@@ -1,0 +1,16 @@
+{
+  "functions": {
+    "app/api/auth/signup/route.ts": {
+      "maxDuration": 10
+    },
+    "app/api/videos/generate/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/videos/upload/route.ts": {
+      "maxDuration": 60
+    },
+    "app/api/webhooks/creem/route.ts": {
+      "maxDuration": 10
+    }
+  }
+}
