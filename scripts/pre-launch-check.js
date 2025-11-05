@@ -24,7 +24,6 @@ const requiredEnvVars = {
 };
 
 const optionalEnvVars = {
-  NEXT_PUBLIC_CLARITY_PROJECT_ID: 'Microsoft Clarity',
   GOOGLE_CLIENT_ID: 'Google OAuth',
   GOOGLE_CLIENT_SECRET: 'Google OAuth Secret',
 };

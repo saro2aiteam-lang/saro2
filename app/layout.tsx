@@ -4,7 +4,6 @@ import { Toaster } from "@/components/ui/toaster"
 import { Toaster as Sonner } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Providers } from './providers'
-import ClarityScript from './clarity-script'
 import CriticalCSS from '@/components/CriticalCSS'
 import './globals.css'
  
@@ -132,7 +131,6 @@ export default function RootLayout({
             <CriticalCSS />
             <Toaster />
             <Sonner />
-            <ClarityScript />
             {children}
           </TooltipProvider>
         </Providers>
