@@ -85,8 +85,8 @@ const Navigation = () => {
                 className="w-full h-full object-contain"
               />
             </div>
-            <span className="text-xl font-bold text-primary">
-              Sora 2
+            <span className="text-xl font-bold text-primary" suppressHydrationWarning>
+              Saro 2
             </span>
           </Link>
 

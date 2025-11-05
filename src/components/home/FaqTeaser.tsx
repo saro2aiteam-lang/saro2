@@ -14,7 +14,7 @@ import { ExternalLink } from 'lucide-react';
 const faqs = [
   {
     id: 'item-1',
-    question: 'What makes Sora 2 different from other AI video generators?',
+    question: 'What makes Saro 2 different from other AI video generators?',
     answer: 'Sora 2 specializes in multi-scene video ads with consistent characters. While other tools generate 10-second single shots, we create 25+ second narratives perfect for TikTok, Shopify, and product promos. Our storyboard builder lets you control continuity, maintain character identity across scenes, and produce ad-ready content with templates.'
   },
   {

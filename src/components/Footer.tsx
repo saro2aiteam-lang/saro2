@@ -41,7 +41,7 @@ const Footer = () => {
                 />
               </div>
               <span className="text-xl font-bold text-primary">
-                Sora 2
+                Saro 2
               </span>
             </div>
             <p className="text-muted-foreground text-sm mb-4 max-w-sm">
@@ -163,7 +163,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-sm text-muted-foreground">
-              © 2024 Sora 2. All rights reserved.
+              © 2024 Saro 2. All rights reserved.
             </div>
             <div className="flex items-center space-x-6 mt-4 md:mt-0">
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">

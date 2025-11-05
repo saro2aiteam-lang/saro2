@@ -106,13 +106,13 @@ const GenerateSidebar = () => {
             <div className="w-8 h-8 rounded-lg overflow-hidden">
               <Image
                 src="/logo.png"
-                alt="Sora 2 Logo"
+                alt="Saro 2 Logo"
                 width={32}
                 height={32}
                 className="w-full h-full object-contain"
               />
             </div>
-            <span className="text-xl font-bold text-primary">Sora 2</span>
+            <span className="text-xl font-bold text-primary">Saro 2</span>
           </Link>
         )}
         {isCollapsed && (

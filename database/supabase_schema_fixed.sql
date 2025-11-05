@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS users (
   credits_balance INTEGER DEFAULT 0,          -- ⭐ 当前可用积分
   credits_total INTEGER DEFAULT 0,            -- ⭐ 累计获得积分
   credits_spent INTEGER DEFAULT 0,             -- ⭐ 累计消费积分
+  credits_limit INTEGER DEFAULT 50,            -- ⭐ 积分上限（代码中使用）
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -55,7 +56,8 @@ CREATE TABLE IF NOT EXISTS video_jobs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   job_id VARCHAR(255) UNIQUE NOT NULL,          -- ⭐ 外部系统返回的任务 ID
-  status VARCHAR(50) DEFAULT 'pending',         -- pending, processing, completed, failed, canceled
+  status VARCHAR(50) DEFAULT 'pending',         -- pending, processing, completed, failed, canceled, PENDING, RUNNING, SUCCEEDED, FAILED
+  CONSTRAINT valid_status CHECK (status IN ('pending', 'processing', 'completed', 'failed', 'canceled', 'PENDING', 'RUNNING', 'SUCCEEDED', 'FAILED')),
   prompt TEXT,
   image_url TEXT,                               -- 输入图片 URL（图片生成视频时）
   aspect_ratio VARCHAR(10),                     -- 16:9, 9:16, 1:1
@@ -64,9 +66,13 @@ CREATE TABLE IF NOT EXISTS video_jobs (
   result_url TEXT,                               -- 生成结果视频 URL
   preview_url TEXT,                             -- 预览图 URL
   error_message TEXT,
-  cost_credits INTEGER DEFAULT 20,               -- 消耗的积分
+  cost_credits INTEGER DEFAULT 20,              -- 消耗的积分（标准字段名）
+  credit_cost INTEGER,                           -- 消耗的积分（代码中使用的别名，与 cost_credits 相同）
   progress INTEGER DEFAULT 0,                    -- 进度百分比（0-100）
+  CONSTRAINT valid_progress CHECK (progress >= 0 AND progress <= 100),
   visibility VARCHAR(20) DEFAULT 'private',      -- private, public
+  model VARCHAR(50),                             -- 使用的模型：veo3, veo3_fast, sora-2-pro-storyboard 等
+  params JSONB,                                 -- ⭐ 额外参数（JSON 格式存储复杂参数）
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -92,7 +98,7 @@ CREATE TABLE IF NOT EXISTS credit_transactions (
 CREATE TABLE IF NOT EXISTS payments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  subscription_id UUID REFERENCES user_subscriptions(id),
+  subscription_id INTEGER REFERENCES user_subscriptions(id),
   payment_id VARCHAR(255) UNIQUE NOT NULL,
   payment_method VARCHAR(50) NOT NULL,           -- subscription, one-time
   amount INTEGER NOT NULL,                      -- 金额（分）
@@ -139,7 +145,42 @@ CREATE TABLE IF NOT EXISTS usage_stats (
 );
 
 -- ============================================================
--- 8. 系统配置表
+-- 8. 用户邮箱别名表（用于支付系统邮箱匹配）
+-- ============================================================
+CREATE TABLE IF NOT EXISTS user_email_aliases (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  alias_email VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_by UUID REFERENCES auth.users(id),
+  status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
+  notes TEXT,
+  UNIQUE(alias_email),
+  UNIQUE(user_id, alias_email)
+);
+
+-- ============================================================
+-- 9. 未匹配支付邮箱记录表（用于处理邮箱不一致的情况）
+-- ============================================================
+CREATE TABLE IF NOT EXISTS unmatched_payment_emails (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email VARCHAR(255) NOT NULL,
+  webhook_data JSONB,
+  payment_id VARCHAR(255),
+  subscription_id VARCHAR(255),
+  amount DECIMAL(10,2),
+  currency VARCHAR(10) DEFAULT 'USD',
+  status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'resolved', 'ignored')),
+  resolved_user_id UUID REFERENCES auth.users(id),
+  resolved_at TIMESTAMP WITH TIME ZONE,
+  resolved_by UUID REFERENCES auth.users(id),
+  notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ============================================================
+-- 10. 系统配置表
 -- ============================================================
 CREATE TABLE IF NOT EXISTS system_config (
   id SERIAL PRIMARY KEY,
@@ -151,7 +192,7 @@ CREATE TABLE IF NOT EXISTS system_config (
 );
 
 -- ============================================================
--- 9. 创建索引（优化查询性能）
+-- 11. 创建索引（优化查询性能）
 -- ============================================================
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_user_subscriptions_user_id ON user_subscriptions(user_id);
@@ -159,6 +200,12 @@ CREATE INDEX IF NOT EXISTS idx_video_jobs_user_id ON video_jobs(user_id);
 CREATE INDEX IF NOT EXISTS idx_video_jobs_status ON video_jobs(status);
 CREATE INDEX IF NOT EXISTS idx_video_jobs_created_at ON video_jobs(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_video_jobs_job_id ON video_jobs(job_id);
+CREATE INDEX IF NOT EXISTS idx_video_jobs_model ON video_jobs(model);
+CREATE INDEX IF NOT EXISTS idx_video_jobs_params ON video_jobs USING gin(params);
+CREATE INDEX IF NOT EXISTS idx_user_email_aliases_user_id ON user_email_aliases(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_email_aliases_email ON user_email_aliases(alias_email);
+CREATE INDEX IF NOT EXISTS idx_unmatched_payment_emails_email ON unmatched_payment_emails(email);
+CREATE INDEX IF NOT EXISTS idx_unmatched_payment_emails_status ON unmatched_payment_emails(status);
 CREATE INDEX IF NOT EXISTS idx_credit_transactions_user_id ON credit_transactions(user_id);
 CREATE INDEX IF NOT EXISTS idx_credit_transactions_created_at ON credit_transactions(created_at);
 CREATE INDEX IF NOT EXISTS idx_credit_transactions_type ON credit_transactions(transaction_type);
@@ -169,7 +216,7 @@ CREATE INDEX IF NOT EXISTS idx_api_keys_active ON api_keys(api_key) WHERE is_act
 CREATE INDEX IF NOT EXISTS idx_usage_stats_user_date ON usage_stats(user_id, stat_date);
 
 -- ============================================================
--- 10. 创建更新时间触发器
+-- 12. 创建更新时间触发器
 -- ============================================================
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -179,6 +226,14 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+-- 删除已存在的触发器（如果存在）
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
+DROP TRIGGER IF EXISTS update_user_subscriptions_updated_at ON user_subscriptions;
+DROP TRIGGER IF EXISTS update_video_jobs_updated_at ON video_jobs;
+DROP TRIGGER IF EXISTS update_system_config_updated_at ON system_config;
+DROP TRIGGER IF EXISTS update_unmatched_payment_emails_updated_at ON unmatched_payment_emails;
+
+-- 创建触发器
 CREATE TRIGGER update_users_updated_at 
     BEFORE UPDATE ON users 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -195,20 +250,25 @@ CREATE TRIGGER update_system_config_updated_at
     BEFORE UPDATE ON system_config 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_unmatched_payment_emails_updated_at 
+    BEFORE UPDATE ON unmatched_payment_emails 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================================
--- 11. 创建新用户自动创建记录触发器
+-- 13. 创建新用户自动创建记录触发器
 -- ============================================================
 CREATE OR REPLACE FUNCTION handle_new_user() 
 RETURNS TRIGGER AS $$
 BEGIN
   -- 创建 users 表记录
-  INSERT INTO users (id, email, full_name, credits_balance, credits_total)
+  INSERT INTO users (id, email, full_name, credits_balance, credits_total, credits_limit)
   VALUES (
     NEW.id, 
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email),
     3,  -- 免费用户初始 3 个积分
-    3
+    3,
+    50  -- 默认积分上限
   )
   ON CONFLICT (id) DO NOTHING;
   
@@ -230,7 +290,7 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
 -- ============================================================
--- 12. 启用 Row Level Security (RLS)
+-- 14. 启用 Row Level Security (RLS)
 -- ============================================================
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_subscriptions ENABLE ROW LEVEL SECURITY;
@@ -239,10 +299,28 @@ ALTER TABLE credit_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE api_keys ENABLE ROW LEVEL SECURITY;
 ALTER TABLE usage_stats ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_email_aliases ENABLE ROW LEVEL SECURITY;
+ALTER TABLE unmatched_payment_emails ENABLE ROW LEVEL SECURITY;
 
 -- ============================================================
--- 13. 创建 RLS 策略
+-- 15. 创建 RLS 策略
 -- ============================================================
+-- 删除已存在的策略（如果存在），避免重复创建错误
+DROP POLICY IF EXISTS "Users can view own data" ON users;
+DROP POLICY IF EXISTS "Users can update own data" ON users;
+DROP POLICY IF EXISTS "Users can view own subscription" ON user_subscriptions;
+DROP POLICY IF EXISTS "Users can update own subscription" ON user_subscriptions;
+DROP POLICY IF EXISTS "Users can view own generations" ON video_jobs;
+DROP POLICY IF EXISTS "Users can create own generations" ON video_jobs;
+DROP POLICY IF EXISTS "Users can update own generations" ON video_jobs;
+DROP POLICY IF EXISTS "Users can view own transactions" ON credit_transactions;
+DROP POLICY IF EXISTS "Users can view own payments" ON payments;
+DROP POLICY IF EXISTS "Users can view own API keys" ON api_keys;
+DROP POLICY IF EXISTS "Users can view own stats" ON usage_stats;
+DROP POLICY IF EXISTS "Anyone can read system config" ON system_config;
+DROP POLICY IF EXISTS "Users can view own email aliases" ON user_email_aliases;
+DROP POLICY IF EXISTS "No public access to unmatched emails" ON unmatched_payment_emails;
+
 -- Users 表策略
 CREATE POLICY "Users can view own data" ON users
   FOR SELECT USING (auth.uid() = id);
@@ -287,8 +365,16 @@ CREATE POLICY "Users can view own stats" ON usage_stats
 CREATE POLICY "Anyone can read system config" ON system_config
   FOR SELECT USING (true);
 
+-- Email aliases 策略（用户只能查看自己的）
+CREATE POLICY "Users can view own email aliases" ON user_email_aliases
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- Unmatched payment emails（仅管理员可访问，普通用户无权限）
+CREATE POLICY "No public access to unmatched emails" ON unmatched_payment_emails
+  FOR SELECT USING (false);
+
 -- ============================================================
--- 14. 插入默认系统配置
+-- 16. 插入默认系统配置
 -- ============================================================
 INSERT INTO system_config (config_key, config_value, description) VALUES
 ('credits_8s_720p_sora2fast', '1.0', '8秒720p Sora2 Fast 消耗 credits'),
@@ -302,7 +388,7 @@ INSERT INTO system_config (config_key, config_value, description) VALUES
 ON CONFLICT (config_key) DO NOTHING;
 
 -- ============================================================
--- 15. 创建 API 密钥生成函数
+-- 17. 创建 API 密钥生成函数
 -- ============================================================
 CREATE OR REPLACE FUNCTION generate_api_key()
 RETURNS TEXT AS $$

@@ -16,14 +16,14 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Sora 2',
-    default: 'Sora 2 AI Video Generator | Text-to-Video with Sora-Level Quality'
+    template: '%s | Saro 2',
+    default: 'Saro 2 AI Video Generator | Text-to-Video with Sora-Level Quality'
   },
   description: 'Create cinematic videos from text prompts. Advanced motion realism, multi-shot storytelling, and creative control. Independent platform, easy to use.',
   keywords: 'AI video ads, multi-scene storyboard, consistent characters, 25 second AI video, vertical ad templates, TikTok ad generator, Shopify product video, AI storyboard builder',
-  authors: [{ name: 'Sora 2 Team' }],
-  creator: 'Sora 2',
-  publisher: 'Sora 2',
+  authors: [{ name: 'Saro 2 Team' }],
+  creator: 'Saro 2',
+  publisher: 'Saro 2',
   formatDetection: {
     email: false,
     address: false,
@@ -37,21 +37,21 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://saro2.ai',
-    siteName: 'Sora 2',
-    title: 'Sora 2 AI Video Generator | Text-to-Video with Sora-Level Quality',
+    siteName: 'Saro 2',
+    title: 'Saro 2 AI Video Generator | Text-to-Video with Sora-Level Quality',
     description: 'Create cinematic videos from text prompts. Advanced motion realism, multi-shot storytelling, and creative control. Independent platform, easy to use.',
     images: [
       {
         url: 'https://saro2.ai/placeholder.svg',
         width: 1200,
         height: 630,
-        alt: 'Sora 2 AI Video Generator | Text-to-Video with Sora-Level Quality',
+        alt: 'Saro 2 AI Video Generator | Text-to-Video with Sora-Level Quality',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sora 2 AI Video Generator | Text-to-Video with Sora-Level Quality',
+    title: 'Saro 2 AI Video Generator | Text-to-Video with Sora-Level Quality',
     description: 'Create cinematic videos from text prompts. Advanced motion realism, multi-shot storytelling, and creative control. Independent platform, easy to use.',
     images: ['https://saro2.ai/placeholder.svg'],
     creator: '@saro2_ai',
@@ -101,7 +101,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "Sora 2",
+              "name": "Saro 2",
               "url": "https://saro2.ai",
               "logo": "/favicon.png",
               "sameAs": [

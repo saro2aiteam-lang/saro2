@@ -43,7 +43,7 @@ const Hero = () => {
           {/* Main Heading */}
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1] mb-6">
             <div className="text-foreground">
-              Sora 2
+              Saro 2
             </div>
           </h1>
 
