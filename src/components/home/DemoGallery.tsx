@@ -5,7 +5,6 @@ import { ExternalLink } from "lucide-react";
 
 const videos = [
   "/videos/annimate.mp4",
-  "/videos/skiing.mp4",
   "/videos/bride.mp4",
   "/videos/eyes.mp4",
   "/videos/grandama sing.mp4",
@@ -19,6 +18,7 @@ const videos = [
 function VideoItem({ src }: { src: string }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   const tryPlayWithSound = async () => {
     const el = ref.current;
@@ -82,6 +82,14 @@ function VideoItem({ src }: { src: string }) {
     }
   };
 
+  const handleError = () => {
+    setHasError(true);
+  };
+
+  if (hasError) {
+    return null;
+  }
+
   return (
     <div className="mb-4 sm:mb-6 rounded-xl overflow-hidden border border-border/50 bg-card/50 backdrop-blur-sm break-inside-avoid relative group hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
       <video
@@ -98,6 +106,7 @@ function VideoItem({ src }: { src: string }) {
         onTouchStart={toggleMute}
         onClick={toggleMute}
         onKeyDown={(e) => { if (e.key === 'Tab') { void toggleMute(); } }}
+        onError={handleError}
       />
       {isMuted && (
         <button
