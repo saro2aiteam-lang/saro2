@@ -213,7 +213,7 @@ export default function HomePage() {
             <p>
               Sora 2 AI video ads generator: create multi-scene video ads with consistent characters for TikTok, Shopify, and product promotions. Sora 2 generates{' '}
               <strong className="font-semibold">25+ second AI video ads</strong> with{' '}
-              <strong className="font-semibold">consistent character identity</strong> across multiple scenes. Sora 2 is perfect for brand storytelling, product showcases, and vertical social media ads. Experience Sora 2 technology for your video marketing needs.
+              <strong className="font-semibold">consistent character identity</strong> across multiple scenes. Sora 2 is perfect for brand storytelling, product showcases, and vertical social media ads. Experience Sora 2 technology for your video marketing needs. Sora 2 delivers professional results with Sora 2-powered video generation. Start using Sora 2 today and see why Sora 2 is the preferred choice for AI video creation.
             </p>
           </div>
         </section>

@@ -18,7 +18,7 @@ const KeyFeatures = () => {
             Sora 2: Next-Generation Cinematic Video Creation
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Sora 2 generates realistic motion, consistent characters, and multi-shot scenes without filming or editing skills. Experience Sora 2 AI video generation technology.
+            Sora 2 generates realistic motion, consistent characters, and multi-shot scenes without filming or editing skills. Experience Sora 2 AI video generation technology. Sora 2 delivers professional results with Sora 2-powered tools.
           </p>
         </div>
 
@@ -114,7 +114,7 @@ const KeyFeatures = () => {
               Try Sora 2 Free — No Editing Required
             </h2>
             <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Start creating cinematic videos with Sora 2 AI-powered tools. Sora 2 makes video creation easy - no experience needed. Discover what Sora 2 can do for your projects.
+              Start creating cinematic videos with Sora 2 AI-powered tools. Sora 2 makes video creation easy - no experience needed. Discover what Sora 2 can do for your projects. Try Sora 2 free and see why creators choose Sora 2 for AI video generation.
             </p>
             <Button
               size="lg"

@@ -54,7 +54,7 @@ const Hero = () => {
 
           {/* Subheading */}
           <p className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Sora 2 AI video generator produces commercially licensed videos with high-consistency scenes, built-in audio, and smooth motion.
+            Sora 2 AI video generator produces commercially licensed videos with high-consistency scenes, built-in audio, and smooth motion. Sora 2 technology enables fast video creation without filming. Experience Sora 2 AI video generation today.
           </p>
         </div>
 

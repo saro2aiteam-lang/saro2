@@ -65,7 +65,7 @@ const FaqTeaser = () => {
             Frequently asked <span className="text-primary">questions</span>
           </h2>
           <p className="text-xl text-muted-foreground">
-            Get answers to common questions about Sora 2 AI Video Ads. Learn how Sora 2 works and why creators choose Sora 2.
+            Get answers to common questions about Sora 2 AI Video Ads. Learn how Sora 2 works and why creators choose Sora 2. Discover Sora 2 features and start creating with Sora 2.
           </p>
         </div>
 

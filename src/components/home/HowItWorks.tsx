@@ -41,7 +41,7 @@ const HowItWorks = () => {
             How it <span className="text-primary">works</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Create professional AI videos with Sora 2 and multiple models in four simple steps. Sora 2 makes video generation effortless.
+            Create professional AI videos with Sora 2 and multiple models in four simple steps. Sora 2 makes video generation effortless. Learn how Sora 2 works and start using Sora 2 today.
           </p>
         </div>
 

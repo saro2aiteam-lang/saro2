@@ -90,7 +90,7 @@ const Testimonials = () => {
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Join creators worldwide who use Sora 2 for AI video generation. 
-            See what users say about our platform watermark-free videos and rendering features.
+            See what users say about our platform watermark-free videos and rendering features. Discover why Sora 2 is trusted by creators using Sora 2 technology.
           </p>
         </div>
 
@@ -155,8 +155,8 @@ const Testimonials = () => {
             Creators use Sora 2 for AI video generation. Features include watermark-free videos, 
             audio synchronization, and efficient rendering. Whether you need text to video, 
             image to video, or are looking for video generation tools, Sora 2 offers 
-            video creation capabilities. Create AI-generated videos with audio features, 
-            quality options, and commercial use licensing.
+            video creation capabilities. Create AI-generated videos with Sora 2 audio features, 
+            Sora 2 quality options, and Sora 2 commercial use licensing. Sora 2 provides everything you need for professional video creation with Sora 2 technology.
           </p>
         </div>
 
