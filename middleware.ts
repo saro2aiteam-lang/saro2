@@ -106,6 +106,6 @@ export const config = {
      * - robots.txt, sitemap.xml (SEO files)
      * - static files (images, fonts, etc.)
      */
-    '/((?!_next/static|_next/image|favicon|icon|logo|robots|sitemap|.*\\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot)).*)',
+    '/(?:(?!_next/static|_next/image|favicon|icon|logo|robots|sitemap|.*\\.(?:ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot)).*)',
   ],
 };
