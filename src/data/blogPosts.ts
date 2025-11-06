@@ -74,7 +74,7 @@ Veo 3 produces coordinated audio matching the visuals—speech, environmental so
 | **Frame Rate** | 24–30 fps | 30–60 fps |
 | **Rendering Style** | Artistic, film-like | Hyper-realistic, motion-accurate |
 
-![1080p vs 4K comparison](https://images.unsplash.com/photo-1551033406-611cf9a28f61?w=1200&h=600&fit=crop&q=80)
+![1080p vs 4K comparison](https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&h=600&fit=crop&q=80)
 
 ---
 
