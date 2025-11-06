@@ -55,12 +55,12 @@ export function verifyWebhookSignature(
   signature: string | null
 ): boolean {
   if (!signature) {
-    console.error('No signature provided for webhook verification');
+    console.error('[WEBHOOK] No signature provided for webhook verification');
     return false;
   }
 
   if (!creemConfig.webhookSecret) {
-    console.error('Webhook secret not configured');
+    console.error('[WEBHOOK] Webhook secret not configured');
     return false;
   }
 
@@ -72,19 +72,34 @@ export function verifyWebhookSignature(
       .update(body)
       .digest('hex');
     
+    // 清理签名字符串（移除可能的空格、换行等）
+    const cleanedSignature = signature.trim();
+    const cleanedExpected = expectedSignature.trim();
+    
     console.log('[WEBHOOK] Signature verification:', {
-      received: signature.substring(0, 8) + '...',
-      expected: expectedSignature.substring(0, 8) + '...',
-      match: signature === expectedSignature
+      receivedLength: cleanedSignature.length,
+      expectedLength: cleanedExpected.length,
+      receivedPrefix: cleanedSignature.substring(0, 16) + '...',
+      expectedPrefix: cleanedExpected.substring(0, 16) + '...',
+      match: cleanedSignature === cleanedExpected
     });
     
     // 使用时序安全比较以防止时序攻击
+    // 如果长度不同，直接返回 false（避免 timingSafeEqual 抛出错误）
+    if (cleanedSignature.length !== cleanedExpected.length) {
+      console.error('[WEBHOOK] Signature length mismatch:', {
+        received: cleanedSignature.length,
+        expected: cleanedExpected.length
+      });
+      return false;
+    }
+    
     return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature)
+      Buffer.from(cleanedSignature),
+      Buffer.from(cleanedExpected)
     );
   } catch (error) {
-    console.error('Error verifying webhook signature:', error);
+    console.error('[WEBHOOK] Error verifying webhook signature:', error);
     return false;
   }
 }

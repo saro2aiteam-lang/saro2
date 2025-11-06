@@ -169,6 +169,18 @@ const summarizeEventForLog = (event: any) => ({
       : [],
 });
 
+// 支持 GET 方法用于测试和健康检查
+export async function GET(request: NextRequest) {
+  return NextResponse.json(
+    { 
+      message: 'Creem webhook endpoint is active',
+      methods: ['POST'],
+      timestamp: new Date().toISOString()
+    },
+    { status: 200 }
+  );
+}
+
 export async function POST(request: NextRequest) {
   try {
     console.log('[WEBHOOK] Starting webhook processing...');
@@ -178,14 +190,30 @@ export async function POST(request: NextRequest) {
       bodyLength: body.length,
     });
     
-    // 检查 Creem 使用的签名头名称（文档指定为 creem-signature）
-    const signature = request.headers.get('creem-signature');
-    console.log('[WEBHOOK] Signature header:', signature ? 'present' : 'missing');
+    // 检查 Creem 使用的签名头名称（支持多种可能的头名称）
+    // Creem 可能使用: creem-signature, x-creem-signature, X-Creem-Signature 等
+    const signature = 
+      request.headers.get('creem-signature') ||
+      request.headers.get('x-creem-signature') ||
+      request.headers.get('X-Creem-Signature') ||
+      request.headers.get('Creem-Signature');
+    
+    console.log('[WEBHOOK] Signature header check:', {
+      'creem-signature': request.headers.get('creem-signature') ? 'present' : 'missing',
+      'x-creem-signature': request.headers.get('x-creem-signature') ? 'present' : 'missing',
+      'X-Creem-Signature': request.headers.get('X-Creem-Signature') ? 'present' : 'missing',
+      'Creem-Signature': request.headers.get('Creem-Signature') ? 'present' : 'missing',
+      found: signature ? 'yes' : 'no'
+    });
     console.log('[WEBHOOK] All headers:', Object.fromEntries(request.headers.entries()));
 
     // 验证Webhook签名（根据Creem文档要求）
     if (!verifyWebhookSignature(body, signature)) {
-      console.error('[WEBHOOK] Invalid signature - rejecting webhook');
+      console.error('[WEBHOOK] Invalid signature - rejecting webhook', {
+        hasSignature: !!signature,
+        bodyLength: body.length,
+        headers: Object.fromEntries(request.headers.entries())
+      });
       return NextResponse.json(
         { error: 'Invalid webhook signature' },
         { status: 401 }

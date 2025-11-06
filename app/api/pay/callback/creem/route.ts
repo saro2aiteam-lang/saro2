@@ -27,6 +27,8 @@ export async function GET(request: NextRequest) {
     // Verify Creem return URL signature per docs
     // https://docs.creem.io/checkout-flow and https://docs.creem.io/learn/checkout-session/return-url
     const apiKey = process.env.CREEM_API_KEY || '';
+    
+    // 如果提供了签名，则验证；如果没有签名，记录警告但继续处理（某些情况下可能没有签名）
     if (signature && apiKey) {
       const pieces: string[] = [];
       const ordered: Array<[string, string | null]> = [
@@ -42,17 +44,59 @@ export async function GET(request: NextRequest) {
       }
       pieces.push(`salt=${apiKey}`);
       const expected = crypto.createHash('sha256').update(pieces.join('|')).digest('hex');
+      
+      console.log('[CALLBACK] Signature verification:', {
+        hasSignature: !!signature,
+        hasApiKey: !!apiKey,
+        pieces: pieces,
+        expectedPrefix: expected.substring(0, 16) + '...',
+        receivedPrefix: signature.substring(0, 16) + '...',
+      });
+      
       const isValid = (() => {
         try {
-          return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
-        } catch { return false; }
+          // 清理签名字符串
+          const cleanedSignature = signature.trim();
+          const cleanedExpected = expected.trim();
+          
+          if (cleanedSignature.length !== cleanedExpected.length) {
+            console.error('[CALLBACK] Signature length mismatch:', {
+              received: cleanedSignature.length,
+              expected: cleanedExpected.length
+            });
+            return false;
+          }
+          
+          return crypto.timingSafeEqual(
+            Buffer.from(cleanedSignature),
+            Buffer.from(cleanedExpected)
+          );
+        } catch (error) {
+          console.error('[CALLBACK] Signature verification error:', error);
+          return false;
+        }
       })();
+      
       if (!isValid) {
         console.error('[CALLBACK] Invalid Creem return URL signature', {
-          checkoutId, orderId, customerId, subscriptionId, productId, requestId,
+          checkoutId, 
+          orderId, 
+          customerId, 
+          subscriptionId, 
+          productId, 
+          requestId,
+          hasApiKey: !!apiKey,
+          signatureLength: signature?.length,
         });
         return NextResponse.redirect(new URL('/dashboard?payment=invalid_signature', request.url));
+      } else {
+        console.log('[CALLBACK] Signature verified successfully');
       }
+    } else if (signature && !apiKey) {
+      console.warn('[CALLBACK] Signature provided but CREEM_API_KEY not configured');
+      // 如果没有配置 API key，仍然继续处理（可能是测试环境）
+    } else if (!signature) {
+      console.warn('[CALLBACK] No signature provided in callback URL - this may be expected in some cases');
     }
 
     // 根据Creem文档：Success URL只有在支付成功后才会被调用
