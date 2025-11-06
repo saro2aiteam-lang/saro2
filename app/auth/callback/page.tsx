@@ -116,8 +116,24 @@ export default function AuthCallbackPage() {
             
             setError(null);
             
-            // Wait a bit for auth state to propagate
-            await new Promise(resolve => setTimeout(resolve, 500));
+            // Supabase automatically processes URL hash parameters and updates session
+            // AuthContext already has an onAuthStateChange listener that will update the state
+            // We just need to wait a bit for React to re-render with the updated state
+            // No need to create another subscription - AuthContext handles it
+            
+            // Wait for AuthContext to update (it listens to onAuthStateChange)
+            // Give React time to process the state update before redirecting
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            if (!mounted) return;
+            
+            // Double-check session is still valid before redirecting
+            const { data: { session: finalSession } } = await supabase.auth.getSession();
+            if (!finalSession) {
+              console.log("⚠️ Session lost during wait, redirecting to home");
+              router.replace("/");
+              return;
+            }
             
             // Redirect to saved path or default to text-to-video
             const redirectPath = typeof window !== 'undefined' 
@@ -129,7 +145,7 @@ export default function AuthCallbackPage() {
               sessionStorage.removeItem('redirectAfterLogin');
             }
             
-            // Use replace to avoid adding to history
+            console.log("🔄 Redirecting to:", redirectPath);
             router.replace(redirectPath);
           } else {
             console.log("⚠️ No session found");

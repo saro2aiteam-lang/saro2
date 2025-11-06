@@ -12,8 +12,9 @@ export async function handleSignInRedirect(
   const { data: { session } } = await supabase.auth.getSession();
   
   if (session) {
-    // Small delay to ensure auth state is updated in context
-    await new Promise(resolve => setTimeout(resolve, 300));
+    // AuthContext already has an onAuthStateChange listener that will update the state
+    // We just need to wait a bit for React to re-render with the updated state
+    await new Promise(resolve => setTimeout(resolve, 500));
     
     onClose();
     const redirectPath = getRedirectPath();
@@ -27,9 +28,13 @@ export async function handleSignInRedirect(
     if (event === 'SIGNED_IN' && session && !subscriptionCleaned) {
       subscriptionCleaned = true;
       subscription.unsubscribe();
-      onClose();
-      const redirectPath = getRedirectPath();
-      router.replace(redirectPath);
+      
+      // Small delay to ensure React state updates
+      setTimeout(() => {
+        onClose();
+        const redirectPath = getRedirectPath();
+        router.replace(redirectPath);
+      }, 200);
     }
   });
 

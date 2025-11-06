@@ -73,12 +73,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithGoogle = async () => {
     // 根据环境设置重定向 URL
+    // 在开发环境，始终使用当前页面的 origin（localhost:3000）
+    // 在生产环境，使用环境变量或默认值
     const isProduction = process.env.NODE_ENV === 'production';
-    const baseUrl = isProduction
-      ? (process.env.NEXT_PUBLIC_APP_URL || 'https://saro2.ai')
-      : window.location.origin;
+    let baseUrl: string;
+    
+    if (isProduction) {
+      baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://saro2.ai';
+    } else {
+      // 开发环境：强制使用当前页面的 origin
+      if (typeof window !== 'undefined') {
+        baseUrl = window.location.origin;
+      } else {
+        baseUrl = 'http://localhost:3000';
+      }
+    }
 
-    console.log('🔐 Google OAuth redirect URL:', `${baseUrl}/auth/callback`);
+    const redirectUrl = `${baseUrl}/auth/callback`;
+    console.log('🔐 Google OAuth Configuration:', {
+      isProduction,
+      baseUrl,
+      redirectUrl,
+      nodeEnv: process.env.NODE_ENV,
+      appUrl: process.env.NEXT_PUBLIC_APP_URL,
+      currentOrigin: typeof window !== 'undefined' ? window.location.origin : 'N/A'
+    });
 
     // 检测移动端设备
     const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -88,7 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${baseUrl}/auth/callback`,
+          redirectTo: redirectUrl,
           queryParams: {
             access_type: 'online',
             prompt: 'select_account'
@@ -101,7 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${baseUrl}/auth/callback`
+          redirectTo: redirectUrl
         }
       })
       return { error }
