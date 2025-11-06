@@ -46,7 +46,7 @@ const HowItWorks = () => {
               <div key={index} className="text-center group">
                 {/* Step Number Circle */}
                 <div className="relative mb-6">
-                  <div className="w-20 h-20 mx-auto bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-2xl shadow-lg">
+                  <div className="w-20 h-20 mx-auto bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-lg">
                     {step.number}
                   </div>
                   

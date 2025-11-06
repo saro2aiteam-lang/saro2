@@ -194,8 +194,7 @@ const SubscriptionPlans = ({
               <span className="hidden sm:inline">Annual</span>
               <span className="sm:hidden">Annual</span>
               <Badge
-                variant="secondary"
-                className="text-[9px] sm:text-[10px] uppercase tracking-wide bg-primary text-primary-foreground shadow-lg border-0"
+                className="text-[9px] sm:text-[10px] uppercase tracking-wide bg-red-500 text-white shadow-lg border-0 hover:bg-red-600"
               >
                 Save 50%
               </Badge>
