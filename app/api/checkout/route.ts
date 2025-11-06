@@ -202,14 +202,23 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json({ error: 'Plan is not configured for checkout' }, { status: 500 });
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorName = error instanceof Error ? error.name : 'UnknownError';
+    
     console.error('[API ERROR] checkout failed', {
-      error: error instanceof Error ? { message: error.message, name: error.name } : String(error),
+      error: errorMessage,
+      errorName,
+      stack: error instanceof Error ? error.stack : undefined,
       debug,
     });
+    
+    // 始终返回错误信息，方便调试
     return NextResponse.json(
-      debugMode
-        ? { error: 'Failed to create checkout session', debug }
-        : { error: 'Failed to create checkout session' },
+      {
+        error: 'Failed to create checkout session',
+        message: errorMessage,
+        ...(debugMode && { debug, stack: error instanceof Error ? error.stack : undefined })
+      },
       { status: 500 }
     );
   }

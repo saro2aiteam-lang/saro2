@@ -24,7 +24,26 @@ export async function createCheckoutSession(planId: string): Promise<CheckoutRes
   if (!response.ok) {
     const payload = await response.json().catch(() => ({}));
     const message = (payload && (payload.error || payload.message)) || 'Failed to create checkout session';
-    throw new CheckoutError(message, 'CHECKOUT_FAILED');
+    
+    // 在控制台输出详细错误信息，方便调试
+    console.error('[Checkout Error]', {
+      status: response.status,
+      planId,
+      error: payload.error,
+      message: payload.message,
+      debug: payload.debug,
+    });
+    
+    const error = new CheckoutError(message, 'CHECKOUT_FAILED', payload);
+    
+    // 如果是配置错误，提供更明确的提示
+    if (message.includes('API key') || message.includes('not configured')) {
+      error.message = 'Payment service not configured. Please contact support.';
+    } else if (message.includes('安全错误') || message.includes('Security')) {
+      error.message = 'Payment service configuration error. Please contact support.';
+    }
+    
+    throw error;
   }
 
   const data = await response.json();

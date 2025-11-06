@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { createServerClient } from '@supabase/ssr';
 import { creemPlansById } from '@/config/creemPlans';
+import crypto from 'crypto';
 
 export const runtime = 'nodejs';
 
@@ -10,10 +11,49 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     
     const plan = searchParams.get('plan') || '';
+    // Parameters documented by Creem for Return URLs
+    const checkoutId = searchParams.get('checkout_id');
+    const orderId = searchParams.get('order_id');
+    const customerId = searchParams.get('customer_id');
+    const subscriptionId = searchParams.get('subscription_id');
+    const productId = searchParams.get('product_id');
+    const requestId = searchParams.get('request_id');
+    const signature = searchParams.get('signature');
 
     console.log('[CALLBACK] Creem success URL callback received');
     console.log('[CALLBACK] Plan:', plan);
     console.log('[CALLBACK] All URL parameters:', Object.fromEntries(searchParams.entries()));
+
+    // Verify Creem return URL signature per docs
+    // https://docs.creem.io/checkout-flow and https://docs.creem.io/learn/checkout-session/return-url
+    const apiKey = process.env.CREEM_API_KEY || '';
+    if (signature && apiKey) {
+      const pieces: string[] = [];
+      const ordered: Array<[string, string | null]> = [
+        ['checkout_id', checkoutId],
+        ['order_id', orderId],
+        ['customer_id', customerId],
+        ['subscription_id', subscriptionId],
+        ['product_id', productId],
+        ['request_id', requestId],
+      ];
+      for (const [k, v] of ordered) {
+        if (v !== null && v !== undefined) pieces.push(`${k}=${v}`);
+      }
+      pieces.push(`salt=${apiKey}`);
+      const expected = crypto.createHash('sha256').update(pieces.join('|')).digest('hex');
+      const isValid = (() => {
+        try {
+          return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+        } catch { return false; }
+      })();
+      if (!isValid) {
+        console.error('[CALLBACK] Invalid Creem return URL signature', {
+          checkoutId, orderId, customerId, subscriptionId, productId, requestId,
+        });
+        return NextResponse.redirect(new URL('/account?payment=invalid_signature', request.url));
+      }
+    }
 
     // 根据Creem文档：Success URL只有在支付成功后才会被调用
     // 因此如果到达这里，就说明支付成功了
@@ -110,7 +150,18 @@ export async function GET(request: NextRequest) {
         }
       }
       
-      const target = `/payment/success?plan=${encodeURIComponent(plan)}&transaction_id=${encodeURIComponent(transactionId)}&value=${encodeURIComponent(amount)}&currency=${encodeURIComponent(currency)}`;
+      const qp: Record<string, string> = {
+        plan,
+        transaction_id: transactionId,
+        value: amount,
+        currency,
+      };
+      if (checkoutId) qp.checkout_id = checkoutId;
+      if (orderId) qp.order_id = orderId;
+      if (subscriptionId) qp.subscription_id = subscriptionId || '';
+      if (productId) qp.product_id = productId || '';
+      if (requestId) qp.request_id = requestId || '';
+      const target = `/payment/success?${new URLSearchParams(qp).toString()}`;
       
       console.log('[CALLBACK] Redirecting to success page:', target);
       return NextResponse.redirect(new URL(target, request.url));

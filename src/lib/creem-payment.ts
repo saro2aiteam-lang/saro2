@@ -205,10 +205,18 @@ export async function createCheckoutForProduct(params: {
   requestId?: string;
   metadata?: Record<string, string | number | boolean | null | undefined>;
 }) {
-  checkKeySecurityRuntime();
-
+  // 先检查 API Key，提供更清晰的错误信息
   if (!creemConfig.apiKey) {
+    console.error('[Creem] API key not configured');
     throw new Error('Creem API key not configured');
+  }
+
+  // 安全检查：在生产环境检测测试密钥
+  try {
+    checkKeySecurityRuntime();
+  } catch (securityError) {
+    console.error('[Creem] Security check failed:', securityError instanceof Error ? securityError.message : String(securityError));
+    throw securityError;
   }
 
   if (!params.productId) {
@@ -235,41 +243,57 @@ export async function createCheckoutForProduct(params: {
   }
 
   if (params.customerEmail) {
+    // 根据 Creem API 文档，只支持 customer.email
+    // 参考: https://docs.creem.io/learn/checkout-session/introduction
     checkoutRequest.customer = {
       email: params.customerEmail,
     };
-    // 如果有 customerId，也可以添加
-    if (params.customerId) {
-      checkoutRequest.customer.id = params.customerId;
-    }
+    // 注意：Creem API 不支持 customer.id，只在 metadata 中传递 customerId
   }
 
   if (params.successUrl) {
     checkoutRequest.success_url = params.successUrl;
   }
 
+  // 注意：Creem API 不支持 cancel_url 参数
+  // 参考: https://docs.creem.io/learn/checkout-session/introduction
+  // cancel_url 功能可能需要在产品设置中配置，而不是在 checkout session 中传递
+
   if (metadata) {
     checkoutRequest.metadata = metadata;
   }
 
   try {
+    // 记录请求详情
+    console.log('[Creem] Creating checkout:', {
+      productId: params.productId,
+      hasApiKey: !!creemConfig.apiKey,
+      apiKeyPrefix: creemConfig.apiKey?.substring(0, 20),
+      hasSuccessUrl: !!params.successUrl,
+      requestBody: JSON.stringify(checkoutRequest, null, 2),
+    });
+
     // 优先使用 SDK，如果失败则使用 REST API
     let result: any;
     
     try {
-      console.log('[Creem] Attempting SDK checkout:', {
-        productId: params.productId,
-        hasApiKey: !!creemConfig.apiKey,
-        apiKeyPrefix: creemConfig.apiKey?.substring(0, 20),
-      });
+      console.log('[Creem] Attempting SDK checkout...');
       
       result = await creem.createCheckout({
         xApiKey: creemConfig.apiKey,
         createCheckoutRequest: checkoutRequest,
       } as any) as any;
+      
+      console.log('[Creem] SDK call completed:', {
+        hasResult: !!result,
+        resultType: typeof result,
+        resultKeys: result ? Object.keys(result) : [],
+      });
     } catch (sdkError) {
+      const sdkErrorMessage = sdkError instanceof Error ? sdkError.message : String(sdkError);
       console.warn('[Creem] SDK failed, falling back to REST API:', {
-        error: sdkError instanceof Error ? sdkError.message : String(sdkError),
+        error: sdkErrorMessage,
+        errorName: sdkError instanceof Error ? sdkError.name : 'Unknown',
         productId: params.productId,
       });
       
@@ -279,27 +303,46 @@ export async function createCheckoutForProduct(params: {
       
       console.log('[Creem] Calling REST API:', apiUrl);
       
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': creemConfig.apiKey,
-        },
-        body: JSON.stringify(checkoutRequest),
-      });
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': creemConfig.apiKey,
+          },
+          body: JSON.stringify(checkoutRequest),
+        });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('[Creem] REST API error:', {
+        console.log('[Creem] REST API response:', {
           status: response.status,
           statusText: response.statusText,
-          errorText,
-          productId: params.productId,
+          ok: response.ok,
         });
-        throw new Error(`Creem API error: ${response.status} ${errorText}`);
-      }
 
-      result = { ok: true, value: await response.json() };
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('[Creem] REST API error:', {
+            status: response.status,
+            statusText: response.statusText,
+            errorText,
+            productId: params.productId,
+          });
+          throw new Error(`Creem API error: ${response.status} ${errorText}`);
+        }
+
+        const responseData = await response.json();
+        console.log('[Creem] REST API success:', {
+          hasData: !!responseData,
+          dataKeys: responseData ? Object.keys(responseData) : [],
+        });
+        result = { ok: true, value: responseData };
+      } catch (fetchError) {
+        console.error('[Creem] REST API fetch failed:', {
+          error: fetchError instanceof Error ? fetchError.message : String(fetchError),
+          errorName: fetchError instanceof Error ? fetchError.name : 'Unknown',
+        });
+        throw fetchError;
+      }
     }
 
     console.log('Creem SDK result:', JSON.stringify(result, null, 2));
