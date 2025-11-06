@@ -47,9 +47,6 @@ const Hero = () => {
             <div className="text-foreground" suppressHydrationWarning>
               Sora 2
             </div>
-            <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-muted-foreground mt-2">
-              Best AI Video Generator
-            </div>
           </h1>
 
           {/* Subheading */}
