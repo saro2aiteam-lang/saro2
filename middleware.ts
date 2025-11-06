@@ -2,13 +2,27 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  
+  // 跳过静态资源和 Next.js 内部文件
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/static') ||
+    pathname.startsWith('/favicon') ||
+    pathname.startsWith('/icon') ||
+    pathname.startsWith('/logo') ||
+    pathname.startsWith('/robots.txt') ||
+    pathname.startsWith('/sitemap.xml') ||
+    pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot)$/)
+  ) {
+    return NextResponse.next();
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   });
-
-  const pathname = request.nextUrl.pathname;
   
   // 创建 Supabase 客户端用于处理所有需要 session 的路由
   const supabase = createServerClient(
@@ -84,9 +98,14 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/auth/callback',
-    '/api/videos/:path*',
-    '/api/subscriptions/:path*',
-    '/api/usage/:path*',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico, favicon.png, icon.png, logo.png (favicon and icons)
+     * - robots.txt, sitemap.xml (SEO files)
+     * - static files (images, fonts, etc.)
+     */
+    '/((?!_next/static|_next/image|favicon|icon|logo|robots|sitemap|.*\\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot)).*)',
   ],
 };
