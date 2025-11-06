@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ReframeParams } from '@/types/generation-modes';
 import { RotateCcw, Play, Upload as UploadIcon, Lightbulb, Sparkles, CircleHelp, Image as ImageIcon, Info, X } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { imagePromptCategories, getImageExamplesByCategory } from '@/data/promptExamples';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -81,6 +81,9 @@ export const ReframeMode: React.FC<ReframeModeProps> = ({
                       <Sparkles className="w-5 h-5 text-amber-500" />
                       Image-to-Video Prompt Examples
                     </DialogTitle>
+                    <DialogDescription>
+                      Browse example prompts to inspire your image-to-video generation
+                    </DialogDescription>
                   </DialogHeader>
 
                   <Tabs defaultValue={imagePromptCategories[0]} className="w-full">

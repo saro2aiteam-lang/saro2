@@ -69,6 +69,29 @@ export async function POST(request: NextRequest) {
     debug.baseUrl = baseUrl;
     debug.vercelEnv = process.env.VERCEL_ENV || process.env.NODE_ENV || 'unknown';
     debug.hasCreemApiKey = !!process.env.CREEM_API_KEY;
+    debug.creemApiKeyPrefix = process.env.CREEM_API_KEY?.substring(0, 20) || 'not set';
+    debug.productId = plan.productId;
+
+    // 检查必需的配置
+    if (!process.env.CREEM_API_KEY) {
+      console.error('[API] CREEM_API_KEY not configured');
+      return NextResponse.json(
+        debugMode
+          ? { error: 'Creem API key not configured', debug }
+          : { error: 'Payment service not configured' },
+        { status: 500 }
+      );
+    }
+
+    if (!plan.productId) {
+      console.error('[API] Plan missing productId', { planId: plan.id });
+      return NextResponse.json(
+        debugMode
+          ? { error: 'Plan productId not configured', debug }
+          : { error: 'Plan not configured for checkout' },
+        { status: 500 }
+      );
+    }
 
     // Prefer creating checkout via productId to attach success/cancel + metadata
     if (plan.productId) {
@@ -108,11 +131,25 @@ export async function POST(request: NextRequest) {
         }
         return NextResponse.json({ checkoutUrl: checkout.checkoutUrl });
       } catch (creemError) {
-        debug.creemError = creemError instanceof Error ? {
-          message: creemError.message,
-          name: creemError.name,
-          stack: creemError.stack
-        } : String(creemError);
+        const errorMessage = creemError instanceof Error ? creemError.message : String(creemError);
+        const errorName = creemError instanceof Error ? creemError.name : 'UnknownError';
+        
+        debug.creemError = {
+          message: errorMessage,
+          name: errorName,
+          stack: creemError instanceof Error ? creemError.stack : undefined
+        };
+        
+        // 记录详细错误日志
+        console.error('[API] Creem checkout failed:', {
+          planId: plan.id,
+          productId: plan.productId,
+          hasApiKey: !!process.env.CREEM_API_KEY,
+          apiKeyPrefix: process.env.CREEM_API_KEY?.substring(0, 20),
+          error: errorMessage,
+          errorName,
+          debug
+        });
         
         // In debug mode, also return the raw error for inspection
         if (debugMode) {
@@ -125,7 +162,31 @@ export async function POST(request: NextRequest) {
           }, { status: 500 });
         }
         
-        throw creemError;
+        // 返回错误信息而不是抛出，避免被外层 catch 捕获
+        return NextResponse.json(
+          debugMode
+            ? {
+                error: 'Creem checkout failed',
+                message: errorMessage,
+                debug: {
+                  ...debug,
+                  rawError: creemError instanceof Error ? {
+                    message: creemError.message,
+                    name: creemError.name,
+                    stack: creemError.stack
+                  } : String(creemError)
+                }
+              }
+            : {
+                error: 'Failed to create payment link',
+                message: errorMessage.includes('安全错误') 
+                  ? 'Payment service configuration error. Please contact support.'
+                  : errorMessage.includes('API key')
+                  ? 'Payment service not configured'
+                  : 'Failed to create checkout session'
+              },
+          { status: 500 }
+        );
       }
     }
 

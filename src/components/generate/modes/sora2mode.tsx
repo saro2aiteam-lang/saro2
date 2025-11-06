@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sora2Params } from '@/types/generation-modes';
 import { Wand2, Video, LayoutPanelTop, Sparkles, Clock, Maximize2, Settings2, Lightbulb, Play, Info } from 'lucide-react';
@@ -77,6 +77,9 @@ export const Sora2Mode: React.FC<Sora2ModeProps> = ({
                     <Sparkles className="w-5 h-5 text-amber-500" />
                     AI-Generated Video Prompt Examples
                   </DialogTitle>
+                  <DialogDescription>
+                    Browse example prompts to inspire your video generation
+                  </DialogDescription>
                 </DialogHeader>
                 
                 <Tabs defaultValue={promptCategories[0]} className="w-full">

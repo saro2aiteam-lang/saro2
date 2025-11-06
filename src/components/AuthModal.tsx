@@ -175,6 +175,13 @@ export default function AuthModal({ isOpen, onClose, preventClose = false }: Aut
           <DialogTitle className="text-center text-2xl font-bold">
             {getTitle()}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            {magicLinkSent 
+              ? 'Check your email for the magic link to sign in'
+              : mode === 'signup' 
+                ? 'Create a new account to get started'
+                : 'Sign in to your account to continue'}
+          </DialogDescription>
         </DialogHeader>
 
         {magicLinkSent ? (

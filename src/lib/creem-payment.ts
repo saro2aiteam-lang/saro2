@@ -22,14 +22,17 @@ const creemConfig: CreemPaymentConfig = {
 // 使用 VERCEL_ENV 而不是 NODE_ENV 来判断真正的部署环境
 function checkKeySecurityRuntime() {
   if (creemConfig.apiKey && process.env.VERCEL_ENV === 'production') {
-    const isTestKey = creemConfig.apiKey.includes('_test_');
+    const isTestKey = creemConfig.apiKey.includes('_test_') || creemConfig.apiKey.startsWith('pk_test_');
     
     if (isTestKey) {
-      throw new Error(
+      const error = new Error(
         '🚨 安全错误：生产环境不应使用测试密钥！\n' +
         `当前密钥: ${creemConfig.apiKey.substring(0, 20)}...\n` +
         '请在 Vercel 环境变量中配置正确的生产密钥。'
       );
+      error.name = 'SecurityError';
+      console.error('[Creem] Security check failed:', error.message);
+      throw error;
     }
   }
 }
@@ -254,16 +257,29 @@ export async function createCheckoutForProduct(params: {
     let result: any;
     
     try {
+      console.log('[Creem] Attempting SDK checkout:', {
+        productId: params.productId,
+        hasApiKey: !!creemConfig.apiKey,
+        apiKeyPrefix: creemConfig.apiKey?.substring(0, 20),
+      });
+      
       result = await creem.createCheckout({
         xApiKey: creemConfig.apiKey,
         createCheckoutRequest: checkoutRequest,
       } as any) as any;
     } catch (sdkError) {
-      console.warn('Creem SDK failed, falling back to REST API:', sdkError);
+      console.warn('[Creem] SDK failed, falling back to REST API:', {
+        error: sdkError instanceof Error ? sdkError.message : String(sdkError),
+        productId: params.productId,
+      });
       
       // 使用 REST API 作为备用方案
       const baseUrl = creemConfig.baseUrl || 'https://api.creem.io';
-      const response = await fetch(`${baseUrl}/v1/checkouts`, {
+      const apiUrl = `${baseUrl}/v1/checkouts`;
+      
+      console.log('[Creem] Calling REST API:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -274,6 +290,12 @@ export async function createCheckoutForProduct(params: {
 
       if (!response.ok) {
         const errorText = await response.text();
+        console.error('[Creem] REST API error:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorText,
+          productId: params.productId,
+        });
         throw new Error(`Creem API error: ${response.status} ${errorText}`);
       }
 

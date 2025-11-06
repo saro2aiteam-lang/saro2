@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -103,6 +103,12 @@ const PaymentModal = ({ isOpen, onClose, selectedPlan = null, onSuccess }: Payme
             {currentStep === 'processing' && "Processing Payment"}
             {currentStep === 'success' && "Payment Successful!"}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            {currentStep === 'plan' && "Select a subscription plan or one-time credit pack"}
+            {currentStep === 'payment' && "Complete your payment to activate your plan"}
+            {currentStep === 'processing' && "Your payment is being processed"}
+            {currentStep === 'success' && "Your payment was successful"}
+          </DialogDescription>
         </DialogHeader>
 
         {/* Plan Selection Step */}
