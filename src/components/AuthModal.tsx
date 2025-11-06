@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from "@/lib/supabase";
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Mail, Lock, ArrowLeft, CheckCircle, User } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -17,9 +18,13 @@ interface AuthModalProps {
 
 export default function AuthModal({ isOpen, onClose, preventClose = false }: AuthModalProps) {
   const router = useRouter();
+  const { signUp, signIn, signInWithGoogle } = useAuth();
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [view, setView] = useState<'magic' | 'password'>('magic');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
@@ -35,6 +40,13 @@ export default function AuthModal({ isOpen, onClose, preventClose = false }: Aut
       return;
     }
 
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -42,7 +54,7 @@ export default function AuthModal({ isOpen, onClose, preventClose = false }: Aut
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          shouldCreateUser: true,
+          shouldCreateUser: mode === 'signup', // Only create user in signup mode
           emailRedirectTo: `${baseUrl}/auth/callback`,
         }
       });
@@ -59,88 +71,132 @@ export default function AuthModal({ isOpen, onClose, preventClose = false }: Aut
     }
   };
 
-  const handlePasswordSignIn = async () => {
+  const handlePasswordAuth = async () => {
+    // Validation
     if (!email || !password) {
       setError('Please enter both email and password');
       return;
     }
 
-    setLoading(true);
-    setError(null);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
 
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        setError(error.message);
-        setLoading(false);
+    if (mode === 'signup') {
+      // Signup validation
+      if (!fullName.trim()) {
+        setError('Please enter your full name');
         return;
       }
 
-      // Wait for session to be established before redirecting
-      if (data.session) {
-        // Small delay to ensure auth state is updated in context
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        onClose();
-        // Redirect to saved path or default to text-to-video
-        const redirectPath = typeof window !== 'undefined' 
-          ? sessionStorage.getItem('redirectAfterLogin') || '/text-to-video'
-          : '/text-to-video';
-        
-        if (typeof window !== 'undefined') {
-          sessionStorage.removeItem('redirectAfterLogin');
+      if (password.length < 6) {
+        setError('Password must be at least 6 characters');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        setError('Passwords do not match');
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const { user, error } = await signUp(email, password, { full_name: fullName.trim() });
+
+        if (error) {
+          setError(error.message);
+          setLoading(false);
+          return;
         }
-        
-        router.replace(redirectPath);
+
+        // Signup successful - show confirmation message
+        setMagicLinkSent(true);
         setLoading(false);
-      } else {
-        // Wait for auth state change if session not immediately available
-        let subscriptionCleaned = false;
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-          if (event === 'SIGNED_IN' && session && !subscriptionCleaned) {
-            subscriptionCleaned = true;
-            subscription.unsubscribe();
-            onClose();
-            const redirectPath = typeof window !== 'undefined' 
-              ? sessionStorage.getItem('redirectAfterLogin') || '/text-to-video'
-              : '/text-to-video';
-            
-            if (typeof window !== 'undefined') {
-              sessionStorage.removeItem('redirectAfterLogin');
-            }
-            
-            router.replace(redirectPath);
-            setLoading(false);
+      } catch (err: any) {
+        setError(err?.message || 'Sign up failed');
+        setLoading(false);
+      }
+    } else {
+      // Signin logic
+      setLoading(true);
+      setError(null);
+
+      try {
+        const { user, error } = await signIn(email, password);
+
+        if (error) {
+          setError(error.message);
+          setLoading(false);
+          return;
+        }
+
+        // Wait for session to be established before redirecting
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          // Small delay to ensure auth state is updated in context
+          await new Promise(resolve => setTimeout(resolve, 300));
+          
+          onClose();
+          // Redirect to saved path or default to text-to-video
+          const redirectPath = typeof window !== 'undefined' 
+            ? sessionStorage.getItem('redirectAfterLogin') || '/text-to-video'
+            : '/text-to-video';
+          
+          if (typeof window !== 'undefined') {
+            sessionStorage.removeItem('redirectAfterLogin');
           }
-        });
-        
-        // Timeout fallback - check session after delay
-        setTimeout(async () => {
-          if (!subscriptionCleaned) {
-            subscriptionCleaned = true;
-            subscription.unsubscribe();
-            const { data: { session: currentSession } } = await supabase.auth.getSession();
-            if (currentSession) {
+          
+          router.replace(redirectPath);
+          setLoading(false);
+        } else {
+          // Wait for auth state change if session not immediately available
+          let subscriptionCleaned = false;
+          const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' && session && !subscriptionCleaned) {
+              subscriptionCleaned = true;
+              subscription.unsubscribe();
               onClose();
               const redirectPath = typeof window !== 'undefined' 
                 ? sessionStorage.getItem('redirectAfterLogin') || '/text-to-video'
                 : '/text-to-video';
+              
               if (typeof window !== 'undefined') {
                 sessionStorage.removeItem('redirectAfterLogin');
               }
+              
               router.replace(redirectPath);
+              setLoading(false);
             }
-            setLoading(false);
-          }
-        }, 2000);
+          });
+          
+          // Timeout fallback - check session after delay
+          setTimeout(async () => {
+            if (!subscriptionCleaned) {
+              subscriptionCleaned = true;
+              subscription.unsubscribe();
+              const { data: { session: currentSession } } = await supabase.auth.getSession();
+              if (currentSession) {
+                onClose();
+                const redirectPath = typeof window !== 'undefined' 
+                  ? sessionStorage.getItem('redirectAfterLogin') || '/text-to-video'
+                  : '/text-to-video';
+                if (typeof window !== 'undefined') {
+                  sessionStorage.removeItem('redirectAfterLogin');
+                }
+                router.replace(redirectPath);
+              }
+              setLoading(false);
+            }
+          }, 2000);
+        }
+      } catch (err: any) {
+        setError(err?.message || 'Sign in failed');
+        setLoading(false);
       }
-    } catch (err: any) {
-      setError(err?.message || 'Sign in failed');
-      setLoading(false);
     }
   };
 
@@ -149,22 +205,7 @@ export default function AuthModal({ isOpen, onClose, preventClose = false }: Aut
     setError(null);
 
     try {
-      // 检测移动端设备
-      const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${baseUrl}/auth/callback`,
-          ...(isMobile && {
-            queryParams: {
-              access_type: 'online',
-              prompt: 'select_account'
-            }
-          })
-        }
-      });
-
+      const { error } = await signInWithGoogle();
       if (error) {
         setError(error.message);
       }
@@ -178,9 +219,20 @@ export default function AuthModal({ isOpen, onClose, preventClose = false }: Aut
   const resetForm = () => {
     setEmail('');
     setPassword('');
+    setFullName('');
+    setConfirmPassword('');
     setError(null);
     setMagicLinkSent(false);
     setView('magic');
+  };
+
+  const switchMode = (newMode: 'signin' | 'signup') => {
+    setMode(newMode);
+    resetForm();
+    // Signup mode defaults to password view
+    if (newMode === 'signup') {
+      setView('password');
+    }
   };
 
   const handleClose = () => {
@@ -197,7 +249,11 @@ export default function AuthModal({ isOpen, onClose, preventClose = false }: Aut
       <DialogContent className={`sm:max-w-md ${preventClose ? '[&>button]:hidden' : ''}`}>
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold">
-            {magicLinkSent ? 'Check Your Email' : 'Sign In to Sora2'}
+            {magicLinkSent 
+              ? 'Check Your Email' 
+              : mode === 'signup' 
+                ? 'Create Your Account' 
+                : 'Sign In to Sora2'}
           </DialogTitle>
         </DialogHeader>
 
@@ -207,26 +263,43 @@ export default function AuthModal({ isOpen, onClose, preventClose = false }: Aut
               <CheckCircle className="w-16 h-16 text-green-500" />
             </div>
             <div className="space-y-2">
-              <p className="text-lg font-medium">Magic link sent!</p>
+              <p className="text-lg font-medium">
+                {mode === 'signup' ? 'Confirmation email sent!' : 'Magic link sent!'}
+              </p>
               <p className="text-muted-foreground">
-                We've sent a login link to <strong>{email}</strong>
+                {mode === 'signup' 
+                  ? (
+                    <>
+                      We've sent a confirmation link to <strong>{email}</strong>. Please check your email and click the link to verify your account.
+                    </>
+                  )
+                  : (
+                    <>
+                      We've sent a login link to <strong>{email}</strong>
+                    </>
+                  )}
               </p>
               <p className="text-sm text-muted-foreground">
-                Check your email and click the link to sign in.
+                {mode === 'signup' 
+                  ? 'After verification, you can sign in to your account.'
+                  : 'Check your email and click the link to sign in.'}
               </p>
             </div>
             <Button
               variant="outline"
-              onClick={() => setMagicLinkSent(false)}
+              onClick={() => {
+                setMagicLinkSent(false);
+                resetForm();
+              }}
               className="w-full"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Sign In
+              Back to {mode === 'signup' ? 'Sign Up' : 'Sign In'}
             </Button>
           </div>
         ) : (
           <div className="space-y-4">
-            {view === 'magic' ? (
+            {view === 'magic' && mode === 'signin' ? (
               <>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
@@ -250,6 +323,18 @@ export default function AuthModal({ isOpen, onClose, preventClose = false }: Aut
               </>
             ) : (
               <>
+                {mode === 'signup' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="full-name">Full Name</Label>
+                    <Input
+                      id="full-name"
+                      type="text"
+                      placeholder="Enter your full name"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                    />
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="email-password">Email</Label>
                   <Input
@@ -265,19 +350,41 @@ export default function AuthModal({ isOpen, onClose, preventClose = false }: Aut
                   <Input
                     id="password"
                     type="password"
-                    placeholder="Enter your password"
+                    placeholder={mode === 'signup' ? 'Create a password (min. 6 characters)' : 'Enter your password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handlePasswordSignIn()}
+                    onKeyDown={(e) => e.key === 'Enter' && handlePasswordAuth()}
                   />
                 </div>
+                {mode === 'signup' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="confirm-password">Confirm Password</Label>
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      placeholder="Confirm your password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handlePasswordAuth()}
+                    />
+                  </div>
+                )}
                 <Button
-                  onClick={handlePasswordSignIn}
+                  onClick={handlePasswordAuth}
                   disabled={loading}
                   className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
                 >
-                  <Lock className="w-4 h-4 mr-2" />
-                  Sign In
+                  {mode === 'signup' ? (
+                    <>
+                      <User className="w-4 h-4 mr-2" />
+                      Create Account
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-4 h-4 mr-2" />
+                      Sign In
+                    </>
+                  )}
                 </Button>
               </>
             )}
@@ -320,12 +427,36 @@ export default function AuthModal({ isOpen, onClose, preventClose = false }: Aut
               Continue with Google
             </Button>
 
-            <div className="text-center">
+            {mode === 'signin' && view === 'password' && (
+              <div className="text-center">
+                <button
+                  onClick={() => setView('magic')}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Use magic link instead
+                </button>
+              </div>
+            )}
+
+            {mode === 'signin' && view === 'magic' && (
+              <div className="text-center">
+                <button
+                  onClick={() => setView('password')}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Use password instead
+                </button>
+              </div>
+            )}
+
+            <div className="text-center pt-2 border-t">
               <button
-                onClick={() => setView(view === 'magic' ? 'password' : 'magic')}
+                onClick={() => switchMode(mode === 'signin' ? 'signup' : 'signin')}
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
-                {view === 'magic' ? 'Use password instead' : 'Use magic link instead'}
+                {mode === 'signin' 
+                  ? "Don't have an account? Sign up" 
+                  : "Already have an account? Sign in"}
               </button>
             </div>
 
