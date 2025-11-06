@@ -8,6 +8,7 @@ import SEOHead from "@/components/SEOHead";
 import { subscriptionPlans } from "@/config/pricing";
 import AuthModal from "@/components/AuthModal";
 import SubscriptionPlans from "@/components/pricing/SubscriptionPlans";
+import { Lock, Check, CreditCard, MessageCircle } from "lucide-react";
 
 const PricingPage = () => {
   const [billingInterval, setBillingInterval] = useState<'month' | 'year'>('year');
@@ -80,9 +81,27 @@ const PricingPage = () => {
             <h1 className="text-3xl sm:text-4xl font-bold mb-3">
               <span className="text-primary">Pricing Plans</span>
             </h1>
-            <p className="text-lg text-muted-foreground mb-4">
-              Choose the perfect plan for your AI video generation needs. Cancel anytime.
-            </p>
+            {/* Trust Badges */}
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-4">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-border/50">
+                <Lock className="w-4 h-4 text-yellow-400" />
+                <span className="text-sm text-muted-foreground">Secure checkout</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-border/50">
+                <div className="w-4 h-4 rounded bg-green-500 flex items-center justify-center">
+                  <Check className="w-3 h-3 text-white" />
+                </div>
+                <span className="text-sm text-muted-foreground">Cancel anytime</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-border/50">
+                <CreditCard className="w-4 h-4 text-yellow-400" />
+                <span className="text-sm text-muted-foreground">No surprise charges</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-border/50">
+                <MessageCircle className="w-4 h-4 text-white" />
+                <span className="text-sm text-muted-foreground">Fast support</span>
+              </div>
+            </div>
           </div>
 
           

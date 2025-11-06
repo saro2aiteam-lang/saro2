@@ -1202,6 +1202,20 @@ const Generate = () => {
             </>
           ) : (
             <>
+              {/* Page Header with H1 */}
+              <header className="text-center mb-8">
+                <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                  {routeFromMode(generationMode) === '/image-to-video' 
+                    ? 'Sora 2 Image to Video Generator'
+                    : 'Sora 2 Text to Video Generator'}
+                </h1>
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  {routeFromMode(generationMode) === '/image-to-video'
+                    ? 'Transform your images into cinematic videos with Sora 2 AI technology'
+                    : 'Create cinematic videos from text prompts using Sora 2 AI'}
+                </p>
+              </header>
+
               {/* Error Display */}
               {Object.keys(errors).length > 0 && (
                 <div className="mb-6">

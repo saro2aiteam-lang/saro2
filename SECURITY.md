@@ -27,12 +27,12 @@
 ### 2. Authentication & Authorization
 
 **Fixed Issues**:
-- ✅ Restored ProtectedRoute wrapper on `/generate` page
+- ✅ Restored ProtectedRoute wrapper on `/text-to-video` page
 - ✅ Added authentication check before API calls
 - ✅ Fixed `handleRetry` missing userId parameter
 
 **Verify**:
-- Test that unauthenticated users cannot access `/generate`
+- Test that unauthenticated users cannot access `/text-to-video`
 - Test that API calls properly reject requests without valid userId
 - Review all API endpoints for proper authentication middleware
 

@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: 'Refund Policy | AI video generation service',
   description: 'Refund Policy for AI video generation service - Learn about our case-by-case refund policy for unused credits and service terms.',
   keywords: 'refund policy, money back guarantee, AI video generation service refund, unused credits refund, customer service',
+  alternates: {
+    canonical: 'https://saro2.ai/refund',
+  },
 };
 
 const RefundPolicy: React.FC = () => {
@@ -15,7 +18,7 @@ const RefundPolicy: React.FC = () => {
         title="Refund Policy | AI video generation service"
         description="Refund Policy for AI video generation service - Learn about our case-by-case refund policy for unused credits and service terms."
         keywords="refund policy, money back guarantee, AI video generation service refund, unused credits refund, customer service"
-        canonicalUrl="/refund"
+        canonical="https://saro2.ai/refund"
       />
       
       <div className="min-h-screen bg-background">
@@ -44,6 +47,12 @@ const RefundPolicy: React.FC = () => {
                     <strong>Each refund request receives individual consideration.</strong> 
                     We maintain the authority to approve or reject refund requests depending on 
                     the particular facts and our evaluation of each case.
+                  </p>
+                  <p className="text-gray-700 leading-relaxed mb-4">
+                    For more information about our services, please visit our <a href="/" className="text-primary hover:underline">homepage</a>, 
+                    check out our <a href="/faq" className="text-primary hover:underline">FAQ</a>, or review our 
+                    <a href="/terms" className="text-primary hover:underline"> Terms of Service</a> and 
+                    <a href="/privacy" className="text-primary hover:underline"> Privacy Policy</a>.
                   </p>
                 </section>
 
@@ -192,6 +201,12 @@ const RefundPolicy: React.FC = () => {
                     <p className="text-gray-700 mb-2"><strong>Response Time:</strong> Within 2-3 business days</p>
                     <p className="text-gray-700">We will respond to your inquiry as quickly as possible.</p>
                   </div>
+                  <p className="text-gray-700 leading-relaxed mt-4">
+                    For more information, visit our <a href="/" className="text-primary hover:underline">homepage</a>, 
+                    <a href="/faq" className="text-primary hover:underline"> FAQ</a>, 
+                    <a href="/terms" className="text-primary hover:underline"> Terms of Service</a>, or 
+                    <a href="/privacy" className="text-primary hover:underline"> Privacy Policy</a>.
+                  </p>
                 </section>
 
                 <section className="mb-8">

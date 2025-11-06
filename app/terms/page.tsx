@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: 'Terms of Service | AI video generation service',
   description: 'Terms of Service for AI video generation service - Read our terms and conditions for using our AI video generation service.',
   keywords: 'terms of service, terms and conditions, AI video generation service, user agreement, legal terms',
+  alternates: {
+    canonical: 'https://saro2.ai/terms',
+  },
 };
 
 const TermsOfService: React.FC = () => {
@@ -15,7 +18,7 @@ const TermsOfService: React.FC = () => {
         title="Terms of Service | AI video generation service"
         description="Terms of Service for AI video generation service - Read our terms and conditions for using our AI video generation service."
         keywords="terms of service, terms and conditions, AI video generation service, user agreement, legal terms"
-        canonicalUrl="/terms"
+        canonical="https://saro2.ai/terms"
       />
       
       <div className="min-h-screen bg-background">
@@ -38,6 +41,11 @@ const TermsOfService: React.FC = () => {
                     When you access and utilize our AI video generation service (referred to as "the Service"), you acknowledge and accept 
                     that you are bound by the terms and conditions set forth in this agreement. Should you not agree with these provisions, 
                     we request that you refrain from using our service.
+                  </p>
+                  <p className="text-gray-700 leading-relaxed mb-4">
+                    For more information about our services, please visit our <a href="/" className="text-primary hover:underline">homepage</a>, 
+                    check out our <a href="/faq" className="text-primary hover:underline">FAQ</a>, or review our 
+                    <a href="/privacy" className="text-primary hover:underline"> Privacy Policy</a>.
                   </p>
                 </section>
 
@@ -239,6 +247,11 @@ const TermsOfService: React.FC = () => {
                     <p className="text-gray-700 mb-2"><strong>Address:</strong> 123 Victoria Street, London, SW1E 6QX, United Kingdom</p>
                     <p className="text-gray-700">We will respond to your inquiry within 5 business days.</p>
                   </div>
+                  <p className="text-gray-700 leading-relaxed mt-4">
+                    For more information, visit our <a href="/" className="text-primary hover:underline">homepage</a>, 
+                    <a href="/faq" className="text-primary hover:underline"> FAQ</a>, or 
+                    <a href="/privacy" className="text-primary hover:underline"> Privacy Policy</a>.
+                  </p>
                 </section>
               </div>
             </div>

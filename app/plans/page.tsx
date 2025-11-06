@@ -3,9 +3,12 @@ import Pricing from '@/page-components/Pricing'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Pricing Plans - Choose Your AI Video Generation Plan | Sora2',
+  title: 'Pricing Plans - Choose Your AI Video Plan | Sora2',
   description: 'View Sora2 pricing plans. Choose from Basic, Creator, or Pro plans with monthly and annual options. Create professional videos with Sora 2 technology.',
   keywords: 'video generation pricing, AI video price, Sora2 pricing, video creation cost, AI tool pricing',
+  alternates: {
+    canonical: 'https://saro2.ai/plans',
+  },
   openGraph: {
     title: 'Pricing Plans - Sora2',
     description: 'View Sora2 pricing plans. Choose from Basic, Creator, or Pro plans with monthly and annual options.',

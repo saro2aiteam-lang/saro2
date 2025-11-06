@@ -131,6 +131,17 @@ const Navigation = () => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
+                  <Link href="/multi-scene" className="group flex gap-3 p-3 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-muted-foreground group-hover:bg-accent-foreground/10">
+                      <Clapperboard className="h-4 w-4" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">Multi-scene (25s)</span>
+                      <span className="text-xs text-muted-foreground group-hover:text-accent-foreground/80">Create longer cinematic videos</span>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href="/watermark-remover" className="group flex gap-3 p-3 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors">
                     <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-muted-foreground group-hover:bg-accent-foreground/10">
                       <Eraser className="h-4 w-4" />
@@ -278,6 +289,7 @@ const Navigation = () => {
                 <div className="flex flex-col">
                   <Link href="/text-to-video" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Text to Video</Link>
                   <Link href="/image-to-video" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Image to Video</Link>
+                  <Link href="/multi-scene" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Multi-scene (25s)</Link>
                   <Link href="/watermark-remover" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Sora2 Watermark Remover</Link>
                 </div>
               </div>

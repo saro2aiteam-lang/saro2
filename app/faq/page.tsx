@@ -3,6 +3,9 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Sora 2 FAQ – Frequently Asked Questions',
   description: 'Find answers about Sora 2 video generation, features, availability, and safety controls.',
+  alternates: {
+    canonical: 'https://saro2.ai/faq',
+  },
 }
 
 const faqs = [
@@ -84,6 +87,14 @@ export default function FAQPage() {
     <main className="max-w-3xl mx-auto px-4 py-16">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <h1 className="text-3xl font-bold mb-6">Sora 2 Video Generation — Frequently Asked Questions</h1>
+      <p className="text-muted-foreground mb-8">
+        Find answers to common questions about Sora 2 video generation. For more information, visit our 
+        <a href="/" className="text-primary hover:underline"> homepage</a>, 
+        <a href="/text-to-video" className="text-primary hover:underline"> Text to Video</a>, 
+        <a href="/plans" className="text-primary hover:underline"> Pricing</a>, or review our 
+        <a href="/terms" className="text-primary hover:underline"> Terms of Service</a> and 
+        <a href="/privacy" className="text-primary hover:underline"> Privacy Policy</a>.
+      </p>
       <ul className="space-y-6">
         {faqs.map((f, i) => (
           <li key={i}>

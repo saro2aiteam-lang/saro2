@@ -103,25 +103,7 @@ const nextConfig = {
   // Configure redirects if needed
   async redirects() {
     return [
-      // Legacy generate page → Text to Video
-      {
-        source: '/generate',
-        destination: '/text-to-video',
-        permanent: true,
-      },
-      // Invite code page removed → redirect to home
-      {
-        source: '/sora2-invitecode',
-        destination: '/',
-        permanent: true,
-      },
-      // Legacy watermark remover route → watermark-remover
-      {
-        source: '/sora2-watermark-remover',
-        destination: '/watermark-remover',
-        permanent: true,
-      },
-      
+      // Add redirects here if needed
     ]
   },
   // Configure rewrites if needed

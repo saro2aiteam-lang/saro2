@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: 'Privacy Policy | AI video generation service',
   description: 'Privacy Policy for AI video generation service - Learn how we collect, use, and protect your personal information.',
   keywords: 'privacy policy, data protection, AI video generation service, personal information, GDPR',
+  alternates: {
+    canonical: 'https://saro2.ai/privacy',
+  },
 };
 
 const PrivacyPolicy: React.FC = () => {
@@ -15,7 +18,7 @@ const PrivacyPolicy: React.FC = () => {
         title="Privacy Policy | AI video generation service"
         description="Privacy Policy for AI video generation service - Learn how we collect, use, and protect your personal information."
         keywords="privacy policy, data protection, AI video generation service, personal information, GDPR"
-        canonicalUrl="/privacy"
+        canonical="https://saro2.ai/privacy"
       />
       
       <div className="min-h-screen bg-background">
@@ -39,6 +42,11 @@ const PrivacyPolicy: React.FC = () => {
                     our practices regarding the collection, usage, sharing, and protection of your personal data when you engage with our platform. 
                     We encourage you to review this document thoroughly. Should you disagree with any aspect of this policy, 
                     we kindly ask that you refrain from using our service.
+                  </p>
+                  <p className="text-gray-700 leading-relaxed mb-4">
+                    For more information about our services, please visit our <a href="/" className="text-primary hover:underline">homepage</a>, 
+                    check out our <a href="/faq" className="text-primary hover:underline">FAQ</a>, or review our 
+                    <a href="/terms" className="text-primary hover:underline"> Terms of Service</a>.
                   </p>
                 </section>
 
@@ -194,6 +202,11 @@ const PrivacyPolicy: React.FC = () => {
                     <p className="text-gray-700 mb-2"><strong>Address:</strong> 123 Victoria Street, London, SW1E 6QX, United Kingdom</p>
                     <p className="text-gray-700">We will respond to your inquiry within 30 days.</p>
                   </div>
+                  <p className="text-gray-700 leading-relaxed mt-4">
+                    For more information, visit our <a href="/" className="text-primary hover:underline">homepage</a>, 
+                    <a href="/faq" className="text-primary hover:underline"> FAQ</a>, or 
+                    <a href="/terms" className="text-primary hover:underline"> Terms of Service</a>.
+                  </p>
                 </section>
               </div>
             </div>
