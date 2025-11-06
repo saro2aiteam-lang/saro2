@@ -261,13 +261,14 @@ CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
   -- 创建 users 表记录
-  INSERT INTO users (id, email, full_name, credits_balance, credits_total, credits_limit)
+  INSERT INTO users (id, email, full_name, credits_balance, credits_total, credits_spent, credits_limit)
   VALUES (
     NEW.id, 
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email),
     3,  -- 免费用户初始 3 个积分
-    3,
+    3,  -- credits_total
+    0,  -- credits_spent (新用户消费为 0)
     50  -- 默认积分上限
   )
   ON CONFLICT (id) DO NOTHING;

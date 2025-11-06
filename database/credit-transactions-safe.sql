@@ -25,12 +25,12 @@ BEGIN
     COALESCE(credits_balance, 0),
     COALESCE(credits_total, 0),
     COALESCE(credits_spent, 0)
-  INTO current_balance, current_total, current_spent
+  INTO v_balance, v_total, v_spent
   FROM users 
   WHERE id = p_user_id;
   
   -- 检查用户是否存在
-  IF current_balance IS NULL THEN
+  IF v_balance IS NULL THEN
     RAISE EXCEPTION 'User not found: %', p_user_id USING ERRCODE = 'P0005';
   END IF;
   
@@ -40,8 +40,8 @@ BEGIN
   END IF;
   
   -- 检查积分上限
-  IF current_balance + p_amount > 50000 THEN
-    RAISE EXCEPTION 'Credit balance would exceed limit: %', current_balance + p_amount USING ERRCODE = 'P0006';
+  IF v_balance + p_amount > 50000 THEN
+    RAISE EXCEPTION 'Credit balance would exceed limit: %', v_balance + p_amount USING ERRCODE = 'P0006';
   END IF;
   
   -- 2. 原子更新用户积分
@@ -105,18 +105,18 @@ BEGIN
     COALESCE(credits_balance, 0),
     COALESCE(credits_total, 0),
     COALESCE(credits_spent, 0)
-  INTO current_balance, current_total, current_spent
+  INTO v_balance, v_total, v_spent
   FROM users 
   WHERE id = p_user_id;
   
   -- 检查用户是否存在
-  IF current_balance IS NULL THEN
+  IF v_balance IS NULL THEN
     RAISE EXCEPTION 'User not found: %', p_user_id USING ERRCODE = 'P0005';
   END IF;
   
   -- 检查积分余额
-  IF current_balance < p_amount THEN
-    RAISE EXCEPTION 'Insufficient credits: % (available: %)', p_amount, current_balance USING ERRCODE = 'P0008';
+  IF v_balance < p_amount THEN
+    RAISE EXCEPTION 'Insufficient credits: % (available: %)', p_amount, v_balance USING ERRCODE = 'P0008';
   END IF;
   
   -- 检查积分数量
@@ -185,12 +185,12 @@ BEGIN
   SELECT 
     COALESCE(credits_balance, 0),
     COALESCE(credits_spent, 0)
-  INTO current_balance, current_spent
+  INTO v_balance, v_spent
   FROM users 
   WHERE id = p_user_id;
   
   -- 检查用户是否存在
-  IF current_balance IS NULL THEN
+  IF v_balance IS NULL THEN
     RAISE EXCEPTION 'User not found: %', p_user_id USING ERRCODE = 'P0005';
   END IF;
   
