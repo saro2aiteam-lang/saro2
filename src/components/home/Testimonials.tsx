@@ -173,24 +173,6 @@ const Testimonials = () => {
             Start Creating Now
           </Button>
         </div>
-
-        {/* SEO-Optimized Footer Text */}
-        <div className="mt-16 text-center">
-          <p className="text-xs text-muted-foreground/60 leading-relaxed max-w-4xl mx-auto">
-            Creators use Sora 2 for AI video generation. Features include watermark-free videos, 
-            audio synchronization, and efficient rendering. Whether you need text to video, 
-            image to video, or are looking for video generation tools, Sora 2 offers 
-            video creation capabilities. Create AI-generated videos with Sora 2 audio features, 
-            Sora 2 quality options, and Sora 2 commercial use licensing. Sora 2 provides everything you need for professional video creation with Sora 2 technology.
-          </p>
-        </div>
-
-        {/* Disclaimer for testimonials */}
-        <div className="mt-8 text-center">
-          <p className="text-xs text-muted-foreground/50 max-w-3xl mx-auto">
-            User testimonials reflect individual experiences, results may vary. Saro2.ai is an independent platform, not affiliated with OpenAI's Sora 2.
-          </p>
-        </div>
       </div>
     </section>
   );

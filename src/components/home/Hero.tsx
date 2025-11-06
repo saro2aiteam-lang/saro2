@@ -1,24 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Play, Sparkles, ArrowRight, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { promptExamples } from '@/data/promptExamples';
 import AuthModal from '@/components/AuthModal';
 
+// Initialize examples outside component to ensure SSR/client consistency
+const getInitialExamples = (): string[] => {
+  const examples = promptExamples.slice(0, 20).map(p => p.prompt);
+  // Duplicate for seamless scroll
+  return [...examples, ...examples];
+};
+
 const Hero = () => {
   const router = useRouter();
   const [prompt, setPrompt] = useState('');
-  const [currentExamples, setCurrentExamples] = useState<string[]>([]);
+  const [currentExamples] = useState<string[]>(getInitialExamples);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-
-  // Initialize with example prompts
-  useEffect(() => {
-    const examples = promptExamples.slice(0, 20).map(p => p.prompt);
-    // Duplicate for seamless scroll
-    setCurrentExamples([...examples, ...examples]);
-  }, []);
 
   const handleGenerate = () => {
     if (prompt.trim()) {
@@ -41,18 +41,19 @@ const Hero = () => {
       
       {/* Content */}
       <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="text-center mb-12">
+        <div className="text-center mb-20 sm:mb-24 md:mb-28">
           {/* Main Heading */}
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1] mb-6">
-            <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-muted-foreground">
-              Sora 2 makes video generation effortless
-            </div>
+            <span className="block text-foreground relative inline-block">
+              Sora 2
+              <span className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 text-[10px] sm:text-xs md:text-sm font-mono font-bold text-red-500 bg-red-50 dark:bg-red-950/30 px-1.5 sm:px-2 py-0.5 rounded whitespace-nowrap tracking-wider">
+                NEW
+              </span>
+            </span>
+            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-muted-foreground mt-2">
+              Generate high-quality AI videos - Fast, Cheaper, 25s long,  No Watermark, Perfect for Ads & Social growth.
+            </span>
           </h1>
-
-          {/* Subheading */}
-          <p className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            A fast and affordable way to generate high-quality videos powered by the Sora 2 model, with no watermarks, optimized for social platforms.
-          </p>
         </div>
 
         {/* Input Section */}
@@ -129,10 +130,6 @@ const Hero = () => {
             Start Creating
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
-          {/* Small disclaimer - doesn't affect SEO */}
-          <p className="text-xs text-muted-foreground/60 mt-4 max-w-2xl mx-auto">
-            Saro2.ai is an independent platform, not affiliated with OpenAI. We provide Sora 2-style video generation services.
-          </p>
         </div>
       </div>
 
