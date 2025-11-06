@@ -121,41 +121,81 @@ function ErrorHandler() {
 
 export default function HomePage() {
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    name: 'Sora 2',
-    description: 'Create cinematic videos from text prompts. Advanced motion realism, multi-shot storytelling, and creative control. Independent platform, easy to use.',
-    url: 'https://saro2.ai',
-    applicationCategory: 'MultimediaApplication',
-    operatingSystem: 'Web',
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-      description: 'Free to try with paid advanced features'
-    },
-    creator: {
-      '@type': 'Organization',
-      name: 'Sora 2',
-      url: 'https://saro2.ai'
-    },
-    featureList: [
-      'Multi-scene storyboard builder',
-      'Consistent character identity',
-      '25-30 second video extension',
-      'Ad-ready layouts and templates',
-      'Vertical ad generation'
-    ],
-    keywords: []
-  }
+  useEffect(() => {
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Sora 2 Video Generator | Sora 2 Alternative',
+      applicationCategory: 'MultimediaApplication',
+      operatingSystem: 'Web',
+      description: 'Sora 2 AI video generator, Sora 2 alternative. Create cinematic videos using Sora 2-style AI technology. Text-to-video, image-to-video, multi-scene storyboard. Saro2.ai is an independent platform providing Sora 2-quality video generation services.',
+      url: 'https://saro2.ai',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+        description: 'Try with credits, paid advanced features available'
+      },
+      creator: {
+        '@type': 'Organization',
+        name: 'Saro',
+        url: 'https://saro2.ai'
+      },
+      featureList: [
+        'Sora 2 text-to-video generation',
+        'Sora 2 image-to-video conversion',
+        'Sora 2 multi-scene storyboard builder',
+        'Consistent character identity',
+        '25-30 second video extension',
+        'Ad-ready layouts and templates',
+        'Vertical ad generation',
+        'Sora 2 watermark removal'
+      ],
+      keywords: 'sora 2, sora 2 ai, sora 2 video generator, sora 2 text to video, sora 2 online, sora 2 alternative, sora 2 video creator, sora 2 alternative platform'
+    }
+
+    const breadcrumbJsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://saro2.ai'
+        }
+      ]
+    }
+
+    const videoJsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'VideoObject',
+      name: 'Sora 2 Video Generator Demo',
+      description: 'Watch how Sora 2 AI generates cinematic videos from text prompts',
+      thumbnailUrl: 'https://saro2.ai/logo.png',
+      uploadDate: '2024-01-01T00:00:00Z',
+      contentUrl: 'https://saro2.ai',
+      embedUrl: 'https://saro2.ai'
+    }
+
+    const scripts = [
+      { id: 'jsonld-software', data: jsonLd },
+      { id: 'jsonld-breadcrumb', data: breadcrumbJsonLd },
+      { id: 'jsonld-video', data: videoJsonLd }
+    ]
+
+    scripts.forEach(({ id, data }) => {
+      if (document.getElementById(id)) return
+      const script = document.createElement('script')
+      script.id = id
+      script.type = 'application/ld+json'
+      script.textContent = JSON.stringify(data)
+      document.head.appendChild(script)
+    })
+  }, [])
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
       <Suspense fallback={null}>
         <ErrorHandler />
       </Suspense>
@@ -169,11 +209,11 @@ export default function HomePage() {
         {/* Lightweight SEO copy block (non-hero) targeting long-tail queries */}
         <section className="px-4 sm:px-6 lg:px-8 py-6">
           <div className="max-w-5xl mx-auto text-sm text-muted-foreground leading-relaxed">
-            <h2 className="sr-only">AI Video Ads Generator</h2>
+            <h2 className="sr-only">Sora 2 AI Video Ads Generator</h2>
             <p>
-              Sora 2 AI video ads generator: create multi-scene video ads with consistent characters for TikTok, Shopify, and product promotions. Generate{' '}
+              Sora 2 AI video ads generator: create multi-scene video ads with consistent characters for TikTok, Shopify, and product promotions. Sora 2 generates{' '}
               <strong className="font-semibold">25+ second AI video ads</strong> with{' '}
-              <strong className="font-semibold">consistent character identity</strong> across multiple scenes. Perfect for brand storytelling, product showcases, and vertical social media ads.
+              <strong className="font-semibold">consistent character identity</strong> across multiple scenes. Sora 2 is perfect for brand storytelling, product showcases, and vertical social media ads. Experience Sora 2 technology for your video marketing needs.
             </p>
           </div>
         </section>

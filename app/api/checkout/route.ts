@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { createCheckoutForProduct } from '@/lib/creem-payment';
 import { creemPlansById } from '@/config/creemPlans';
+import { rateLimit, apiRateLimiter } from '@/lib/rate-limiter';
 
 export const runtime = 'nodejs';
 
@@ -18,6 +19,13 @@ export async function POST(request: NextRequest) {
   const debugParam = request.nextUrl.searchParams.get('debug');
   const debugMode = debugParam === '1' || (debugParam ?? '').toLowerCase() === 'true';
   try {
+    // Rate limiting check (before authentication to prevent abuse)
+    const rateLimitResponse = await rateLimit(request, apiRateLimiter);
+    if (rateLimitResponse) {
+      console.log('[API] Checkout rate limit exceeded');
+      return rateLimitResponse;
+    }
+
     const body = await request.json().catch(() => ({}));
     const planId = body?.planId as string | undefined;
     debug.planId = planId;
@@ -53,6 +61,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
     debug.userId = user?.id ?? null;
+
+    // Additional rate limiting per user (after authentication)
+    const userRateLimitResponse = await rateLimit(request, apiRateLimiter, user.id);
+    if (userRateLimitResponse) {
+      console.log('[API] Checkout rate limit exceeded for user:', user.id);
+      return userRateLimitResponse;
+    }
 
     const { data: userData, error: userError } = await getSupabaseAdmin()
       .from('users')

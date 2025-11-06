@@ -2028,7 +2028,7 @@ const Generate = () => {
                       </h3>
                       <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
                         <p className="text-muted-foreground leading-relaxed" itemProp="text">
-                          Yes! Videos generated with Sora 2 AI can be used for commercial purposes including social media marketing, advertising, content creation, and more. Premium subscribers get full commercial rights with no watermark.
+                          Yes! Videos generated with Sora 2 AI can be used for commercial purposes including social media marketing, advertising, content creation, and more. Premium subscribers get full commercial rights with no platform watermark on generated videos.
                         </p>
                       </div>
                     </div>

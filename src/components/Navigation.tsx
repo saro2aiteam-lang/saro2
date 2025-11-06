@@ -109,17 +109,6 @@ const Navigation = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" sideOffset={8} className="w-80 p-2 rounded-xl bg-popover border border-border shadow-xl">
                 <DropdownMenuItem asChild>
-                  <Link href="/sora2-storyboard" className="group flex gap-3 p-3 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-muted-foreground group-hover:bg-accent-foreground/10">
-                      <Clapperboard className="h-4 w-4" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium">Storyboard</span>
-                      <span className="text-xs text-muted-foreground group-hover:text-accent-foreground/80">Multi-scene video, up to 25s</span>
-                    </div>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
                   <Link href="/text-to-video" className="group flex gap-3 p-3 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors">
                     <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-muted-foreground group-hover:bg-accent-foreground/10">
                       <FileText className="h-4 w-4" />
@@ -287,7 +276,6 @@ const Navigation = () => {
               <div className="px-2 pt-2">
                 <div className="text-xs text-muted-foreground pb-1">Generate</div>
                 <div className="flex flex-col">
-                  <Link href="/sora2-storyboard" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Storyboard</Link>
                   <Link href="/text-to-video" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Text to Video</Link>
                   <Link href="/image-to-video" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Image to Video</Link>
                   <Link href="/watermark-remover" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Sora2 Watermark Remover</Link>

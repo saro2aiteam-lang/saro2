@@ -37,6 +37,14 @@ const faqs = [
   },
   
   {
+    q: 'Can I use for commercial advertising?',
+    a: 'Yes. Videos generated with Sora 2 can be used for commercial projects, including TikTok ads, Shopify product videos, and social media campaigns. You own the rights to videos you create, subject to our acceptable use policy.'
+  },
+  {
+    q: 'Do videos have watermarks?',
+    a: 'Premium plans include no platform watermark downloads. Your exported AI videos include no platform-added marks and are ready for commercial use. "No Watermark" refers only to watermarks added by this platform. We do not support removing watermarks from copyrighted or stock footage. Not for removing third-party or stock provider watermarks.'
+  },
+  {
     q: 'If I make a payment, will my payment information be safe?',
     a: 'Absolutely. We use secure, trusted payment platforms and banks. Your payment is fully protected, and no personal information will ever be exposed or leaked.'
   },
@@ -46,7 +54,7 @@ const faqs = [
   },
   {
     q: 'Is Saro2 affiliated with Sora 2?',
-    a: 'No. Saro2 is an independent platform inspired by similar next-generation video workflows.'
+    a: 'No. Saro2.ai is a completely independent AI video generation platform with no affiliation, partnership, or authorization relationship with OpenAI\'s Sora 2. We provide Sora 2-style video generation services using our own technology stack. We use the term "Sora 2" only for descriptive and comparative purposes to help users understand our service positioning. Saro2.ai is an independent platform inspired by similar next-generation video workflows.'
   },
   {
     q: 'Do I need editing experience?',
@@ -55,6 +63,10 @@ const faqs = [
   {
     q: 'Can I try free credits?',
     a: 'Yes. You can start generating immediately.'
+  },
+  {
+    q: 'What is the relationship between Saro2.ai and OpenAI\'s Sora 2?',
+    a: 'Saro2.ai is a completely independent AI video generation platform with no affiliation, partnership, or authorization relationship with OpenAI\'s Sora 2. We provide Sora 2-style video generation services using our own technology. We use the term "Sora 2" only for descriptive and comparative purposes to help users understand our service positioning. "Sora 2" is a registered trademark of OpenAI, and all trademarks belong to their respective owners.'
   }
 ]
 

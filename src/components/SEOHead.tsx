@@ -63,6 +63,15 @@ const SEOHead = ({
       document.head.appendChild(metaAuthor);
     }
 
+    // Add Google Site Verification meta tag
+    let googleVerification = document.querySelector('meta[name="google-site-verification"]');
+    if (!googleVerification) {
+      googleVerification = document.createElement('meta');
+      googleVerification.setAttribute('name', 'google-site-verification');
+      googleVerification.setAttribute('content', 'RXG1GciT_6Lk-VckDXsTp0wkUZYZfI0RDWy-9D_P-0E');
+      document.head.appendChild(googleVerification);
+    }
+
     // Update or create canonical URL
     let canonicalLink = document.querySelector('link[rel="canonical"]');
     if (canonicalLink) {
@@ -179,7 +188,7 @@ const SEOHead = ({
           "Vertical ad generation",
           "Text to Video Generation",
           "Image to Video Conversion",
-          "No Watermark on Premium"
+          "No Platform Watermark on Premium"
         ],
         "screenshot": `${baseUrl}/placeholder.svg`,
         "video": {

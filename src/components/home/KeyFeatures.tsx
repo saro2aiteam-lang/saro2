@@ -15,10 +15,10 @@ const KeyFeatures = () => {
             <Sparkles className="w-8 h-8 text-primary" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-            Next-Generation Cinematic Video Creation
+            Sora 2: Next-Generation Cinematic Video Creation
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Generate realistic motion, consistent characters, and multi-shot scenes without filming or editing skills.
+            Sora 2 generates realistic motion, consistent characters, and multi-shot scenes without filming or editing skills. Experience Sora 2 AI video generation technology.
           </p>
         </div>
 
@@ -114,7 +114,7 @@ const KeyFeatures = () => {
               Try Sora 2 Free — No Editing Required
             </h2>
             <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Start creating cinematic videos with AI-powered tools. No experience needed.
+              Start creating cinematic videos with Sora 2 AI-powered tools. Sora 2 makes video creation easy - no experience needed. Discover what Sora 2 can do for your projects.
             </p>
             <Button
               size="lg"

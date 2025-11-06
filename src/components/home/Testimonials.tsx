@@ -4,16 +4,17 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Star } from 'lucide-react';
+import StickFigureAvatar from './StickFigureAvatar';
 
 const testimonials = [
   {
     id: 1,
-    name: "Emma Thompson",
+    name: "James Wilson",
     role: "Wedding Videographer",
     location: "London, UK",
     rating: 5,
-    avatar: "ET",
-    review: "Switched from Runway and never looked back. No watermark saved us hundreds in licensing fees, and the audio sync is so natural our clients think we hired professional voice actors. Render times cut our production workflow by 60%."
+    avatarVariant: 1,
+    review: "The no watermark feature is really helpful for our business. The audio sync works well and helps us create professional-looking videos more efficiently. Our clients appreciate the quality."
   },
   {
     id: 2,
@@ -21,8 +22,8 @@ const testimonials = [
     role: "SaaS Founder",
     location: "Singapore",
     rating: 5,
-    avatar: "MC",
-    review: "Game-changer for product demos. The realistic audio makes our AI videos feel completely professional. 40% boost in conversion rates, and it's way more affordable than other Sora alternatives. HD quality is unmatched."
+    avatarVariant: 2,
+    review: "Great tool for creating product demo videos. The realistic audio helps make our videos feel more professional. It's been useful for our marketing efforts and offers good value."
   },
   {
     id: 3,
@@ -30,8 +31,8 @@ const testimonials = [
     role: "Content Creator",
     location: "Mexico City",
     rating: 5,
-    avatar: "SR",
-    review: "I create 5-10 videos daily. Sora 2's speed and quality are unmatched. Text-to-video intros in minutes, zero watermarks means full monetization. This is the tool I wish existed 2 years ago."
+    avatarVariant: 3,
+    review: "I use this regularly for my content creation. The text-to-video feature is fast and the quality is good. Having no watermarks is important for my work, and the tool has been reliable."
   },
   {
     id: 4,
@@ -39,8 +40,8 @@ const testimonials = [
     role: "Creative Director",
     location: "Seoul, South Korea",
     rating: 5,
-    avatar: "DK",
-    review: "Our agency handles 50+ campaigns monthly. Fast renders let us hit impossible deadlines, and clients can't tell it's AI-generated. Professional quality without the enterprise price tag."
+    avatarVariant: 4,
+    review: "We use this for various client projects. The rendering speed helps us meet tight deadlines, and the output quality works well for our needs. It's a practical solution for our agency."
   },
   {
     id: 5,
@@ -48,8 +49,8 @@ const testimonials = [
     role: "Product Designer",
     location: "Toronto, Canada",
     rating: 5,
-    avatar: "LW",
-    review: "Product mockups went from days to minutes. Image-to-video transforms concept sketches into stunning visuals instantly. No watermark = complete creative freedom for client presentations."
+    avatarVariant: 5,
+    review: "The image-to-video feature is useful for turning concept sketches into visual presentations. It saves time in our design process and helps us communicate ideas to clients more effectively."
   },
   {
     id: 6,
@@ -57,8 +58,8 @@ const testimonials = [
     role: "Online Educator",
     location: "Sydney, Australia",
     rating: 5,
-    avatar: "AJ",
-    review: "Teaching 10,000+ students requires engaging content at scale. Sora2's natural audio sync makes complex explanations feel conversational. Best ROI for course creation tools."
+    avatarVariant: 6,
+    review: "I use this to create educational content for my courses. The natural audio sync helps make explanations clearer, and it's been a helpful addition to my content creation workflow."
   }
 ];
 
@@ -88,8 +89,8 @@ const Testimonials = () => {
             Loved by <span className="text-primary">creators worldwide</span>
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Join 10,000+ creators who trust Sora 2 for professional AI video generation. 
-            See what real users say about our no watermark, fast render technology.
+            Join creators worldwide who use Sora 2 for AI video generation. 
+            See what users say about our platform watermark-free videos and rendering features.
           </p>
         </div>
 
@@ -102,10 +103,8 @@ const Testimonials = () => {
             >
               {/* Avatar and Rating */}
               <div className="flex items-start gap-4 mb-5">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
-                  <span className="text-primary font-bold text-base">
-                    {testimonial.avatar}
-                  </span>
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow p-2">
+                  <StickFigureAvatar variant={testimonial.avatarVariant} className="text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1 mb-2">
@@ -135,11 +134,11 @@ const Testimonials = () => {
         {/* CTA Section */}
         <div className="text-center bg-gradient-to-br from-primary/5 via-primary/3 to-background rounded-3xl p-10 sm:p-12 border border-primary/10">
           <h3 className="text-2xl sm:text-3xl font-bold mb-4">
-            Join 10,000+ creators making stunning videos
+            Join creators making videos with AI
           </h3>
           <p className="text-muted-foreground mb-8 max-w-2xl mx-auto text-base sm:text-lg">
-            Experience AI video generation with no watermark, realistic audio, 
-            and lightning-fast render times. Start creating professional videos today.
+            Experience AI video generation with watermark-free videos, audio features, 
+            and efficient rendering. Start creating videos today.
           </p>
           <Button 
             size="lg"
@@ -153,12 +152,18 @@ const Testimonials = () => {
         {/* SEO-Optimized Footer Text */}
         <div className="mt-16 text-center">
           <p className="text-xs text-muted-foreground/60 leading-relaxed max-w-4xl mx-auto">
-            Join over 10,000 creators using Sora 2 for AI video generation. Our users love 
-            the no watermark feature, realistic audio synchronization, and fast render times. 
-            Whether you need text to video, image to video, or looking for the best 
-            Sora alternative, Sora 2 delivers professional results at affordable prices. 
-            Create stunning AI-generated videos today with automatic audio, HD quality, 
-            and commercial licensing included.
+            Creators use Sora 2 for AI video generation. Features include watermark-free videos, 
+            audio synchronization, and efficient rendering. Whether you need text to video, 
+            image to video, or are looking for video generation tools, Sora 2 offers 
+            video creation capabilities. Create AI-generated videos with audio features, 
+            quality options, and commercial use licensing.
+          </p>
+        </div>
+
+        {/* Disclaimer for testimonials */}
+        <div className="mt-8 text-center">
+          <p className="text-xs text-muted-foreground/50 max-w-3xl mx-auto">
+            User testimonials reflect individual experiences, results may vary. Saro2.ai is an independent platform, not affiliated with OpenAI's Sora 2.
           </p>
         </div>
       </div>

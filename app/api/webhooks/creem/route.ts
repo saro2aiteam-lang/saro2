@@ -736,41 +736,11 @@ async function handlePaymentSucceeded(data: any) {
             await logEmailMatching(customerEmail, 'none', null, null, 'payment.succeeded', data);
             
             // 4. 记录未匹配的邮箱用于后续处理
+            // 管理员可以通过 user_email_aliases 表添加邮箱映射
             await logUnmatchedEmail(customerEmail, data);
-             console.log('[WEBHOOK] No user found with email:', customerEmail);
-             console.log('[WEBHOOK] This might be a different email than the registered one.');
-             
-             // 临时手动映射已知的邮箱对应关系
-             const emailMapping: Record<string, string> = {
-               'panzhaoning@outlook.com': '582767446@qq.com'
-             };
-             
-             const mappedEmail = emailMapping[customerEmail.toLowerCase()];
-             if (mappedEmail) {
-               console.log('[WEBHOOK] Found email mapping:', { from: customerEmail, to: mappedEmail });
-               
-               const { data: mappedUser, error: mappedError } = await getSupabaseAdmin()
-                 .from('users')
-                 .select('id, email')
-                 .eq('email', mappedEmail)
-                 .maybeSingle();
-               
-               if (mappedError) {
-                 console.error('[WEBHOOK] Failed to lookup mapped user:', mappedError);
-               } else if (mappedUser) {
-                 finalUserId = mappedUser.id;
-                 console.log('[WEBHOOK] Found user by email mapping:', { 
-                   purchaseEmail: customerEmail, 
-                   registeredEmail: mappedEmail, 
-                   userId: finalUserId 
-                 });
-               } else {
-                 console.log('[WEBHOOK] Mapped email not found in database:', mappedEmail);
-               }
-             } else {
-               console.log('[WEBHOOK] No email mapping found for:', customerEmail);
-               console.log('[WEBHOOK] Please check if user registered with a different email address.');
-             }
+            console.log('[WEBHOOK] No user found with email:', customerEmail);
+            console.log('[WEBHOOK] This might be a different email than the registered one.');
+            console.log('[WEBHOOK] To resolve this, add an entry to user_email_aliases table mapping this email to the user.');
           }
         }
       }

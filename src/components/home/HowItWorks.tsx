@@ -9,25 +9,25 @@ const steps = [
     number: '1',
     icon: Palette,
     title: 'Choose Your Mode',
-    description: 'Select from Text-to-Video, Image-to-Video, Multi-scene Storyboard, or Watermark Remover. Choose from multiple AI models including Sora 2 and Veo 3.'
+    description: 'Select from Sora 2 Text-to-Video, Sora 2 Image-to-Video, Multi-scene Storyboard, or Watermark Remover. Choose from multiple AI models including Sora 2 and Veo 3.'
   },
   {
     number: '2',
     icon: Edit3,
     title: 'Enter Your Prompt',
-    description: 'Describe your video vision in detail. For image-to-video, upload your starting image. For multi-scene, define multiple sequential scenes up to 25 seconds.'
+    description: 'Describe your video vision in detail. For Sora 2 image-to-video, upload your starting image. For multi-scene, define multiple sequential scenes up to 25 seconds with Sora 2.'
   },
   {
     number: '3',
     icon: Sliders,
     title: 'Configure Settings',
-    description: 'Choose aspect ratio (Portrait/Landscape/Square), duration, and other parameters. For multi-scene videos, allocate timing for each scene.'
+    description: 'Choose aspect ratio (Portrait/Landscape/Square), duration, and other parameters. For Sora 2 multi-scene videos, allocate timing for each scene.'
   },
   {
     number: '4',
     icon: Play,
     title: 'Generate & Download',
-    description: 'Click generate and wait for your AI video to be created. Download HD quality videos with audio when ready for social media, ads, or commercial use.'
+    description: 'Click generate and wait for your Sora 2 AI video to be created. Download HD quality videos with audio when ready for social media, ads, or commercial use.'
   }
 ];
 
@@ -41,7 +41,7 @@ const HowItWorks = () => {
             How it <span className="text-primary">works</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Create professional AI videos with multiple models in four simple steps
+            Create professional AI videos with Sora 2 and multiple models in four simple steps. Sora 2 makes video generation effortless.
           </p>
         </div>
 

@@ -3,13 +3,20 @@ import Storyboard from '@/page-components/Storyboard'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Multi-Scene AI Video Generator | aivido',
-  description: 'Create engaging multi-scene video content powered by artificial intelligence. Perfect for storytelling and brand narratives. Build longer 25+ second videos with consistent character appearances.',
+  title: 'Sora 2 Pro Multi-Scene Video Generator | Storyboard Creator',
+  description: 'Create multi-scene videos with Sora 2 Pro storyboard builder. Build 25+ second videos with consistent characters across scenes. Sora 2 Pro multi-scene generator perfect for TikTok, YouTube Shorts, and social media ads.',
+  keywords: 'sora 2 pro, sora 2 storyboard, sora 2 multi scene, sora 2 pro storyboard, sora 2 multi scene video, sora 2 video generator, sora 2 ai, multi-scene video, storyboard creator, AI video storyboard',
   openGraph: {
-    title: 'Multi-Scene AI Video Generator | aivido',
-    description: 'Create engaging multi-scene video content powered by artificial intelligence. Perfect for storytelling and brand narratives. Build longer 25+ second videos with consistent character appearances.',
+    title: 'Sora 2 Pro Multi-Scene Video Generator | Storyboard Creator',
+    description: 'Create multi-scene videos with Sora 2 Pro storyboard builder. Build 25+ second videos with consistent characters across scenes.',
     url: 'https://saro2.ai/multi-scene',
-    images: ['https://saro2.ai/placeholder.svg']
+    images: ['https://saro2.ai/logo.png']
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sora 2 Pro Multi-Scene Video Generator | Storyboard Creator',
+    description: 'Create multi-scene videos with Sora 2 Pro storyboard builder. Build 25+ second videos with consistent characters.',
+    images: ['https://saro2.ai/logo.png']
   },
 }
 

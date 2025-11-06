@@ -35,7 +35,7 @@ const faqs = [
   {
     id: 'item-6',
     question: 'Do videos have watermarks?',
-    answer: 'Premium plans include no watermark downloads. This ensures your video ads are professional and ready for commercial use without any branding from our platform.'
+    answer: 'Premium plans include no platform watermark downloads. Your exported AI videos include no platform-added marks and are ready for commercial use. "No Watermark" refers only to watermarks added by this platform. We do not support removing watermarks from copyrighted or stock footage. Not for removing third-party or stock provider watermarks.'
   },
   {
     id: 'item-7',
@@ -46,6 +46,11 @@ const faqs = [
     id: 'item-8',
     question: 'Are there any hidden charges?',
     answer: 'No, the price displayed is the total amount you\'ll pay. There are no additional hidden fees. Annual plans save up to 50% compared to monthly billing.'
+  },
+  {
+    id: 'item-9',
+    question: 'Is Saro2.ai affiliated with OpenAI\'s Sora 2?',
+    answer: 'No. Saro2.ai is a completely independent AI video generation platform with no affiliation, partnership, or authorization relationship with OpenAI\'s Sora 2. We provide Sora 2-style video generation services using our own technology stack. We use the term "Sora 2" only for descriptive and comparative purposes to help users understand our service positioning. "Sora 2" is a registered trademark of OpenAI, and all trademarks belong to their respective owners.'
   },
 
 ];
@@ -60,7 +65,7 @@ const FaqTeaser = () => {
             Frequently asked <span className="text-primary">questions</span>
           </h2>
           <p className="text-xl text-muted-foreground">
-            Get answers to common questions about Sora 2 AI Video Ads
+            Get answers to common questions about Sora 2 AI Video Ads. Learn how Sora 2 works and why creators choose Sora 2.
           </p>
         </div>
 

@@ -21,6 +21,16 @@ export async function createCheckoutSession(planId: string): Promise<CheckoutRes
     throw new CheckoutError('Authentication required', 'AUTH_REQUIRED');
   }
 
+  if (response.status === 429) {
+    const payload = await response.json().catch(() => ({}));
+    const retryAfter = payload.retryAfter || 60;
+    throw new CheckoutError(
+      `Too many requests. Please wait ${retryAfter} seconds before trying again.`,
+      'RATE_LIMIT_EXCEEDED',
+      payload
+    );
+  }
+
   if (!response.ok) {
     const payload = await response.json().catch(() => ({}));
     const message = (payload && (payload.error || payload.message)) || 'Failed to create checkout session';
@@ -36,11 +46,17 @@ export async function createCheckoutSession(planId: string): Promise<CheckoutRes
     
     const error = new CheckoutError(message, 'CHECKOUT_FAILED', payload);
     
-    // 如果是配置错误，提供更明确的提示
+    // 提供用户友好的错误消息
     if (message.includes('API key') || message.includes('not configured')) {
-      error.message = 'Payment service not configured. Please contact support.';
+      error.message = 'Payment service is temporarily unavailable. Please contact support@saro2.ai for assistance.';
     } else if (message.includes('安全错误') || message.includes('Security')) {
-      error.message = 'Payment service configuration error. Please contact support.';
+      error.message = 'Payment service configuration error. Please contact support@saro2.ai.';
+    } else if (message.includes('Plan not found') || message.includes('Plan is not configured')) {
+      error.message = 'This plan is not available. Please select a different plan or contact support.';
+    } else if (message.includes('Too Many Requests') || message.includes('rate limit')) {
+      error.message = 'Too many requests. Please wait a moment and try again.';
+    } else if (response.status >= 500) {
+      error.message = 'Payment service is temporarily unavailable. Please try again in a few moments.';
     }
     
     throw error;

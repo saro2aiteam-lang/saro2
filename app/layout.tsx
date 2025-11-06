@@ -16,14 +16,14 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Saro 2',
-    default: 'Saro 2 AI Video Generator | Text-to-Video with Sora-Level Quality'
+    template: '%s | Saro',
+    default: 'Sora 2 Video Generator | AI Text-to-Video Creator | Saro'
   },
-  description: 'Create cinematic videos from text prompts. Advanced motion realism, multi-shot storytelling, and creative control. Independent platform, easy to use.',
-  keywords: 'AI video ads, multi-scene storyboard, consistent characters, 25 second AI video, vertical ad templates, TikTok ad generator, Shopify product video, AI storyboard builder',
-  authors: [{ name: 'Saro 2 Team' }],
-  creator: 'Saro 2',
-  publisher: 'Saro 2',
+  description: 'Sora 2 AI video generator. Create cinematic videos with Sora 2-style AI technology. Text-to-video, image-to-video, multi-scene storyboard. Independent platform.',
+  keywords: 'sora 2, sora 2 ai, sora 2 video generator, sora 2 text to video, sora 2 alternative, sora 2 ai video, sora 2 image to video',
+  authors: [{ name: 'Saro Team' }],
+  creator: 'Saro',
+  publisher: 'Saro',
   formatDetection: {
     email: false,
     address: false,
@@ -37,23 +37,23 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://saro2.ai',
-    siteName: 'Saro 2',
-    title: 'Saro 2 AI Video Generator | Text-to-Video with Sora-Level Quality',
-    description: 'Create cinematic videos from text prompts. Advanced motion realism, multi-shot storytelling, and creative control. Independent platform, easy to use.',
+    siteName: 'Saro',
+    title: 'Sora 2 Video Generator | AI Text-to-Video Creator Online | Saro',
+    description: 'Sora 2 AI video generator: Create cinematic videos from text prompts with Sora 2 technology. Advanced motion realism, multi-shot storytelling, and creative control. Sora 2 text-to-video, image-to-video, and multi-scene storyboard creator.',
     images: [
       {
-        url: 'https://saro2.ai/placeholder.svg',
+        url: 'https://saro2.ai/logo.png',
         width: 1200,
         height: 630,
-        alt: 'Saro 2 AI Video Generator | Text-to-Video with Sora-Level Quality',
+        alt: 'Sora 2 Video Generator | AI Text-to-Video Creator Online',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Saro 2 AI Video Generator | Text-to-Video with Sora-Level Quality',
-    description: 'Create cinematic videos from text prompts. Advanced motion realism, multi-shot storytelling, and creative control. Independent platform, easy to use.',
-    images: ['https://saro2.ai/placeholder.svg'],
+    title: 'Sora 2 Video Generator | AI Text-to-Video Creator Online | Saro',
+    description: 'Sora 2 AI video generator: Create cinematic videos from text prompts with Sora 2 technology. Advanced motion realism, multi-shot storytelling, and creative control.',
+    images: ['https://saro2.ai/logo.png'],
     creator: '@saro2_ai',
   },
   robots: {
@@ -68,11 +68,10 @@ export const metadata: Metadata = {
     },
   },
   verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
     other: {
-      'msvalidate.01': 'your-bing-verification-code',
+      'msvalidate.01': process.env.BING_VERIFICATION_CODE || 'your-bing-verification-code',
     },
-    // yandex: 'your-yandex-verification-code',
-    // yahoo: 'your-yahoo-verification-code',
   },
   icons: {
     icon: '/favicon.png',
@@ -101,9 +100,10 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "Saro 2",
+              "name": "Saro",
               "url": "https://saro2.ai",
-              "logo": "/favicon.png",
+              "logo": "https://saro2.ai/logo.png",
+              "description": "Saro provides Sora 2 AI video generation platform. Create cinematic videos with Sora 2 text-to-video, image-to-video, and multi-scene storyboard features.",
               "sameAs": [
                 "https://twitter.com/saro2_ai"
               ]

@@ -109,28 +109,10 @@ const nextConfig = {
         destination: '/text-to-video',
         permanent: true,
       },
-      // Legacy text-video route → text-to-video
-      {
-        source: '/text-video',
-        destination: '/text-to-video',
-        permanent: true,
-      },
-      // Legacy sora2-storyboard route → multi-scene
-      {
-        source: '/sora2-storyboard',
-        destination: '/multi-scene',
-        permanent: true,
-      },
       // Invite code page removed → redirect to home
       {
         source: '/sora2-invitecode',
         destination: '/',
-        permanent: true,
-      },
-      // Pricing route renamed: /subscribe -> /plans
-      {
-        source: '/subscribe',
-        destination: '/plans',
         permanent: true,
       },
       // Legacy watermark remover route → watermark-remover

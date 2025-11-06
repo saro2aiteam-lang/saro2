@@ -73,6 +73,12 @@ const SubscriptionPlans = ({
           title: "Login session expired",
           description: "Please log in again to continue your purchase.",
         });
+      } else if (error instanceof CheckoutError && error.code === "RATE_LIMIT_EXCEEDED") {
+        toast({
+          variant: "destructive",
+          title: "Too many requests",
+          description: error.message || "Please wait a moment before trying again.",
+        });
       } else {
         // Fallback: if one-time pack has static URL, try direct redirect
         const isOneTime = plan.billingInterval === 'one-time';
@@ -85,11 +91,29 @@ const SubscriptionPlans = ({
             } catch (_) {}
           }
         }
+        const errorMessage = error instanceof Error ? error.message : "Please try again later.";
         toast({
           variant: "destructive",
           title: "Failed to create payment link",
-          description: error instanceof Error ? error.message : "Please try again later.",
+          description: errorMessage,
         });
+        // If error suggests contacting support, show additional help
+        if (errorMessage.includes('contact support')) {
+          setTimeout(() => {
+            toast({
+              title: "Need Help?",
+              description: "Contact support@saro2.ai for assistance.",
+              action: (
+                <a 
+                  href="mailto:support@saro2.ai?subject=Payment Issue" 
+                  className="text-primary hover:underline"
+                >
+                  Contact Support
+                </a>
+              ),
+            });
+          }, 2000);
+        }
       }
     } finally {
       setLoadingPlanId(null);

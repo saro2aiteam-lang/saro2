@@ -11,8 +11,12 @@ Disallow: /_next/
 Disallow: /dashboard/
 
 # Allow important pages
+Allow: /text-to-video
 Allow: /multi-scene
+Allow: /image-to-video
 Allow: /watermark-remover
 Allow: /plans
+Allow: /blog
+Allow: /faq
 Allow: /about
 Allow: /contact

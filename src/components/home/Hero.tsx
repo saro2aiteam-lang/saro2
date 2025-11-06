@@ -48,13 +48,13 @@ const Hero = () => {
               Sora 2
             </div>
             <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-muted-foreground mt-2">
-              Best AI Video Generator
+              Create cinematic AI videos from text or images
             </div>
           </h1>
 
           {/* Subheading */}
           <p className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Simply turn text prompts or image into cinematic videos. High-consistency scenes, smooth motion, and creative storytelling. No filming required.
+            Sora 2 AI video generator delivers fast renders with commercial licensing options. Sora 2 creates high-consistency scenes, smooth motion, and creative storytelling. No filming required with Sora 2 technology.
           </p>
         </div>
 
@@ -71,9 +71,9 @@ const Hero = () => {
                 }
               }}
               placeholder="Type your idea and watch it come to life in minutes"
-              className="w-full px-6 py-5 sm:py-6 text-base sm:text-lg rounded-2xl border-2 border-border bg-background/80 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all pr-40 sm:pr-48"
+              className="w-full px-6 py-5 sm:py-6 text-base sm:text-lg rounded-2xl border-2 border-border bg-background/80 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all pr-32 sm:pr-64"
             />
-            <div className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 flex gap-2">
+            <div className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 flex gap-2 z-10">
               <Button
                 variant="ghost"
                 size="sm"
@@ -132,6 +132,10 @@ const Hero = () => {
             Start Creating
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
+          {/* Small disclaimer - doesn't affect SEO */}
+          <p className="text-xs text-muted-foreground/60 mt-4 max-w-2xl mx-auto">
+            Saro2.ai is an independent platform, not affiliated with OpenAI. We provide Sora 2-style video generation services. Experience the power of Sora 2 AI video creation today.
+          </p>
         </div>
       </div>
 
