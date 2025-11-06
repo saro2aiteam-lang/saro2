@@ -4,6 +4,11 @@
  */
 
 import { Creem } from 'creem';
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+// 加载 .env.local 文件
+config({ path: resolve(process.cwd(), '.env.local') });
 
 // 从环境变量获取 API Key
 const apiKey = process.env.CREEM_API_KEY;
@@ -17,47 +22,79 @@ const creem = new Creem();
 
 // 定义所有产品
 const products = [
+  // 订阅计划
   {
     name: 'Basic - Monthly',
-    price: 1900, // $19/月, 100 credits ($0.19/credit)
+    price: 1900, // $19/月
     interval: 'month' as const,
-    envKey: 'CREEM_PRODUCT_BASIC_MONTHLY',
-    description: '100 credits per month - Perfect for getting started',
+    envKey: 'NEXT_PUBLIC_CREEM_PLAN_BASIC_MONTHLY_ID',
+    description: 'Perfect for getting started',
+    billingType: 'recurring' as const,
   },
   {
     name: 'Basic - Yearly',
-    price: 19200, // $192/年 (相当于 $16/月, 节省 $36)
+    price: 19200, // $192/年
     interval: 'year' as const,
-    envKey: 'CREEM_PRODUCT_BASIC_YEARLY',
-    description: '1,200 credits per year - Save $36 annually',
+    envKey: 'NEXT_PUBLIC_CREEM_PLAN_BASIC_YEARLY_ID',
+    description: 'Save $36 annually',
+    billingType: 'recurring' as const,
   },
   {
     name: 'Creator - Monthly',
-    price: 4900, // $49/月, 300 credits ($0.16/credit)
+    price: 4900, // $49/月
     interval: 'month' as const,
-    envKey: 'CREEM_PRODUCT_CREATOR_MONTHLY',
-    description: '300 credits per month - Ideal for content creators',
+    envKey: 'NEXT_PUBLIC_CREEM_PLAN_CREATOR_MONTHLY_ID',
+    description: 'Ideal for content creators',
+    billingType: 'recurring' as const,
   },
   {
     name: 'Creator - Yearly',
-    price: 49920, // $499.20/年 (相当于 $41.60/月, 节省 $88.80)
+    price: 49920, // $499.20/年
     interval: 'year' as const,
-    envKey: 'CREEM_PRODUCT_CREATOR_YEARLY',
-    description: '3,600 credits per year - Save $88.80 annually',
+    envKey: 'NEXT_PUBLIC_CREEM_PLAN_CREATOR_YEARLY_ID',
+    description: 'Save $88.80 annually',
+    billingType: 'recurring' as const,
   },
   {
     name: 'Pro - Monthly',
-    price: 14900, // $149/月, 1000 credits ($0.15/credit)
+    price: 14900, // $149/月
     interval: 'month' as const,
-    envKey: 'CREEM_PRODUCT_PRO_MONTHLY',
-    description: '1,000 credits per month - For professionals',
+    envKey: 'NEXT_PUBLIC_CREEM_PLAN_PRO_MONTHLY_ID',
+    description: 'For professionals',
+    billingType: 'recurring' as const,
   },
   {
     name: 'Pro - Yearly',
-    price: 152064, // $1,520.64/年 (相当于 $126.72/月, 节省 $267.36)
+    price: 152064, // $1,520.64/年
     interval: 'year' as const,
-    envKey: 'CREEM_PRODUCT_PRO_YEARLY',
-    description: '12,000 credits per year - Save $267.36 annually',
+    envKey: 'NEXT_PUBLIC_CREEM_PLAN_PRO_YEARLY_ID',
+    description: 'Save $267.36 annually',
+    billingType: 'recurring' as const,
+  },
+  // 一次性包
+  {
+    name: 'Starter Pack',
+    price: 990, // $9.9
+    interval: undefined,
+    envKey: 'NEXT_PUBLIC_CREEM_PACK_STARTER_ID',
+    description: 'Pay once, use anytime — credits never expire',
+    billingType: 'one-time' as const,
+  },
+  {
+    name: 'Creator Pack',
+    price: 4900, // $49
+    interval: undefined,
+    envKey: 'NEXT_PUBLIC_CREEM_PACK_CREATOR_ID',
+    description: 'Pay once, use anytime — credits never expire',
+    billingType: 'one-time' as const,
+  },
+  {
+    name: 'Professional Pack',
+    price: 19900, // $199
+    interval: undefined,
+    envKey: 'NEXT_PUBLIC_CREEM_PACK_DEV_ID',
+    description: 'Pay once, use anytime — credits never expire',
+    billingType: 'one-time' as const,
   },
 ];
 
@@ -70,28 +107,66 @@ async function createProducts() {
     try {
       console.log(`📦 创建产品: ${product.name} ($${product.price / 100})...`);
 
-      const result = await creem.createProduct({
-        xApiKey: apiKey!,
-        createProductRequest: {
-          name: product.name,
-          price: product.price,
-          interval: product.interval,
-          currency: 'usd',
-          description: product.description,
+      // 构建符合 Creem API 规范的产品创建请求
+      // 参考: https://docs.creem.io/api-reference/endpoint/create-product
+      const createRequest: any = {
+        name: product.name,
+        price: product.price,
+        currency: 'usd',
+        description: product.description,
+      };
+
+      // 根据产品类型设置 billing_type 和 billing_period
+      if (product.billingType === 'recurring' && product.interval) {
+        createRequest.billing_type = 'recurring';
+        // 将 interval 转换为 billing_period 格式
+        if (product.interval === 'month') {
+          createRequest.billing_period = 'every-month';
+        } else if (product.interval === 'year') {
+          createRequest.billing_period = 'every-year';
+        }
+      } else if (product.billingType === 'one-time') {
+        createRequest.billing_type = 'one-time';
+      }
+
+      // 使用 REST API 创建产品
+      // Creem API 端点: https://api.creem.io/v1/products
+      const baseUrl = process.env.CREAM_BASE_URL || 'https://api.creem.io';
+      
+      console.log(`   使用 API: ${baseUrl}/v1/products`);
+      console.log(`   API Key: ${apiKey!.substring(0, 20)}...`);
+      console.log(`   请求体: ${JSON.stringify(createRequest, null, 2)}`);
+      
+      const response = await fetch(`${baseUrl}/v1/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey!,
         },
+        body: JSON.stringify(createRequest),
       });
 
-      if (result.ok && result.value) {
-        const productId = result.value.id;
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`❌ 失败: ${response.status} ${response.statusText}`);
+        console.error(`   错误详情: ${errorText}\n`);
+        continue;
+      }
+
+      const result = await response.json();
+      
+      if (result.id) {
+        const productId = result.id;
         console.log(`✅ 成功! Product ID: ${productId}\n`);
         
         results.push({
           name: product.name,
-          id: productId || '',
+          id: productId,
           envKey: product.envKey,
         });
       } else {
-        console.error(`❌ 失败: ${JSON.stringify(result.error)}\n`);
+        console.error(`❌ 失败: 响应中没有产品 ID\n`);
+        console.error(`   响应: ${JSON.stringify(result)}\n`);
       }
     } catch (error) {
       console.error(`❌ 创建 ${product.name} 时出错:`, error);

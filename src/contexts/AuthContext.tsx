@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 使用 Supabase 自带的 signUp 触发确认邮件（依赖 Supabase Auth 邮件配置）
     try {
       const isProduction = process.env.NODE_ENV === 'production'
-      const baseUrl = isProduction ? (process.env.NEXT_PUBLIC_APP_URL || 'https://aivido.ai') : window.location.origin
+      const baseUrl = isProduction ? (process.env.NEXT_PUBLIC_APP_URL || 'https://saro2.ai') : window.location.origin
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -75,7 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 根据环境设置重定向 URL
     const isProduction = process.env.NODE_ENV === 'production';
     const baseUrl = isProduction
-      ? 'https://aivido.ai'
+      ? (process.env.NEXT_PUBLIC_APP_URL || 'https://saro2.ai')
       : window.location.origin;
 
     console.log('🔐 Google OAuth redirect URL:', `${baseUrl}/auth/callback`);

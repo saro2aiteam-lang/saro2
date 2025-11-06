@@ -12,9 +12,10 @@ import { Mail, Lock, ArrowLeft, CheckCircle } from 'lucide-react';
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  preventClose?: boolean; // Prevent closing when user is not authenticated
 }
 
-export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
+export default function AuthModal({ isOpen, onClose, preventClose = false }: AuthModalProps) {
   const router = useRouter();
   const [view, setView] = useState<'magic' | 'password'>('magic');
   const [email, setEmail] = useState('');
@@ -68,20 +69,77 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
         setError(error.message);
-      } else {
+        setLoading(false);
+        return;
+      }
+
+      // Wait for session to be established before redirecting
+      if (data.session) {
+        // Small delay to ensure auth state is updated in context
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
         onClose();
-        router.push('/text-to-video');
+        // Redirect to saved path or default to text-to-video
+        const redirectPath = typeof window !== 'undefined' 
+          ? sessionStorage.getItem('redirectAfterLogin') || '/text-to-video'
+          : '/text-to-video';
+        
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('redirectAfterLogin');
+        }
+        
+        router.replace(redirectPath);
+        setLoading(false);
+      } else {
+        // Wait for auth state change if session not immediately available
+        let subscriptionCleaned = false;
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+          if (event === 'SIGNED_IN' && session && !subscriptionCleaned) {
+            subscriptionCleaned = true;
+            subscription.unsubscribe();
+            onClose();
+            const redirectPath = typeof window !== 'undefined' 
+              ? sessionStorage.getItem('redirectAfterLogin') || '/text-to-video'
+              : '/text-to-video';
+            
+            if (typeof window !== 'undefined') {
+              sessionStorage.removeItem('redirectAfterLogin');
+            }
+            
+            router.replace(redirectPath);
+            setLoading(false);
+          }
+        });
+        
+        // Timeout fallback - check session after delay
+        setTimeout(async () => {
+          if (!subscriptionCleaned) {
+            subscriptionCleaned = true;
+            subscription.unsubscribe();
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
+            if (currentSession) {
+              onClose();
+              const redirectPath = typeof window !== 'undefined' 
+                ? sessionStorage.getItem('redirectAfterLogin') || '/text-to-video'
+                : '/text-to-video';
+              if (typeof window !== 'undefined') {
+                sessionStorage.removeItem('redirectAfterLogin');
+              }
+              router.replace(redirectPath);
+            }
+            setLoading(false);
+          }
+        }, 2000);
       }
     } catch (err: any) {
       setError(err?.message || 'Sign in failed');
-    } finally {
       setLoading(false);
     }
   };
@@ -131,8 +189,12 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => (open ? null : handleClose())}>
-      <DialogContent className="sm:max-w-md">
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open && !preventClose) {
+        handleClose();
+      }
+    }}>
+      <DialogContent className={`sm:max-w-md ${preventClose ? '[&>button]:hidden' : ''}`}>
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold">
             {magicLinkSent ? 'Check Your Email' : 'Sign In to Sora2'}

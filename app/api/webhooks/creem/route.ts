@@ -199,9 +199,15 @@ export async function POST(request: NextRequest) {
     console.log('[WEBHOOK] Event parsed successfully');
     
     // Normalize event type and payload shape from Creem
-    const eventType = event?.type || event?.eventType || event?.event_type || 'unknown';
+    // According to Creem docs: events have "eventType" field and "object" payload
+    const eventType = event?.eventType || event?.type || event?.event_type || 'unknown';
     const payload = event?.object || event?.data || null;
+    const eventId = event?.id || null;
+    const createdAt = event?.created_at || null;
+    
     console.log('[WEBHOOK] Event type:', eventType);
+    console.log('[WEBHOOK] Event ID:', eventId);
+    console.log('[WEBHOOK] Event created_at:', createdAt);
 
     console.log('[WEBHOOK] Received webhook event:', eventType);
     console.log('[WEBHOOK] Event has payload:', !!payload);
@@ -209,29 +215,25 @@ export async function POST(request: NextRequest) {
 
     switch (eventType) {
       case 'subscription.active': {
-        console.log('[WEBHOOK] Processing subscription.active event...');
+        // According to Creem docs: Use only for synchronization
+        // We encourage using subscription.paid for activating access
+        console.log('[WEBHOOK] Processing subscription.active event (sync only)...');
         try {
-          // Try to resolve Supabase user by email then normalize data for our handler
           const sub = payload;
-          console.log('[WEBHOOK] Subscription payload:', sub);
-          
           const email = sub?.customer?.email;
           if (!email) {
             console.error('[WEBHOOK] subscription.active missing customer email');
             break;
           }
           
-          console.log('[WEBHOOK] Looking up user with email:', email);
           const userId = await findUserByEmail(String(email));
-          console.log('[WEBHOOK] User lookup result:', userId);
-          
           if (!userId) {
-            console.log('[WEBHOOK] No user found, logging unmatched email');
             await logUnmatchedEmail(String(email), event);
             break;
           }
           
-          console.log('[WEBHOOK] Calling handleSubscriptionCreated...');
+          // Only sync subscription data, don't activate credits here
+          // Credits should be activated via subscription.paid event
           await handleSubscriptionCreated({
             subscription_id: sub?.id,
             customer_id: userId,
@@ -239,20 +241,71 @@ export async function POST(request: NextRequest) {
             status: sub?.status ?? 'active',
             current_period_start: sub?.current_period_start_date ?? sub?.current_period_start ?? null,
             current_period_end: sub?.current_period_end_date ?? sub?.current_period_end ?? null,
+            skipCredits: true, // Skip credit activation for sync event
           });
-          console.log('[WEBHOOK] handleSubscriptionCreated completed');
         } catch (error) {
           console.error('[WEBHOOK] Error in subscription.active handler:', error);
-          throw error; // Re-throw to be caught by outer try-catch
+          throw error;
+        }
+        break;
+      }
+      
+      case 'subscription.paid': {
+        // According to Creem docs: Recommended event for activating access
+        // A subscription transaction was paid by the customer
+        console.log('[WEBHOOK] Processing subscription.paid event (activate access)...');
+        try {
+          const sub = payload;
+          const email = sub?.customer?.email;
+          if (!email) {
+            console.error('[WEBHOOK] subscription.paid missing customer email');
+            break;
+          }
+          
+          const userId = await findUserByEmail(String(email));
+          if (!userId) {
+            await logUnmatchedEmail(String(email), event);
+            break;
+          }
+          
+          // Activate subscription and credits
+          await handleSubscriptionCreated({
+            subscription_id: sub?.id,
+            customer_id: userId,
+            plan_id: sub?.product?.id,
+            status: sub?.status ?? 'active',
+            current_period_start: sub?.current_period_start_date ?? sub?.current_period_start ?? null,
+            current_period_end: sub?.current_period_end_date ?? sub?.current_period_end ?? null,
+            skipCredits: false, // Activate credits for paid event
+          });
+          
+          // Also handle as payment succeeded for payment record
+          const normalized = {
+            subscription_id: sub?.id,
+            payment_id: sub?.last_transaction_id ?? sub?.last_transaction?.id,
+            amount: sub?.last_transaction?.amount,
+            currency: sub?.last_transaction?.currency ?? 'USD',
+            customer_id: userId,
+            metadata: {
+              customerId: userId,
+              planId: sub?.product?.id,
+            }
+          };
+          await handlePaymentSucceeded(normalized);
+        } catch (error) {
+          console.error('[WEBHOOK] Error in subscription.paid handler:', error);
+          throw error;
         }
         break;
       }
       
       case 'subscription.update': {
+        // According to Creem docs: A subscription object was updated
         const sub = payload;
         await handleSubscriptionUpdated({
           subscription_id: sub?.id,
           status: sub?.status,
+          current_period_start: sub?.current_period_start_date ?? sub?.current_period_start ?? null,
           current_period_end: sub?.current_period_end_date ?? sub?.current_period_end ?? null,
         });
         break;
@@ -273,16 +326,36 @@ export async function POST(request: NextRequest) {
       }
       
       case 'subscription.trialing': {
+        // According to Creem docs: A subscription started a trial period
         const sub = payload;
         console.log('[WEBHOOK] Subscription trialing:', sub?.id);
-        // Handle trial period - could activate limited features
+        const email = sub?.customer?.email;
+        if (email) {
+          const userId = await findUserByEmail(String(email));
+          if (userId) {
+            await handleSubscriptionCreated({
+              subscription_id: sub?.id,
+              customer_id: userId,
+              plan_id: sub?.product?.id,
+              status: 'trialing',
+              current_period_start: sub?.current_period_start_date ?? sub?.current_period_start ?? null,
+              current_period_end: sub?.current_period_end_date ?? sub?.current_period_end ?? null,
+              skipCredits: false, // Activate trial credits
+            });
+          }
+        }
         break;
       }
       
       case 'subscription.paused': {
+        // According to Creem docs: A subscription was paused
         const sub = payload;
         console.log('[WEBHOOK] Subscription paused:', sub?.id);
-        // Handle paused subscription
+        await handleSubscriptionUpdated({
+          subscription_id: sub?.id,
+          status: 'paused',
+          current_period_end: sub?.current_period_end_date ?? sub?.current_period_end ?? null,
+        });
         break;
       }
       
@@ -293,34 +366,27 @@ export async function POST(request: NextRequest) {
         break;
       }
       
-      case 'payment.succeeded':
-        await handlePaymentSucceeded(payload);
-        break;
-
-      // Map Creem's paid event to our payment success handler
-      case 'subscription.paid': {
-        const sub = payload;
-        const normalized = {
-          subscription_id: sub?.id,
-          payment_id: sub?.last_transaction_id ?? sub?.last_transaction?.id,
-          amount: sub?.last_transaction?.amount,
-          currency: sub?.last_transaction?.currency ?? 'USD',
-        };
-        await handlePaymentSucceeded(normalized);
+      case 'checkout.completed': {
+        // According to Creem docs: A checkout session was completed
+        // Returns all information about payment and order
+        await handleCheckoutCompleted(payload);
         break;
       }
       
-      case 'checkout.completed':
-        await handleCheckoutCompleted(payload);
+      case 'payment.succeeded':
+        // Legacy event type, may still be used
+        await handlePaymentSucceeded(payload);
         break;
       
       case 'payment.failed':
         await handlePaymentFailed(payload);
         break;
       
-      case 'refund.created':
+      case 'refund.created': {
+        // According to Creem docs: A refund was created
         await handleRefundCreated(payload);
         break;
+      }
       
       default:
         console.log('Unhandled event type:', eventType);
@@ -344,14 +410,15 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleSubscriptionCreated(data: any) {
-  const { subscription_id, customer_id, plan_id, status } = data;
+  const { subscription_id, customer_id, plan_id, status, skipCredits = false } = data;
   const supabaseAdmin = getSupabaseAdmin();
   
   console.log('[WEBHOOK] Processing subscription.created:', {
     subscription_id,
     customer_id,
     plan_id,
-    status
+    status,
+    skipCredits
   });
 
   // 获取计划配置以确定积分数量
@@ -414,8 +481,8 @@ async function handleSubscriptionCreated(data: any) {
     console.log('[WEBHOOK] User updated:', userUpdateData);
   }
 
-  // 3. 发放订阅积分
-  if (creditAmount > 0) {
+  // 3. 发放订阅积分（如果未跳过）
+  if (!skipCredits && creditAmount > 0) {
     try {
       // 避免重复发放：若该订阅已记录过发放，则跳过
       let alreadyCredited = false;
@@ -477,7 +544,7 @@ async function handleSubscriptionCreated(data: any) {
 }
 
 async function handleSubscriptionUpdated(data: any) {
-  const { subscription_id, status, current_period_end } = data;
+  const { subscription_id, status, current_period_start, current_period_end } = data;
   const supabaseAdmin = getSupabaseAdmin();
   const subscriptionIdColumn = await resolveSubscriptionIdColumn(supabaseAdmin);
   
@@ -485,7 +552,9 @@ async function handleSubscriptionUpdated(data: any) {
     .from('user_subscriptions')
     .update({
       plan_status: status,
-      current_period_end: new Date(current_period_end),
+      current_period_start: current_period_start ? new Date(current_period_start) : undefined,
+      current_period_end: current_period_end ? new Date(current_period_end) : undefined,
+      updated_at: new Date().toISOString()
     })
     .eq(subscriptionIdColumn, subscription_id);
 
@@ -501,7 +570,8 @@ async function handleSubscriptionUpdated(data: any) {
       .from('users')
       .update({
         subscription_status: status,
-        subscription_end_date: new Date(current_period_end),
+        subscription_end_date: current_period_end ? new Date(current_period_end) : null,
+        updated_at: new Date().toISOString()
       })
       .eq('id', subscription.user_id);
   }

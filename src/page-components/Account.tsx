@@ -10,6 +10,8 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import GenerationHistory from "@/components/GenerationHistory";
+import SubscriptionHistory from "@/components/SubscriptionHistory";
+import PaymentHistory from "@/components/PaymentHistory";
 import { Zap, History, Download, Crown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -119,9 +121,11 @@ const Account = () => {
 
           {/* Main Content */}
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="history">History</TabsTrigger>
+              <TabsTrigger value="generations">Generations</TabsTrigger>
+              <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
+              <TabsTrigger value="payments">Payments</TabsTrigger>
             </TabsList>
 
             {/* Overview Tab */}
@@ -154,9 +158,15 @@ const Account = () => {
                     <div className="flex items-center justify-between">
                       <span className="text-sm">Status</span>
                       <Badge variant="outline" className="text-green-500 border-green-500">
-                        Active
+                        {userData.subscriptionStatus === 'active' ? 'Active' : userData.subscriptionStatus}
                       </Badge>
                     </div>
+                    {userData.nextBilling !== "N/A" && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Next Billing</span>
+                        <span className="text-sm text-muted-foreground">{userData.nextBilling}</span>
+                      </div>
+                    )}
                     <div className="pt-2 space-y-2">
                       <Button variant="outline" className="w-full" onClick={() => setShowSubscriptionModal(true)}>
                         Upgrade Plan
@@ -167,9 +177,19 @@ const Account = () => {
               </div>
             </TabsContent>
 
-            {/* History Tab */}
-            <TabsContent value="history">
+            {/* Generations Tab */}
+            <TabsContent value="generations">
               <GenerationHistory />
+            </TabsContent>
+
+            {/* Subscriptions Tab */}
+            <TabsContent value="subscriptions">
+              <SubscriptionHistory />
+            </TabsContent>
+
+            {/* Payments Tab */}
+            <TabsContent value="payments">
+              <PaymentHistory />
             </TabsContent>
           </Tabs>
         </div>

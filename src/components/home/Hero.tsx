@@ -82,7 +82,11 @@ const Hero = () => {
               </Button>
               <Button
                 size="lg"
-                onClick={() => setIsAuthModalOpen(true)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsAuthModalOpen(true);
+                }}
                 className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 sm:px-6 text-sm sm:text-base"
               >
                 <User className="w-4 h-4 mr-2" />

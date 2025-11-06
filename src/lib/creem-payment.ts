@@ -189,6 +189,10 @@ export async function createSubscriptionViaAPI(params: {
   }
 }
 
+/**
+ * 创建 Creem Checkout Session
+ * 根据官方 API 文档: https://docs.creem.io/api-reference/endpoint/create-checkout
+ */
 export async function createCheckoutForProduct(params: {
   productId: string;
   customerId: string;
@@ -216,21 +220,65 @@ export async function createCheckoutForProduct(params: {
       )
     : undefined;
 
+  // 构建符合官方 API 规范的请求体
+  // 参考: https://docs.creem.io/api-reference/endpoint/create-checkout
+  const checkoutRequest: any = {
+    product_id: params.productId, // API 使用 product_id (snake_case)
+    units: 1,
+  };
+
+  if (params.requestId) {
+    checkoutRequest.request_id = params.requestId;
+  }
+
+  if (params.customerEmail) {
+    checkoutRequest.customer = {
+      email: params.customerEmail,
+    };
+    // 如果有 customerId，也可以添加
+    if (params.customerId) {
+      checkoutRequest.customer.id = params.customerId;
+    }
+  }
+
+  if (params.successUrl) {
+    checkoutRequest.success_url = params.successUrl;
+  }
+
+  if (metadata) {
+    checkoutRequest.metadata = metadata;
+  }
+
   try {
-    const result = await creem.createCheckout({
-      xApiKey: creemConfig.apiKey,
-      createCheckoutRequest: {
-        productId: params.productId,
-        units: 1,
-        customer: params.customerEmail ? {
-          email: params.customerEmail,
-        } : undefined,
-        metadata,
-        successUrl: params.successUrl,
-        cancelUrl: params.cancelUrl,
-        requestId: params.requestId, // 添加 request_id 支持
-      },
-    } as any) as any;
+    // 优先使用 SDK，如果失败则使用 REST API
+    let result: any;
+    
+    try {
+      result = await creem.createCheckout({
+        xApiKey: creemConfig.apiKey,
+        createCheckoutRequest: checkoutRequest,
+      } as any) as any;
+    } catch (sdkError) {
+      console.warn('Creem SDK failed, falling back to REST API:', sdkError);
+      
+      // 使用 REST API 作为备用方案
+      const baseUrl = creemConfig.baseUrl || 'https://api.creem.io';
+      const response = await fetch(`${baseUrl}/v1/checkouts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': creemConfig.apiKey,
+        },
+        body: JSON.stringify(checkoutRequest),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Creem API error: ${response.status} ${errorText}`);
+      }
+
+      result = { ok: true, value: await response.json() };
+    }
 
     console.log('Creem SDK result:', JSON.stringify(result, null, 2));
 
@@ -270,42 +318,42 @@ export async function createCheckoutForProduct(params: {
 }
 
 // 订阅计划定义
-// TODO: 从 Creem Dashboard 获取实际的产品 ID 并替换下面的值
+// 使用新的环境变量命名：NEXT_PUBLIC_CREEM_PLAN_*_ID
 export const subscriptionPlans: Record<string, SubscriptionPlan> = {
   basic: {
     monthly: { 
       price: 1900, // $19/月, 100 credits ($0.19/credit)
       interval: 'month',
-      productId: process.env.CREEM_PRODUCT_BASIC_MONTHLY || 'prod_basic_monthly' // 替换为实际的 Creem 产品 ID
+      productId: process.env.NEXT_PUBLIC_CREEM_PLAN_BASIC_MONTHLY_ID || 'prod_basic_monthly'
     },
     yearly: { 
       price: 19200, // $192/年 (相当于 $16/月)
       interval: 'year',
-      productId: process.env.CREEM_PRODUCT_BASIC_YEARLY || 'prod_basic_yearly'
+      productId: process.env.NEXT_PUBLIC_CREEM_PLAN_BASIC_YEARLY_ID || 'prod_basic_yearly'
     }
   },
   creator: {
     monthly: { 
       price: 4900, // $49/月, 300 credits ($0.16/credit)
       interval: 'month',
-      productId: process.env.CREEM_PRODUCT_CREATOR_MONTHLY || 'prod_creator_monthly'
+      productId: process.env.NEXT_PUBLIC_CREEM_PLAN_CREATOR_MONTHLY_ID || 'prod_creator_monthly'
     },
     yearly: { 
       price: 49920, // $499.20/年 (相当于 $41.60/月)
       interval: 'year',
-      productId: process.env.CREEM_PRODUCT_CREATOR_YEARLY || 'prod_creator_yearly'
+      productId: process.env.NEXT_PUBLIC_CREEM_PLAN_CREATOR_YEARLY_ID || 'prod_creator_yearly'
     }
   },
   pro: {
     monthly: { 
       price: 14900, // $149/月, 1000 credits ($0.15/credit)
       interval: 'month',
-      productId: process.env.CREEM_PRODUCT_PRO_MONTHLY || 'prod_pro_monthly'
+      productId: process.env.NEXT_PUBLIC_CREEM_PLAN_PRO_MONTHLY_ID || 'prod_pro_monthly'
     },
     yearly: { 
       price: 152064, // $1,520.64/年 (相当于 $126.72/月)
       interval: 'year',
-      productId: process.env.CREEM_PRODUCT_PRO_YEARLY || 'prod_pro_yearly'
+      productId: process.env.NEXT_PUBLIC_CREEM_PLAN_PRO_YEARLY_ID || 'prod_pro_yearly'
     }
   }
 };

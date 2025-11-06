@@ -30,11 +30,9 @@ const resolvePlanConfig = (
   billing: 'MONTHLY' | 'YEARLY'
 ) => {
   const envKeyRoot = `NEXT_PUBLIC_CREEM_PLAN_${baseId}_${billing}`;
-  const legacyProductKey = `CREEM_PRODUCT_${baseId}_${billing}`;
-  const legacyUrlKey = `CREEM_PLAN_${baseId}_${billing}_URL`;
 
-  const checkoutUrl = readEnv(`${envKeyRoot}_URL`) ?? readEnv(legacyUrlKey);
-  const productId = readEnv(`${envKeyRoot}_ID`) ?? readEnv(legacyProductKey);
+  const checkoutUrl = readEnv(`${envKeyRoot}_URL`);
+  const productId = readEnv(`${envKeyRoot}_ID`);
 
   return { checkoutUrl, productId };
 };

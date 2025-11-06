@@ -50,7 +50,7 @@ const Navigation = () => {
 
   const navItems = [
     { name: "Home", href: "/", icon: Home },
-    { name: "Generate", href: "/text-video", icon: Play },
+    { name: "Generate", href: "/text-to-video", icon: Play },
     { name: "Pricing", href: "/plans", icon: DollarSign },
     { name: "Blog", href: "/blog", icon: BookOpen },
   ];
@@ -120,7 +120,7 @@ const Navigation = () => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/text-video" className="group flex gap-3 p-3 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors">
+                  <Link href="/text-to-video" className="group flex gap-3 p-3 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors">
                     <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted text-muted-foreground group-hover:bg-accent-foreground/10">
                       <FileText className="h-4 w-4" />
                     </div>
@@ -228,7 +228,15 @@ const Navigation = () => {
                   variant="ghost"
                   size="sm"
                   className="hover-lift"
-                  onClick={() => setIsAuthModalOpen(true)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Save current path for redirect after login
+                    if (typeof window !== 'undefined') {
+                      sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
+                    }
+                    setIsAuthModalOpen(true);
+                  }}
                 >
                   <User className="w-4 h-4 mr-1" />
                   Sign In
@@ -237,7 +245,17 @@ const Navigation = () => {
                   variant="cyber"
                   size="sm"
                   className=""
-                  onClick={() => (isAuthenticated ? router.push('/text-video') : setIsAuthModalOpen(true))}
+                  onClick={() => {
+                    if (isAuthenticated) {
+                      router.push('/text-to-video');
+                    } else {
+                      // Save current path for redirect after login
+                      if (typeof window !== 'undefined') {
+                        sessionStorage.setItem('redirectAfterLogin', '/text-to-video');
+                      }
+                      setIsAuthModalOpen(true);
+                    }
+                  }}
                 >
                   Get Started
                 </Button>
@@ -270,7 +288,7 @@ const Navigation = () => {
                 <div className="text-xs text-muted-foreground pb-1">Generate</div>
                 <div className="flex flex-col">
                   <Link href="/sora2-storyboard" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Storyboard</Link>
-                  <Link href="/text-video" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Text to Video</Link>
+                  <Link href="/text-to-video" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Text to Video</Link>
                   <Link href="/image-to-video" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Image to Video</Link>
                   <Link href="/watermark-remover" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Sora2 Watermark Remover</Link>
                 </div>
@@ -313,7 +331,15 @@ const Navigation = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setIsAuthModalOpen(true)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Save current path for redirect after login
+                        if (typeof window !== 'undefined') {
+                          sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
+                        }
+                        setIsAuthModalOpen(true);
+                      }}
                     >
                       <User className="w-4 h-4 mr-1" />
                       Sign In
@@ -321,7 +347,17 @@ const Navigation = () => {
                     <Button
                       variant="gradient"
                       size="sm"
-                      onClick={() => (isAuthenticated ? router.push('/text-video') : setIsAuthModalOpen(true))}
+                      onClick={() => {
+                        if (isAuthenticated) {
+                          router.push('/text-to-video');
+                        } else {
+                          // Save current path for redirect after login
+                          if (typeof window !== 'undefined') {
+                            sessionStorage.setItem('redirectAfterLogin', '/text-to-video');
+                          }
+                          setIsAuthModalOpen(true);
+                        }
+                      }}
                     >
                       Get Started
                     </Button>

@@ -57,6 +57,16 @@ export default function AuthCallbackPage() {
           return;
         }
 
+        // Check for error parameters in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const errorParam = urlParams.get('error') || hashParams.get('error');
+        const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
+        
+        const isDatabaseError = 
+          errorParam === 'server_error' && 
+          errorDescription?.includes('Database error saving new user');
+
         // Process the auth callback
         console.log("🔄 Processing auth callback...");
         const { data, error } = await supabase.auth.getSession();
@@ -66,10 +76,10 @@ export default function AuthCallbackPage() {
           setError(`Authentication failed: ${error.message}`);
           setMessage("Sign-in failed. Please try again or contact support.");
           
-          // Redirect to sign-in after a delay
+          // Redirect to home page after a delay
           timeoutId = setTimeout(() => {
             if (mounted) {
-              router.replace("/auth/email");
+              router.replace("/");
             }
           }, 3000);
           return;
@@ -78,21 +88,59 @@ export default function AuthCallbackPage() {
         if (mounted) {
           if (data.session) {
             console.log("✅ Authentication successful:", data.session.user.email);
-            setMessage("Signed in successfully! Redirecting…");
+            
+            // If there was a database error, try to fix it
+            if (isDatabaseError) {
+              console.log("🔧 Attempting to fix missing user record...");
+              try {
+                const response = await fetch('/api/users/fix-missing', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ userId: data.session.user.id }),
+                });
+                
+                if (response.ok) {
+                  console.log("✅ User record fixed successfully");
+                  setMessage("Account setup complete! Redirecting…");
+                } else {
+                  console.warn("⚠️ Failed to fix user record, but continuing...");
+                  setMessage("Signed in successfully! Redirecting…");
+                }
+              } catch (fixError) {
+                console.error("❌ Error fixing user record:", fixError);
+                setMessage("Signed in successfully! Redirecting…");
+              }
+            } else {
+              setMessage("Signed in successfully! Redirecting…");
+            }
+            
             setError(null);
             
-            // Redirect to main app
-            timeoutId = setTimeout(() => {
-              router.replace("/text-to-video");
-            }, 1000);
+            // Wait a bit for auth state to propagate
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Redirect to saved path or default to text-to-video
+            const redirectPath = typeof window !== 'undefined' 
+              ? sessionStorage.getItem('redirectAfterLogin') || '/text-to-video'
+              : '/text-to-video';
+            
+            // Clean up redirect path from storage
+            if (typeof window !== 'undefined') {
+              sessionStorage.removeItem('redirectAfterLogin');
+            }
+            
+            // Use replace to avoid adding to history
+            router.replace(redirectPath);
           } else {
             console.log("⚠️ No session found");
-            setMessage("No session found. Redirecting to sign-in…");
+            setMessage("No session found. Redirecting to home…");
             setError(null);
             
-            // Redirect to sign-in
+            // Redirect to home page
             timeoutId = setTimeout(() => {
-              router.replace("/auth/email");
+              if (mounted) {
+                router.replace("/");
+              }
             }, 2000);
           }
         }
@@ -102,10 +150,10 @@ export default function AuthCallbackPage() {
         setError(`Error: ${errorMessage}`);
         setMessage("An unexpected error occurred. Please try again.");
         
-        // Redirect to sign-in after error
+        // Redirect to home page after error
         timeoutId = setTimeout(() => {
           if (mounted) {
-            router.replace("/auth/email");
+            router.replace("/");
           }
         }, 3000);
       }
@@ -142,8 +190,8 @@ export default function AuthCallbackPage() {
           )}
           <div className="text-xs text-gray-500">
             If this page doesn't redirect automatically, 
-            <a href="/auth/email" className="text-blue-600 hover:text-blue-800 underline ml-1">
-              click here to sign in
+            <a href="/" className="text-blue-600 hover:text-blue-800 underline ml-1">
+              click here to go home
             </a>
           </div>
         </div>
