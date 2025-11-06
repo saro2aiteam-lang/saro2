@@ -2,14 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, Sparkles, ArrowRight } from 'lucide-react';
+import { Play, Sparkles, ArrowRight, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { promptExamples } from '@/data/promptExamples';
+import AuthModal from '@/components/AuthModal';
 
 const Hero = () => {
   const router = useRouter();
   const [prompt, setPrompt] = useState('');
   const [currentExamples, setCurrentExamples] = useState<string[]>([]);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Initialize with example prompts
   useEffect(() => {
@@ -42,8 +44,8 @@ const Hero = () => {
         <div className="text-center mb-12">
           {/* Main Heading */}
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1] mb-6">
-            <div className="text-foreground">
-              Saro 2
+            <div className="text-foreground" suppressHydrationWarning>
+              Sora 2
             </div>
           </h1>
 
@@ -80,12 +82,12 @@ const Hero = () => {
               </Button>
               <Button
                 size="lg"
-                onClick={handleGenerate}
+                onClick={() => setIsAuthModalOpen(true)}
                 className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 sm:px-6 text-sm sm:text-base"
               >
-                <Play className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Generate</span>
-                <span className="sm:hidden">Go</span>
+                <User className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Sign In</span>
+                <span className="sm:hidden">Sign In</span>
               </Button>
             </div>
           </div>
@@ -126,6 +128,11 @@ const Hero = () => {
         </div>
       </div>
 
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+      />
     </section>
   );
 };

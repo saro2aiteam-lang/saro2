@@ -107,11 +107,11 @@ const KeyFeatures = () => {
           </Card>
         </div>
 
-        {/* Section 4: Try Saro 2 Free */}
+        {/* Section 4: Try Sora 2 Free */}
         <div className="text-center">
           <Card className="p-12 bg-gradient-to-br from-primary/5 to-primary/10 border-2 border-primary/20">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Try Saro 2 Free — No Editing Required
+              Try Sora 2 Free — No Editing Required
             </h2>
             <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
               Start creating cinematic videos with AI-powered tools. No experience needed.

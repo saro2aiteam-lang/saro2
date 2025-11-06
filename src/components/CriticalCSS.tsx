@@ -8,6 +8,9 @@ interface CriticalCSSProps {
 
 const CriticalCSS = ({ css }: CriticalCSSProps) => {
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     // Inline critical CSS for above-the-fold content
     const criticalCSS = css || `
       /* Critical CSS for above-the-fold content */
@@ -143,6 +146,7 @@ const CriticalCSS = ({ css }: CriticalCSSProps) => {
     
     // Cleanup function
     return () => {
+      if (typeof window === 'undefined') return;
       const existingStyle = document.querySelector('style[data-critical="true"]');
       if (existingStyle) {
         existingStyle.remove();

@@ -31,7 +31,7 @@ const testimonials = [
     location: "Mexico City",
     rating: 5,
     avatar: "SR",
-    review: "I create 5-10 videos daily. Sora2's speed and quality are unmatched. Text-to-video intros in minutes, zero watermarks means full monetization. This is the tool I wish existed 2 years ago."
+    review: "I create 5-10 videos daily. Sora 2's speed and quality are unmatched. Text-to-video intros in minutes, zero watermarks means full monetization. This is the tool I wish existed 2 years ago."
   },
   {
     id: 4,
@@ -88,7 +88,7 @@ const Testimonials = () => {
             Loved by <span className="text-primary">creators worldwide</span>
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Join 10,000+ creators who trust Sora2 for professional AI video generation. 
+            Join 10,000+ creators who trust Sora 2 for professional AI video generation. 
             See what real users say about our no watermark, fast render technology.
           </p>
         </div>
@@ -153,10 +153,10 @@ const Testimonials = () => {
         {/* SEO-Optimized Footer Text */}
         <div className="mt-16 text-center">
           <p className="text-xs text-muted-foreground/60 leading-relaxed max-w-4xl mx-auto">
-            Join over 10,000 creators using Sora2 for AI video generation. Our users love 
+            Join over 10,000 creators using Sora 2 for AI video generation. Our users love 
             the no watermark feature, realistic audio synchronization, and fast render times. 
             Whether you need text to video, image to video, or looking for the best 
-            Sora alternative, Sora2 delivers professional results at affordable prices. 
+            Sora alternative, Sora 2 delivers professional results at affordable prices. 
             Create stunning AI-generated videos today with automatic audio, HD quality, 
             and commercial licensing included.
           </p>
