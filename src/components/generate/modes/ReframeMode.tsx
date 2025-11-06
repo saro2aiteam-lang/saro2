@@ -140,7 +140,7 @@ export const ReframeMode: React.FC<ReframeModeProps> = ({
                     aria-label="Open Prompt GPT"
                     onClick={() =>
                       window.open(
-                        "https://chatgpt.com/g/g-68e177451b608191847c35c6a1b4a5bf-ai-video-prompt-director",
+                        "https://chatgpt.com/g/g-690c3e49fb308191aa623c67543a766a-sarogpt-ai-video-prompt-script-assistant",
                         "_blank",
                         "noopener,noreferrer"
                       )

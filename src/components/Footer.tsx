@@ -13,7 +13,7 @@ const Footer = () => {
       { name: "Blog", href: "/blog", external: false },
     ],
     resources: [
-      { name: "AI Video Prompt GPT", href: "https://chatgpt.com/g/g-68e177451b608191847c35c6a1b4a5bf-ai-video-prompt-director", external: true },
+      { name: "AI Video Prompt GPT", href: "https://chatgpt.com/g/g-690c3e49fb308191aa623c67543a766a-sarogpt-ai-video-prompt-script-assistant", external: true },
       { name: "Privacy Policy", href: "/privacy", external: false },
       { name: "Terms of Service", href: "/terms", external: false },
       { name: "Refund Policy", href: "/refund", external: false },
