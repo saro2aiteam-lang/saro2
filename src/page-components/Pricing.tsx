@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -12,6 +12,12 @@ import SubscriptionPlans from "@/components/pricing/SubscriptionPlans";
 const PricingPage = () => {
   const [billingInterval, setBillingInterval] = useState<'month' | 'year'>('year');
   const [showAuthModal, setShowAuthModal] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("event", "view_pricing");
+    }
+  }, []);
 
   const displayedPlans = useMemo(() => {
     return subscriptionPlans.filter((plan) => plan.billingInterval === billingInterval);

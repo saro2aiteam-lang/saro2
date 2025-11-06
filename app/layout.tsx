@@ -6,6 +6,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner"
 import { Providers } from './providers'
 import CriticalCSSWrapper from '@/components/CriticalCSSWrapper'
 import TooltipProviderWrapper from '@/components/TooltipProviderWrapper'
+import PageView from './pageview'
 import './globals.css'
  
 
@@ -100,7 +101,7 @@ export default function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-P6GF9BE0RJ');
+            gtag('config', 'G-P6GF9BE0RJ', { send_page_view: false });
           `}
         </Script>
         
@@ -145,6 +146,7 @@ export default function RootLayout({
             <CriticalCSSWrapper />
             <Toaster />
             <Sonner />
+            <PageView />
             {children}
           </TooltipProviderWrapper>
         </Providers>

@@ -20,6 +20,16 @@ export default function PaymentSuccessPage() {
   const target = `/dashboard?payment=success${plan ? `&plan=${encodeURIComponent(plan)}` : ""}`;
 
   useEffect(() => {
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("event", "purchase", {
+        value: value,
+        currency: currency,
+        transaction_id: transactionId || undefined,
+      });
+    }
+  }, [value, currency, transactionId]);
+
+  useEffect(() => {
     (window as any).__redirectAfterGA = () => {
       setIsRedirecting(true);
       try { router.replace(target); } catch (e) {}
