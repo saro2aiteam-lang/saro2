@@ -44,17 +44,14 @@ const Hero = () => {
         <div className="text-center mb-12">
           {/* Main Heading */}
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1] mb-6">
-            <div className="text-foreground" suppressHydrationWarning>
-              Sora 2
-            </div>
-            <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-muted-foreground mt-2">
-              Create cinematic AI videos from text or images
+            <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-muted-foreground">
+              Sora 2 makes video generation effortless
             </div>
           </h1>
 
           {/* Subheading */}
           <p className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Sora 2 AI video generator produces commercially licensed videos with high-consistency scenes, built-in audio, and smooth motion. 
+            A fast and affordable way to generate high-quality videos powered by the Sora 2 model, with no watermarks, optimized for social platforms.
           </p>
         </div>
 
@@ -134,7 +131,7 @@ const Hero = () => {
           </Button>
           {/* Small disclaimer - doesn't affect SEO */}
           <p className="text-xs text-muted-foreground/60 mt-4 max-w-2xl mx-auto">
-            Saro2.ai is an independent platform, not affiliated with OpenAI. We provide Sora 2-style video generation services. Experience the power of Sora 2 AI video creation today.
+            Saro2.ai is an independent platform, not affiliated with OpenAI. We provide Sora 2-style video generation services.
           </p>
         </div>
       </div>

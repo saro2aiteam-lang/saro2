@@ -2,7 +2,7 @@
 
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/home/Hero";
-import KeyFeatures from "@/components/home/KeyFeatures";
+import WhyThisMatters from "@/components/home/WhyThisMatters";
 import DemoGallery from "@/components/home/DemoGallery";
 import HowItWorks from "@/components/home/HowItWorks";
 import PricingSection from "@/components/home/PricingSection";
@@ -34,9 +34,9 @@ const Index = () => {
         <DemoGallery />
       </FadeInSection>
       
-      {/* Key Features */}
+      {/* Why This Matters & Key Features */}
       <FadeInSection delay={400}>
-        <KeyFeatures />
+        <WhyThisMatters />
       </FadeInSection>
       
       {/* How It Works */}

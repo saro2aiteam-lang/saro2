@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Sparkles, Film, Camera } from 'lucide-react';
+import { X, DollarSign, Zap, Film, Image, Share2, Sparkles } from 'lucide-react';
 
 const KeyFeatures = () => {
   return (
@@ -15,95 +15,100 @@ const KeyFeatures = () => {
             <Sparkles className="w-8 h-8 text-primary" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-            Sora 2: Next-Generation Cinematic Video Creation
+            What makes Saro2 AI different
           </h2>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Sora 2 generates realistic motion, consistent characters, and multi-shot scenes without filming or editing skills. Experience Sora 2 AI video generation technology. Sora 2 delivers professional results with Sora 2-powered tools.
-          </p>
         </div>
 
-        {/* Section 2 & 3: Feature Cards Grid */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          {/* Motion Realism Card */}
-          <Card className="p-8 border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg bg-card/50 backdrop-blur-sm">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Film className="w-6 h-6 text-primary" />
+        {/* Feature Cards Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          {/* No Watermark */}
+          <Card className="p-6 border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg bg-card/50 backdrop-blur-sm">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <X className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="text-2xl sm:text-3xl font-bold">
-                Motion Realism & Scene Consistency
+              <h3 className="text-xl font-bold">
+                No watermark
               </h3>
             </div>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3 group">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-primary/20 transition-colors">
-                  <Check className="w-4 h-4 text-primary" />
-                </div>
-                <span className="text-base text-foreground/90 leading-relaxed">Physical-style scene simulation</span>
-              </li>
-              <li className="flex items-start gap-3 group">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-primary/20 transition-colors">
-                  <Check className="w-4 h-4 text-primary" />
-                </div>
-                <span className="text-base text-foreground/90 leading-relaxed">Smooth camera motion</span>
-              </li>
-              <li className="flex items-start gap-3 group">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-primary/20 transition-colors">
-                  <Check className="w-4 h-4 text-primary" />
-                </div>
-                <span className="text-base text-foreground/90 leading-relaxed">Cinematic lighting presets</span>
-              </li>
-              <li className="flex items-start gap-3 group">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-primary/20 transition-colors">
-                  <Check className="w-4 h-4 text-primary" />
-                </div>
-                <span className="text-base text-foreground/90 leading-relaxed">World-state continuity</span>
-              </li>
-              <li className="flex items-start gap-3 group">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-primary/20 transition-colors">
-                  <Check className="w-4 h-4 text-primary" />
-                </div>
-                <span className="text-base text-foreground/90 leading-relaxed">Character persistence</span>
-              </li>
-            </ul>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Your videos are clean, brandable, and ready for commercial use.
+            </p>
           </Card>
 
-          {/* Storyboard Card */}
-          <Card className="p-8 border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg bg-card/50 backdrop-blur-sm">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Camera className="w-6 h-6 text-primary" />
+          {/* Best Cost-Performance */}
+          <Card className="p-6 border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg bg-card/50 backdrop-blur-sm">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <DollarSign className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="text-2xl sm:text-3xl font-bold">
-                Storyboard → Script → Camera Movements
+              <h3 className="text-xl font-bold">
+                Best cost-performance
               </h3>
             </div>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3 group">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-primary/20 transition-colors">
-                  <Check className="w-4 h-4 text-primary" />
-                </div>
-                <span className="text-base text-foreground/90 leading-relaxed">Visual storyboard layout</span>
-              </li>
-              <li className="flex items-start gap-3 group">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-primary/20 transition-colors">
-                  <Check className="w-4 h-4 text-primary" />
-                </div>
-                <span className="text-base text-foreground/90 leading-relaxed">Shot-by-shot prompts</span>
-              </li>
-              <li className="flex items-start gap-3 group">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-primary/20 transition-colors">
-                  <Check className="w-4 h-4 text-primary" />
-                </div>
-                <span className="text-base text-foreground/90 leading-relaxed">Camera direction control</span>
-              </li>
-              <li className="flex items-start gap-3 group">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-primary/20 transition-colors">
-                  <Check className="w-4 h-4 text-primary" />
-                </div>
-                <span className="text-base text-foreground/90 leading-relaxed">Scene transitions</span>
-              </li>
-            </ul>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Up to 10× cheaper than other AI video tools, with generous credits.
+            </p>
+          </Card>
+
+          {/* Fast & Convenient */}
+          <Card className="p-6 border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg bg-card/50 backdrop-blur-sm">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Zap className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold">
+                Fast & convenient
+              </h3>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Generate 10-second clips within minutes — right in the browser.
+            </p>
+          </Card>
+
+          {/* Sora 2 Pro Storyboard */}
+          <Card className="p-6 border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg bg-card/50 backdrop-blur-sm">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Film className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold">
+                Sora 2 Pro Storyboard (25 seconds)
+              </h3>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Multi-scene storytelling for ads, trailers, product showcases, and cinematic short films.
+            </p>
+          </Card>
+
+          {/* Text-to-video & Image-to-video */}
+          <Card className="p-6 border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg bg-card/50 backdrop-blur-sm">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Image className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold">
+                Text-to-video & image-to-video
+              </h3>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Upload an image and animate motion around it, or describe a scene in one sentence.
+            </p>
+          </Card>
+
+          {/* Social-ready */}
+          <Card className="p-6 border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg bg-card/50 backdrop-blur-sm">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Share2 className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold">
+                Social-ready
+              </h3>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Perfect for TikTok, Reels, Shorts, and paid ads.
+            </p>
           </Card>
         </div>
 

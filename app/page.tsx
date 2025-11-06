@@ -4,12 +4,13 @@ import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import Hero from '@/components/home/Hero'
-import KeyFeatures from '@/components/home/KeyFeatures'
 import Testimonials from '@/components/home/Testimonials'
 import HowItWorks from '@/components/home/HowItWorks'
 import DemoGallery from '@/components/home/DemoGallery'
 import PricingTeaser from '@/components/home/PricingTeaser'
 import FaqTeaser from '@/components/home/FaqTeaser'
+import WhyThisMatters from '@/components/home/WhyThisMatters'
+import WhoThisIsFor from '@/components/home/WhoThisIsFor'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
@@ -203,7 +204,8 @@ export default function HomePage() {
       <main>
         <Hero />
         <DemoGallery />
-        <KeyFeatures />
+        <WhyThisMatters />
+        <WhoThisIsFor />
         <Testimonials />
         <HowItWorks />
         {/* Lightweight SEO copy block (non-hero) targeting long-tail queries */}
@@ -211,9 +213,9 @@ export default function HomePage() {
           <div className="max-w-5xl mx-auto text-sm text-muted-foreground leading-relaxed">
             <h2 className="sr-only">Sora 2 AI Video Ads Generator</h2>
             <p>
-              Sora 2 AI video ads generator: create multi-scene video ads with consistent characters for TikTok, Shopify, and product promotions. Sora 2 generates{' '}
+              Create multi-scene video ads with consistent characters for TikTok, Shopify, and product promotions. Generate{' '}
               <strong className="font-semibold">25+ second AI video ads</strong> with{' '}
-              <strong className="font-semibold">consistent character identity</strong> across multiple scenes. Sora 2 is perfect for brand storytelling, product showcases, and vertical social media ads. Experience Sora 2 technology for your video marketing needs. Sora 2 delivers professional results with Sora 2-powered video generation. Start using Sora 2 today and see why Sora 2 is the preferred choice for AI video creation.
+              <strong className="font-semibold">consistent character identity</strong> across multiple scenes. Perfect for brand storytelling, product showcases, and social media marketing.
             </p>
           </div>
         </section>
