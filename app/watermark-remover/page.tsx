@@ -13,7 +13,17 @@ export const metadata = {
     title: 'Sora 2 Watermark Remover | Remove Watermark from Sora 2 Videos',
     description: 'Remove watermarks from Sora 2 videos instantly. Sora 2 watermark remover tool for Sora 2 Pro and Sora 2 generated videos. API-ready, commercial use.',
     url: 'https://saro2.ai/watermark-remover',
-    images: ['https://saro2.ai/logo.png'],
+    siteName: 'Sora 2',
+    images: [
+      {
+        url: 'https://saro2.ai/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Sora 2 Watermark Remover',
+      }
+    ],
+    locale: 'en_US',
+    type: 'website',
   },
   twitter: {
     card: 'summary_large_image',

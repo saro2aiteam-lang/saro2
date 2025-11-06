@@ -4,21 +4,31 @@ export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title: 'Sora 2 Pro Multi-Scene Video Generator | Storyboard',
-  description: 'Create multi-scene videos with Sora 2 Pro storyboard builder. Build 25+ second videos with consistent characters across scenes. Perfect for TikTok, YouTube Shorts, and social media ads.',
+  description: 'Create multi-scene AI videos up to 25s for YouTube Shorts, TikTok and Reels. Control scenes and maintain visual consistency.',
   keywords: 'sora 2 pro, sora 2 storyboard, sora 2 multi scene, sora 2 pro storyboard, sora 2 multi scene video, sora 2 video generator, sora 2 ai, multi-scene video, storyboard creator, AI video storyboard',
   alternates: {
     canonical: 'https://saro2.ai/multi-scene',
   },
   openGraph: {
-    title: 'Sora 2 Pro Multi-Scene Video Generator | Storyboard Creator',
-    description: 'Create multi-scene videos with Sora 2 Pro storyboard builder. Build 25+ second videos with consistent characters across scenes.',
+    title: 'Sora 2 Pro Multi-Scene Video Generator | Storyboard',
+    description: 'Create multi-scene AI videos up to 25s for YouTube Shorts, TikTok and Reels. Control scenes and maintain visual consistency.',
     url: 'https://saro2.ai/multi-scene',
-    images: ['https://saro2.ai/logo.png']
+    siteName: 'Sora 2',
+    images: [
+      {
+        url: 'https://saro2.ai/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Sora 2 Pro Multi-Scene Video Generator',
+      }
+    ],
+    locale: 'en_US',
+    type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sora 2 Pro Multi-Scene Video Generator | Storyboard Creator',
-    description: 'Create multi-scene videos with Sora 2 Pro storyboard builder. Build 25+ second videos with consistent characters.',
+    title: 'Sora 2 Pro Multi-Scene Video Generator | Storyboard',
+    description: 'Create multi-scene AI videos up to 25s for YouTube Shorts, TikTok and Reels. Control scenes and maintain visual consistency.',
     images: ['https://saro2.ai/logo.png']
   },
 }

@@ -13,7 +13,17 @@ export const metadata = {
     title: 'Sora 2 Image to Video Generator | Transform Photos into Cinematic Videos',
     description: 'Use Sora 2 AI to convert product photos into animated video advertisements. Sora 2 image-to-video technology transforms static images into cinematic videos with natural motion.',
     url: 'https://saro2.ai/image-to-video',
-    images: ['https://saro2.ai/logo.png']
+    siteName: 'Sora 2',
+    images: [
+      {
+        url: 'https://saro2.ai/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Sora 2 Image to Video Generator',
+      }
+    ],
+    locale: 'en_US',
+    type: 'website',
   },
   twitter: {
     card: 'summary_large_image',

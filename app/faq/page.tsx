@@ -3,8 +3,31 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Sora 2 FAQ – Frequently Asked Questions',
   description: 'Find answers about Sora 2 video generation, features, availability, and safety controls.',
+  keywords: 'Sora 2 FAQ, frequently asked questions, Sora 2 help, video generation questions, Sora 2 support',
   alternates: {
     canonical: 'https://saro2.ai/faq',
+  },
+  openGraph: {
+    title: 'Sora 2 FAQ – Frequently Asked Questions',
+    description: 'Find answers about Sora 2 video generation, features, availability, and safety controls.',
+    url: 'https://saro2.ai/faq',
+    siteName: 'Sora 2',
+    images: [
+      {
+        url: 'https://saro2.ai/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Sora 2 FAQ',
+      }
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sora 2 FAQ – Frequently Asked Questions',
+    description: 'Find answers about Sora 2 video generation, features, availability, and safety controls.',
+    images: ['https://saro2.ai/logo.png']
   },
 }
 

@@ -31,8 +31,8 @@ const Blog = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead 
-        title="Sora2 Blog - Tutorials & Best Practices"
-        description="Latest insights, tutorials, and best practices for AI video generation with Sora2: prompts, API integration, workflows, and comparisons."
+        title="Sora2 Blog | Sora 2 Tutorials & Guides"
+        description="Get the latest tips, comparisons, and workflows for creating video with Sora 2. Dive into Sora 2 text-to-video guides and tutorials."
         canonical="https://saro2.ai/blog"
       />
       <Navigation />
@@ -42,7 +42,7 @@ const Blog = () => {
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-3xl sm:text-4xl font-bold mb-4">
-              <span className="text-primary">AI Video Generation Blog</span>
+              Sora2 Blog | Sora 2 Tutorials & Guides
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Latest insights, tutorials, and best practices for AI video generation with Sora2, API integration, and creative workflows

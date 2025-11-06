@@ -23,10 +23,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: `${post.title} | Sora2 Blog`,
     description: post.excerpt,
     keywords: post.tags.join(', '),
+    alternates: {
+      canonical: `https://saro2.ai/blog/${slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt,
-      images: [post.image],
+      url: `https://saro2.ai/blog/${slug}`,
+      siteName: 'Sora 2',
+      images: [
+        {
+          url: post.image,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        }
+      ],
+      locale: 'en_US',
       type: 'article',
       publishedTime: post.publishedAt,
       authors: [post.author],

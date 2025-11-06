@@ -9,6 +9,28 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://saro2.ai/terms',
   },
+  openGraph: {
+    title: 'Terms of Service | AI video generation service',
+    description: 'Terms of Service for AI video generation service - Read our terms and conditions for using our AI video generation service.',
+    url: 'https://saro2.ai/terms',
+    siteName: 'Sora 2',
+    images: [
+      {
+        url: 'https://saro2.ai/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Terms of Service',
+      }
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Terms of Service | AI video generation service',
+    description: 'Terms of Service for AI video generation service - Read our terms and conditions for using our AI video generation service.',
+    images: ['https://saro2.ai/logo.png']
+  },
 };
 
 const TermsOfService: React.FC = () => {

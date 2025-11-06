@@ -280,9 +280,9 @@ const Storyboard = () => {
   return (
     <div className="min-h-screen bg-background flex">
       <SEOHead 
-        title="Sora 2 Pro Storyboard — Multi-Scene AI Video Creator"
-        description="Build multi-scene AI videos up to 25s for Youtube Shorts, TikTok and Reels. Control scenes, maintain visual consistency, and export HD with Sora 2 Pro Storyboard."
-        canonical="https://saro2.ai/sora2-storyboard"
+        title="Sora 2 Pro Multi-Scene Video Generator | Storyboard"
+        description="Create multi-scene AI videos up to 25s for YouTube Shorts, TikTok and Reels. Control scenes and maintain visual consistency."
+        canonical="https://saro2.ai/multi-scene"
         keywords="Sora 2 Pro Storyboard,AI video storyboard,multi-scene video,TikTok video generator,Instagram Reels,YouTube Shorts,AI video creator,Sora 2,storyboard generator,AI video maker,social media video creator"
         image="https://saro2.ai/og-sora2-storyboard.jpg"
       />
@@ -296,7 +296,7 @@ const Storyboard = () => {
             "@type": "SoftwareApplication",
             "name": "Sora 2 Pro Storyboard",
             "description": "Create professional multi-scene AI videos up to 25 seconds perfect for YouTube Shorts, TikTok, Instagram Reels. Design your story with scene-by-scene control and seamless transitions using Sora 2 Pro Storyboard's advanced capabilities.",
-            "url": "https://saro2.ai/sora2-storyboard",
+            "url": "https://saro2.ai/multi-scene",
             "applicationCategory": "MultimediaApplication",
             "operatingSystem": "Web Browser",
             "offers": {
@@ -382,6 +382,11 @@ const Storyboard = () => {
       </nav>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Page Title */}
+          <h1 className="text-4xl font-bold text-foreground mb-8 text-center">
+            Sora 2 Pro Multi-Scene Video Generator
+          </h1>
+          
           {/* Error Display */}
           {Object.keys(errors).length > 0 && (
             <div className="mb-6">

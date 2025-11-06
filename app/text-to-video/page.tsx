@@ -13,7 +13,17 @@ export const metadata = {
     title: 'Sora 2 Text to Video Generator | AI Video Creator Online',
     description: 'Use Sora 2 AI to create cinematic videos from text prompts. Sora 2 text-to-video generator produces high-quality videos with advanced motion realism.',
     url: 'https://saro2.ai/text-to-video',
-    images: ['https://saro2.ai/logo.png']
+    siteName: 'Sora 2',
+    images: [
+      {
+        url: 'https://saro2.ai/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Sora 2 Text to Video Generator',
+      }
+    ],
+    locale: 'en_US',
+    type: 'website',
   },
   twitter: {
     card: 'summary_large_image',

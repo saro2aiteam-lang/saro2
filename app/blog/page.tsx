@@ -2,21 +2,30 @@ import Blog from '@/page-components/Blog'
 
 export const metadata = {
   title: 'Sora2 Blog | Sora 2 Tutorials & Guides',
-  description: 'Get the latest tips, comparisons, and workflows for creating video with Sora 2. Dive into Sora 2 text-to-video guides, Sora 2 image-to-video tutorials, and creative strategies.',
+  description: 'Get the latest tips, comparisons, and workflows for creating video with Sora 2. Dive into Sora 2 text-to-video guides and tutorials.',
   keywords: 'Sora2 blog, Sora 2 tutorials, Sora 2 guide, AI video generation tips, Sora 2 insights, Sora 2 workflows, Sora 2 vs Veo, Sora 2 comparison, Sora 2 video generator',
   alternates: {
     canonical: 'https://saro2.ai/blog',
   },
   openGraph: {
-    title: 'Sora2 Blog | Sora 2 Tutorials, Guides & AI Video Generation Insights',
+    title: 'Sora2 Blog | Sora 2 Tutorials & Guides',
     description: 'Get the latest tips, comparisons, and workflows for creating video with Sora 2. Dive into Sora 2 text-to-video guides and tutorials.',
-    images: ['https://saro2.ai/logo.png'],
+    url: 'https://saro2.ai/blog',
+    siteName: 'Sora 2',
+    images: [
+      {
+        url: 'https://saro2.ai/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Sora2 Blog',
+      }
+    ],
+    locale: 'en_US',
     type: 'website',
-    url: 'https://saro2.ai/blog'
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sora2 Blog | Sora 2 Tutorials, Guides & AI Video Generation Insights',
+    title: 'Sora2 Blog | Sora 2 Tutorials & Guides',
     description: 'Get the latest tips, comparisons, and workflows for creating video with Sora 2.',
     images: ['https://saro2.ai/logo.png']
   },
