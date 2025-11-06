@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     }
 
     const priceInfo = plan[billingCycle as 'monthly' | 'yearly'];
-    const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/account?success=true`;
+    const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=true`;
     const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/plans?canceled=true`;
 
     // Create subscription with Creem Payment

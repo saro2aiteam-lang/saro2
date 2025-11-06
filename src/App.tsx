@@ -33,7 +33,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 {/* /generate route removed; use /text-video or /image-to-video */}
-                <Route path="/account" element={<Account />} />
+                <Route path="/dashboard" element={<Account />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/plans" element={<Pricing />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

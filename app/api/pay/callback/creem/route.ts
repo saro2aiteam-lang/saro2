@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
         console.error('[CALLBACK] Invalid Creem return URL signature', {
           checkoutId, orderId, customerId, subscriptionId, productId, requestId,
         });
-        return NextResponse.redirect(new URL('/account?payment=invalid_signature', request.url));
+        return NextResponse.redirect(new URL('/dashboard?payment=invalid_signature', request.url));
       }
     }
 
@@ -168,12 +168,12 @@ export async function GET(request: NextRequest) {
     } else {
       // 如果没有plan参数，说明URL配置错误或者是非法访问
       console.warn('[CALLBACK] No plan parameter found - invalid success URL callback');
-      return NextResponse.redirect(new URL('/account?payment=error', request.url));
+      return NextResponse.redirect(new URL('/dashboard?payment=error', request.url));
     }
 
   } catch (error) {
     console.error('[CALLBACK] Error processing return URL:', error);
-    return NextResponse.redirect(new URL('/account?payment=error', request.url));
+    return NextResponse.redirect(new URL('/dashboard?payment=error', request.url));
   }
 }
 

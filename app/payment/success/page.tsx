@@ -17,7 +17,7 @@ export default function PaymentSuccessPage() {
   const currency = ((searchParams?.get('currency') || searchParams?.get('curr') || 'USD').toString().toUpperCase()).slice(0, 3);
 
   const plan = (searchParams?.get('plan') || '').toString();
-  const target = `/account?payment=success${plan ? `&plan=${encodeURIComponent(plan)}` : ""}`;
+  const target = `/dashboard?payment=success${plan ? `&plan=${encodeURIComponent(plan)}` : ""}`;
 
   useEffect(() => {
     (window as any).__redirectAfterGA = () => {
@@ -99,10 +99,10 @@ export default function PaymentSuccessPage() {
                 Go to Studio
               </Link>
               <Link 
-                href="/account" 
+                href="/dashboard" 
                 className="inline-flex items-center justify-center px-6 py-2 rounded-md border border-border hover:bg-accent transition-colors font-medium"
               >
-                View Account
+                View Dashboard
               </Link>
             </div>
             <p className="text-xs text-muted-foreground">

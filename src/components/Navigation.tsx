@@ -196,11 +196,11 @@ const Navigation = () => {
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => router.push('/account')}>
+                  <DropdownMenuItem onClick={() => router.push('/dashboard')}>
                     <User className="w-4 h-4 mr-2" />
-                    Account Settings
+                    Dashboard
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => router.push('/account')}>
+                  <DropdownMenuItem onClick={() => router.push('/dashboard')}>
                     <Settings className="w-4 h-4 mr-2" />
                     Preferences
                   </DropdownMenuItem>
@@ -300,10 +300,10 @@ const Navigation = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => router.push('/account')}
+                      onClick={() => router.push('/dashboard')}
                     >
                       <User className="w-4 h-4 mr-1" />
-                      Account
+                      Dashboard
                     </Button>
                     <Button 
                       variant="outline" 

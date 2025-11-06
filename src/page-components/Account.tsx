@@ -54,7 +54,7 @@ const Account = () => {
         toast.success(`Payment successful${planName ? `: ${planName.replace(/_/g, " ")}` : ""}`);
         refreshCredits().catch(() => {});
         // Clean query params to avoid re-triggering on back/refresh
-        router.replace("/account");
+        router.replace("/dashboard");
       }
     } catch (_e) {
       // no-op

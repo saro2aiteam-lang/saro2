@@ -899,7 +899,7 @@ const Generate = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => router.push('/dashboard')}>
                   <User className="w-4 h-4 mr-2" />
-                  Account Settings
+                  Dashboard
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => router.push('/dashboard')}>
                   <Settings className="w-4 h-4 mr-2" />

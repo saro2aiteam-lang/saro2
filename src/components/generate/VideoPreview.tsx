@@ -328,7 +328,7 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({
             >
               <Download className="w-4 h-4" />
             </Button>
-            <Link href="/account">
+            <Link href="/dashboard">
               <Button 
                 variant="outline" 
                 size="sm" 
