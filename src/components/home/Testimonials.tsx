@@ -4,7 +4,38 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Star } from 'lucide-react';
-import StickFigureAvatar from './StickFigureAvatar';
+
+// Country code to flag emoji mapping
+const getCountryFlag = (location: string): string => {
+  const locationLower = location.toLowerCase();
+  
+  // Map locations to country codes for flag emoji
+  const countryMap: { [key: string]: string } = {
+    'uk': '🇬🇧',
+    'united kingdom': '🇬🇧',
+    'london': '🇬🇧',
+    'singapore': '🇸🇬',
+    'mexico': '🇲🇽',
+    'mexico city': '🇲🇽',
+    'south korea': '🇰🇷',
+    'korea': '🇰🇷',
+    'seoul': '🇰🇷',
+    'canada': '🇨🇦',
+    'toronto': '🇨🇦',
+    'australia': '🇦🇺',
+    'sydney': '🇦🇺',
+  };
+
+  // Try to find matching country
+  for (const [key, flag] of Object.entries(countryMap)) {
+    if (locationLower.includes(key)) {
+      return flag;
+    }
+  }
+
+  // Default fallback
+  return '🌍';
+};
 
 const testimonials = [
   {
@@ -13,7 +44,6 @@ const testimonials = [
     role: "Wedding Videographer",
     location: "London, UK",
     rating: 5,
-    avatarVariant: 1,
     review: "The no watermark feature is really helpful for our business. The audio sync works well and helps us create professional-looking videos more efficiently. Our clients appreciate the quality."
   },
   {
@@ -22,7 +52,6 @@ const testimonials = [
     role: "SaaS Founder",
     location: "Singapore",
     rating: 5,
-    avatarVariant: 2,
     review: "Great tool for creating product demo videos. The realistic audio helps make our videos feel more professional. It's been useful for our marketing efforts and offers good value."
   },
   {
@@ -31,7 +60,6 @@ const testimonials = [
     role: "Content Creator",
     location: "Mexico City",
     rating: 5,
-    avatarVariant: 3,
     review: "I use this regularly for my content creation. The text-to-video feature is fast and the quality is good. Having no watermarks is important for my work, and the tool has been reliable."
   },
   {
@@ -40,7 +68,6 @@ const testimonials = [
     role: "Creative Director",
     location: "Seoul, South Korea",
     rating: 5,
-    avatarVariant: 4,
     review: "We use this for various client projects. The rendering speed helps us meet tight deadlines, and the output quality works well for our needs. It's a practical solution for our agency."
   },
   {
@@ -49,7 +76,6 @@ const testimonials = [
     role: "Product Designer",
     location: "Toronto, Canada",
     rating: 5,
-    avatarVariant: 5,
     review: "The image-to-video feature is useful for turning concept sketches into visual presentations. It saves time in our design process and helps us communicate ideas to clients more effectively."
   },
   {
@@ -58,7 +84,6 @@ const testimonials = [
     role: "Online Educator",
     location: "Sydney, Australia",
     rating: 5,
-    avatarVariant: 6,
     review: "I use this to create educational content for my courses. The natural audio sync helps make explanations clearer, and it's been a helpful addition to my content creation workflow."
   }
 ];
@@ -103,8 +128,8 @@ const Testimonials = () => {
             >
               {/* Avatar and Rating */}
               <div className="flex items-start gap-4 mb-5">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow p-2">
-                  <StickFigureAvatar variant={testimonial.avatarVariant} className="text-primary" />
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow text-2xl">
+                  {getCountryFlag(testimonial.location)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1 mb-2">
