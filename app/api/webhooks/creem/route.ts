@@ -245,7 +245,8 @@ export async function POST(request: NextRequest) {
       case 'subscription.active': {
         // According to Creem docs: Use only for synchronization
         // We encourage using subscription.paid for activating access
-        console.log('[WEBHOOK] Processing subscription.active event (sync only)...');
+        // However, if subscription.paid doesn't arrive, we should still activate credits
+        console.log('[WEBHOOK] Processing subscription.active event...');
         try {
           const sub = payload;
           const email = sub?.customer?.email;
@@ -260,8 +261,39 @@ export async function POST(request: NextRequest) {
             break;
           }
           
-          // Only sync subscription data, don't activate credits here
-          // Credits should be activated via subscription.paid event
+          // Check if credits have already been activated for this subscription
+          // If not, activate them (in case subscription.paid didn't arrive)
+          let shouldActivateCredits = false;
+          if (sub?.id) {
+            const { data: existingTx } = await getSupabaseAdmin()
+              .from('credit_transactions')
+              .select('id')
+              .eq('user_id', userId)
+              .eq('metadata->>subscriptionId', sub.id)
+              .eq('reason', 'subscription_created')
+              .maybeSingle();
+            
+            if (!existingTx) {
+              // No credits activated yet, check if we should activate
+              const metadataCredits = sub?.metadata?.credits;
+              const hasCreditsInMetadata = metadataCredits && Number(metadataCredits) > 0;
+              
+              // If metadata has credits or this is a new active subscription, activate credits
+              if (hasCreditsInMetadata || sub?.status === 'active') {
+                shouldActivateCredits = true;
+                console.log('[WEBHOOK] subscription.active: Credits not yet activated, will activate now', {
+                  subscriptionId: sub.id,
+                  hasMetadataCredits: hasCreditsInMetadata,
+                  metadataCredits
+                });
+              }
+            } else {
+              console.log('[WEBHOOK] subscription.active: Credits already activated, skipping', {
+                subscriptionId: sub.id
+              });
+            }
+          }
+          
           await handleSubscriptionCreated({
             subscription_id: sub?.id,
             customer_id: userId,
@@ -269,7 +301,8 @@ export async function POST(request: NextRequest) {
             status: sub?.status ?? 'active',
             current_period_start: sub?.current_period_start_date ?? sub?.current_period_start ?? null,
             current_period_end: sub?.current_period_end_date ?? sub?.current_period_end ?? null,
-            skipCredits: true, // Skip credit activation for sync event
+            skipCredits: !shouldActivateCredits, // Activate credits if not already done
+            metadata: sub?.metadata, // Pass metadata so credits can be read from it
           });
         } catch (error) {
           console.error('[WEBHOOK] Error in subscription.active handler:', error);
@@ -305,6 +338,7 @@ export async function POST(request: NextRequest) {
             current_period_start: sub?.current_period_start_date ?? sub?.current_period_start ?? null,
             current_period_end: sub?.current_period_end_date ?? sub?.current_period_end ?? null,
             skipCredits: false, // Activate credits for paid event
+            metadata: sub?.metadata, // Pass metadata so credits can be read from it
           });
           
           // Also handle as payment succeeded for payment record
@@ -369,6 +403,7 @@ export async function POST(request: NextRequest) {
               current_period_start: sub?.current_period_start_date ?? sub?.current_period_start ?? null,
               current_period_end: sub?.current_period_end_date ?? sub?.current_period_end ?? null,
               skipCredits: false, // Activate trial credits
+              metadata: sub?.metadata, // Pass metadata so credits can be read from it
             });
           }
         }
@@ -453,29 +488,89 @@ async function handleSubscriptionCreated(data: any) {
   const planConfig = plan_id
     ? (creemPlansById[plan_id] || Object.values(creemPlansById).find(p => p.productId === plan_id))
     : undefined;
-  const creditAmount = planConfig?.credits ?? 0;
+  
+  // 优先使用metadata中的credits，如果没有则使用planConfig中的credits
+  const metadataCredits = data?.metadata?.credits;
+  const parsedMetadataCredits = metadataCredits ? Number(metadataCredits) : 0;
+  const creditAmount = parsedMetadataCredits > 0 
+    ? parsedMetadataCredits 
+    : (planConfig?.credits ?? 0);
   
   console.log('[WEBHOOK] Plan config:', planConfig ? { id: planConfig.id, name: planConfig.name, credits: planConfig.credits } : 'null');
+  console.log('[WEBHOOK] Credit amount:', { 
+    fromMetadata: parsedMetadataCredits, 
+    fromPlanConfig: planConfig?.credits ?? 0, 
+    final: creditAmount 
+  });
 
-  // 1. 创建订阅记录
-  console.log('[WEBHOOK] Creating subscription record...');
-  const { data: subscriptionData, error: subscriptionError } = await supabaseAdmin
+  // 1. 创建或更新订阅记录（使用UPSERT）
+  console.log('[WEBHOOK] Upserting subscription record...');
+  const subscriptionIdColumn = await resolveSubscriptionIdColumn(supabaseAdmin);
+  
+  // 先检查是否已存在订阅记录
+  const { data: existingSubscription } = await supabaseAdmin
     .from('user_subscriptions')
-    .insert({
+    .select('id')
+    .eq('user_id', customer_id)
+    .maybeSingle();
+
+  let subscriptionData;
+  let subscriptionError;
+
+  if (existingSubscription) {
+    // 更新现有订阅
+    console.log('[WEBHOOK] Updating existing subscription record...');
+    const updateData: any = {
+      plan_status: status,
+      plan_type: planConfig?.groupId || 'basic',
+      current_period_start: data.current_period_start ? new Date(data.current_period_start) : null,
+      current_period_end: data.current_period_end ? new Date(data.current_period_end) : null,
+      updated_at: new Date().toISOString()
+    };
+    
+    // 如果提供了subscription_id，更新它
+    if (subscription_id) {
+      updateData[subscriptionIdColumn] = subscription_id;
+    }
+
+    const result = await supabaseAdmin
+      .from('user_subscriptions')
+      .update(updateData)
+      .eq('id', existingSubscription.id)
+      .select()
+      .single();
+    
+    subscriptionData = result.data;
+    subscriptionError = result.error;
+  } else {
+    // 创建新订阅
+    console.log('[WEBHOOK] Creating new subscription record...');
+    const insertData: any = {
       user_id: customer_id,
       plan_status: status,
       plan_type: planConfig?.groupId || 'basic',
       current_period_start: data.current_period_start ? new Date(data.current_period_start) : null,
       current_period_end: data.current_period_end ? new Date(data.current_period_end) : null,
-      creem_subscription_id: subscription_id,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
-    })
-    .select()
-    .single();
+    };
+    
+    if (subscription_id) {
+      insertData[subscriptionIdColumn] = subscription_id;
+    }
+
+    const result = await supabaseAdmin
+      .from('user_subscriptions')
+      .insert(insertData)
+      .select()
+      .single();
+    
+    subscriptionData = result.data;
+    subscriptionError = result.error;
+  }
 
   if (subscriptionError) {
-    console.error('[WEBHOOK] Failed to create subscription:', subscriptionError);
+    console.error('[WEBHOOK] Failed to upsert subscription:', subscriptionError);
     console.error('[WEBHOOK] Subscription error details:', {
       code: subscriptionError.code,
       message: subscriptionError.message,
@@ -483,9 +578,9 @@ async function handleSubscriptionCreated(data: any) {
       hint: subscriptionError.hint
     });
     // 不抛出异常，记录错误但继续处理
-    console.log('[WEBHOOK] Continuing despite subscription creation error');
+    console.log('[WEBHOOK] Continuing despite subscription upsert error');
   } else {
-    console.log('[WEBHOOK] Subscription created successfully:', subscriptionData);
+    console.log('[WEBHOOK] Subscription upserted successfully:', subscriptionData);
   }
 
   // 2. 更新用户表的订阅信息
@@ -510,6 +605,12 @@ async function handleSubscriptionCreated(data: any) {
   }
 
   // 3. 发放订阅积分（如果未跳过）
+  console.log('[WEBHOOK] Credit activation check:', {
+    skipCredits,
+    creditAmount,
+    willActivate: !skipCredits && creditAmount > 0
+  });
+  
   if (!skipCredits && creditAmount > 0) {
     try {
       // 避免重复发放：若该订阅已记录过发放，则跳过
@@ -539,7 +640,18 @@ async function handleSubscriptionCreated(data: any) {
         });
 
         // 使用事务安全 RPC 发放积分
-        const { data: creditResult, error: creditErr } = await supabaseAdmin.rpc('credit_user_credits_transaction', {
+        console.log('[WEBHOOK] Attempting to credit subscription credits via RPC:', {
+          userId: customer_id,
+          amount: creditAmount,
+          subscriptionId: subscription_id,
+          planId: plan_id
+        });
+
+        let creditResult;
+        let creditErr;
+        
+        // 首先尝试使用 p_bucket 参数（新版本函数）
+        const rpcCall = await supabaseAdmin.rpc('credit_user_credits_transaction', {
           p_user_id: customer_id,
           p_amount: creditAmount,
           p_reason: 'subscription_created',
@@ -552,15 +664,64 @@ async function handleSubscriptionCreated(data: any) {
           },
           p_bucket: 'subscription'
         });
+        
+        creditResult = rpcCall.data;
+        creditErr = rpcCall.error;
+
+        // 如果失败且错误提示参数不匹配，尝试不带 p_bucket 参数（旧版本函数）
+        if (creditErr) {
+          const errorMessage = creditErr.message || String(creditErr);
+          const isParameterError = errorMessage.includes('parameter') || 
+                                   errorMessage.includes('does not exist') ||
+                                   errorMessage.includes('unknown') ||
+                                   creditErr.code === '42883' || // function does not exist
+                                   creditErr.code === '42P01';   // undefined function
+          
+          if (isParameterError) {
+            console.log('[WEBHOOK] RPC call with p_bucket failed, trying without p_bucket parameter...');
+            const fallbackCall = await supabaseAdmin.rpc('credit_user_credits_transaction', {
+              p_user_id: customer_id,
+              p_amount: creditAmount,
+              p_reason: 'subscription_created',
+              p_metadata: {
+                planId: planConfig?.id,
+                planCategory: planConfig?.category,
+                subscriptionId: subscription_id,
+                source: 'webhook',
+                eventType: 'subscription.created',
+                bucket: 'subscription' // Store bucket in metadata instead
+              }
+            });
+            
+            creditResult = fallbackCall.data;
+            creditErr = fallbackCall.error;
+          }
+        }
 
         if (creditErr) {
-          console.error('[WEBHOOK] Failed to credit subscription via RPC:', creditErr);
+          console.error('[WEBHOOK] ❌ Failed to credit subscription via RPC:', {
+            error: creditErr,
+            code: creditErr.code,
+            message: creditErr.message,
+            details: creditErr.details,
+            hint: creditErr.hint,
+            userId: customer_id,
+            amount: creditAmount,
+            subscriptionId: subscription_id
+          });
+          // 不抛出异常，但记录详细错误以便排查
         } else {
           const snapshot = Array.isArray(creditResult) ? (creditResult as any[])[0] : null;
           console.log('[WEBHOOK] ✅ Subscription credits credited via RPC', {
             userId: customer_id,
             amount: creditAmount,
-            snapshot
+            subscriptionId: subscription_id,
+            snapshot: snapshot ? {
+              credits_balance: snapshot.credits_balance,
+              credits_total: snapshot.credits_total,
+              subscription_credits_balance: snapshot.subscription_credits_balance,
+              flex_credits_balance: snapshot.flex_credits_balance
+            } : null
           });
         }
       }
@@ -972,7 +1133,8 @@ async function handleCheckoutCompleted(checkout: any) {
       plan_id: product.id,
       status: subscription.status,
       current_period_start: subscription.current_period_start_date,
-      current_period_end: subscription.current_period_end_date
+      current_period_end: subscription.current_period_end_date,
+      metadata: subscription.metadata, // Pass metadata so credits can be read from it
     });
     return;
   }
