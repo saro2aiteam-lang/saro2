@@ -70,7 +70,7 @@ const PricingPage = () => {
       <SEOHead 
         title="Pricing Plans - Choose Your AI Video Generation Plan | Sora2"
         description="View Sora2 pricing plans. Choose from Basic, Creator, or Pro plans with monthly and annual options. Create professional videos with Sora 2 technology."
-        canonical="https://aivido.ai/plans"
+        canonical="https://saro2.ai/plans"
       />
       <Navigation />
       
@@ -202,7 +202,7 @@ const PricingPage = () => {
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold mb-2">What is aivido.ai refund policy?</h3>
+                <h3 className="font-semibold mb-2">What is saro2.ai refund policy?</h3>
                 <p className="text-sm text-muted-foreground">
                   We offer a 7-day money-back guarantee for all subscription plans. Contact support@saro2.ai for refunds. For general inquiries and partnerships, contact team@saro2.ai. Refunds are processed within 5-7 business days.
                 </p>

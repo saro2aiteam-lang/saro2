@@ -13,7 +13,7 @@ declare global {
 
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import Script from "next/script";
-import { Play, FileText, Sparkles, AlertTriangle, Layers, Smartphone, Download, Film, Target, Star, Quote, CheckCircle, Zap, Users, Clock, ImageIcon } from "lucide-react";
+import { Play, FileText, Sparkles, AlertTriangle, Layers, Smartphone, Download, Film, Target, Star, Quote, CheckCircle, Zap, Users, Clock, ImageIcon, User, Settings, LogOut, ChevronDown } from "lucide-react";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import GenerateSidebar from "@/components/generate/GenerateSidebar";
@@ -32,10 +32,29 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import ThemeToggle from "@/components/ThemeToggle";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 
 const Storyboard = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, signOut } = useAuth();
   const { subscription, calculateCredits } = useCredits();
+  const router = useRouter();
+  
+  // Get user display name and initials
+  const getUserDisplayName = useCallback(() => {
+    return user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+  }, [user]);
+  
+  const getUserInitials = useCallback(() => {
+    const name = getUserDisplayName();
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  }, [getUserDisplayName]);
   
   // Storyboard state
   const [storyboardParams, setStoryboardParams] = useState<StoryboardParams>({
@@ -339,9 +358,50 @@ const Storyboard = () => {
         <div className="flex justify-end items-center gap-3 px-6 py-4 border-b border-border">
           <ThemeToggle />
           {isAuthenticated ? (
-            <div className="text-sm text-muted-foreground">
-              {user?.email?.split('@')[0] || 'User'}
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="flex items-center space-x-2 hover:bg-muted/50 transition-colors rounded-full px-2 py-1"
+                >
+                  {/* User Avatar */}
+                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
+                    {getUserInitials()}
+                  </div>
+                  {/* User Name */}
+                  <span className="text-sm font-medium text-foreground hidden sm:block">
+                    {getUserDisplayName()}
+                  </span>
+                  {/* Dropdown Arrow */}
+                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="flex items-center space-x-2 p-2">
+                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium">
+                    {getUserInitials()}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">{getUserDisplayName()}</span>
+                    <span className="text-xs text-muted-foreground">{user?.email}</span>
+                  </div>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+                  <User className="w-4 h-4 mr-2" />
+                  Dashboard
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push('/dashboard')}>
+                  <Settings className="w-4 h-4 mr-2" />
+                  Preferences
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => signOut()} className="text-red-600 focus:text-red-600">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <>
               <Button
