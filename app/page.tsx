@@ -2,17 +2,41 @@
 
 import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import Hero from '@/components/home/Hero'
-import Testimonials from '@/components/home/Testimonials'
-import HowItWorks from '@/components/home/HowItWorks'
-import DemoGallery from '@/components/home/DemoGallery'
-import PricingTeaser from '@/components/home/PricingTeaser'
-import FaqTeaser from '@/components/home/FaqTeaser'
-import WhyThisMatters from '@/components/home/WhyThisMatters'
-import WhoThisIsFor from '@/components/home/WhoThisIsFor'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
+
+// 动态导入非关键组件，延迟加载以提升首屏性能
+const DemoGallery = dynamic(() => import('@/components/home/DemoGallery'), {
+  loading: () => <div className="h-96" />,
+  ssr: true
+});
+const WhyThisMatters = dynamic(() => import('@/components/home/WhyThisMatters'), {
+  loading: () => <div className="h-96" />,
+  ssr: true
+});
+const WhoThisIsFor = dynamic(() => import('@/components/home/WhoThisIsFor'), {
+  loading: () => <div className="h-96" />,
+  ssr: true
+});
+const Testimonials = dynamic(() => import('@/components/home/Testimonials'), {
+  loading: () => <div className="h-96" />,
+  ssr: true
+});
+const HowItWorks = dynamic(() => import('@/components/home/HowItWorks'), {
+  loading: () => <div className="h-96" />,
+  ssr: true
+});
+const PricingTeaser = dynamic(() => import('@/components/home/PricingTeaser'), {
+  loading: () => <div className="h-96" />,
+  ssr: true
+});
+const FaqTeaser = dynamic(() => import('@/components/home/FaqTeaser'), {
+  loading: () => <div className="h-96" />,
+  ssr: true
+});
 
 function ErrorHandler() {
   const router = useRouter();
@@ -185,14 +209,25 @@ export default function HomePage() {
       { id: 'jsonld-video', data: videoJsonLd }
     ]
 
-    scripts.forEach(({ id, data }) => {
-      if (document.getElementById(id)) return
-      const script = document.createElement('script')
-      script.id = id
-      script.type = 'application/ld+json'
-      script.textContent = JSON.stringify(data)
-      document.head.appendChild(script)
-    })
+    // Defer JSON-LD scripts to reduce render blocking
+    const loadScripts = () => {
+      scripts.forEach(({ id, data }) => {
+        if (document.getElementById(id)) return
+        const script = document.createElement('script')
+        script.id = id
+        script.type = 'application/ld+json'
+        script.textContent = JSON.stringify(data)
+        script.defer = true
+        document.head.appendChild(script)
+      })
+    }
+
+    // Load after page is interactive
+    if (document.readyState === 'complete') {
+      loadScripts()
+    } else {
+      window.addEventListener('load', loadScripts, { once: true })
+    }
   }, [])
 
   return (
@@ -203,11 +238,21 @@ export default function HomePage() {
       <Navigation />
       <main>
         <Hero />
-        <DemoGallery />
-        <WhyThisMatters />
-        <WhoThisIsFor />
-        <Testimonials />
-        <HowItWorks />
+        <Suspense fallback={<div className="h-96" />}>
+          <DemoGallery />
+        </Suspense>
+        <Suspense fallback={<div className="h-96" />}>
+          <WhyThisMatters />
+        </Suspense>
+        <Suspense fallback={<div className="h-96" />}>
+          <WhoThisIsFor />
+        </Suspense>
+        <Suspense fallback={<div className="h-96" />}>
+          <Testimonials />
+        </Suspense>
+        <Suspense fallback={<div className="h-96" />}>
+          <HowItWorks />
+        </Suspense>
         {/* Lightweight SEO copy block (non-hero) targeting long-tail queries */}
         <section className="px-4 sm:px-6 lg:px-8 py-6">
           <div className="max-w-5xl mx-auto text-sm text-muted-foreground leading-relaxed">
@@ -219,8 +264,12 @@ export default function HomePage() {
             </p>
           </div>
         </section>
-        <PricingTeaser />
-        <FaqTeaser />
+        <Suspense fallback={<div className="h-96" />}>
+          <PricingTeaser />
+        </Suspense>
+        <Suspense fallback={<div className="h-96" />}>
+          <FaqTeaser />
+        </Suspense>
       </main>
       <Footer />
     </>

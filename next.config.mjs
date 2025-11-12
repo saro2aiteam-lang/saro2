@@ -9,8 +9,23 @@ const nextConfig = {
   },
   experimental: {
     optimizeCss: true, // Enable CSS optimization for better performance
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'], // Optimize icon imports
+    optimizePackageImports: [
+      'lucide-react', 
+      '@radix-ui/react-icons',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-toast',
+      '@radix-ui/react-tooltip',
+      'recharts',
+      'react-markdown',
+    ], // Optimize icon and component imports
   },
+  // Enable SWC minification for better tree shaking
+  swcMinify: true,
+  // Optimize production builds
+  productionBrowserSourceMaps: false,
   // Externalize packages for better compatibility
   serverExternalPackages: ['@supabase/supabase-js'],
   images: {
@@ -77,6 +92,26 @@ const nextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=86400',
+          },
+        ],
+      },
+      // Video assets caching
+      {
+        source: '/videos/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Image assets caching
+      {
+        source: '/(.*\\.(jpg|jpeg|png|webp|avif|svg|gif))',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

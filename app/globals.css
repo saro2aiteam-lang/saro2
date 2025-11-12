@@ -205,6 +205,9 @@
   animation: scroll 60s linear infinite;
   display: flex;
   width: fit-content;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .animate-scroll:hover {

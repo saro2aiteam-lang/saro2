@@ -17,8 +17,11 @@ const videos = [
 
 function VideoItem({ src }: { src: string }) {
   const ref = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(false);
 
   const tryPlayWithSound = async () => {
     const el = ref.current;
@@ -86,28 +89,73 @@ function VideoItem({ src }: { src: string }) {
     setHasError(true);
   };
 
+  // Intersection Observer for lazy loading
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    let timer: NodeJS.Timeout | null = null;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsInView(true);
+            // Delay loading until user is likely to interact
+            timer = setTimeout(() => {
+              setShouldLoad(true);
+            }, 100);
+          }
+        });
+      },
+      {
+        rootMargin: '50px', // Start loading 50px before entering viewport
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(containerRef.current);
+
+    return () => {
+      if (timer) clearTimeout(timer);
+      if (containerRef.current) {
+        observer.unobserve(containerRef.current);
+      }
+    };
+  }, []);
+
   if (hasError) {
     return null;
   }
 
   return (
-    <div className="mb-4 sm:mb-6 rounded-xl overflow-hidden border border-border/50 bg-card/50 backdrop-blur-sm break-inside-avoid relative group hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
-      <video
-        ref={ref}
-        src={encodeURI(src)}
-        playsInline
-        loop
-        preload="metadata"
-        muted={isMuted}
-        tabIndex={0}
-        className="w-full h-auto block transition-transform duration-300 group-hover:scale-[1.02]"
-        onMouseEnter={tryPlayWithSound}
-        onMouseLeave={pauseAndReset}
-        onTouchStart={toggleMute}
-        onClick={toggleMute}
-        onKeyDown={(e) => { if (e.key === 'Tab') { void toggleMute(); } }}
-        onError={handleError}
-      />
+    <div 
+      ref={containerRef}
+      className="mb-4 sm:mb-6 rounded-xl overflow-hidden border border-border/50 bg-card/50 backdrop-blur-sm break-inside-avoid relative group hover:border-primary/50 transition-all duration-300 hover:shadow-lg"
+      style={{ aspectRatio: '9/16', minHeight: '200px' }}
+    >
+      {shouldLoad ? (
+        <video
+          ref={ref}
+          src={encodeURI(src)}
+          playsInline
+          loop
+          preload="none"
+          muted={isMuted}
+          tabIndex={0}
+          className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.02]"
+          onMouseEnter={tryPlayWithSound}
+          onMouseLeave={pauseAndReset}
+          onTouchStart={toggleMute}
+          onClick={toggleMute}
+          onKeyDown={(e) => { if (e.key === 'Tab') { void toggleMute(); } }}
+          onError={handleError}
+          loading="lazy"
+        />
+      ) : (
+        <div className="w-full h-full bg-muted/50 flex items-center justify-center" aria-label="Loading video">
+          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+        </div>
+      )}
       {isMuted && (
         <button
           onClick={unmuteOnClick}

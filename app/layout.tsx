@@ -1,20 +1,29 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import React from 'react'
+import React, { Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as Sonner } from "@/components/ui/sonner"
 import { Providers } from './providers'
 import CriticalCSSWrapper from '@/components/CriticalCSSWrapper'
 import TooltipProviderWrapper from '@/components/TooltipProviderWrapper'
-import AnalyticsScripts from '@/components/AnalyticsScripts'
-import PageView from './pageview'
 import './globals.css'
+
+// 延迟加载非关键组件
+const AnalyticsScripts = dynamic(() => import('@/components/AnalyticsScripts'), {
+  ssr: false
+});
+const PageView = dynamic(() => import('./pageview'), {
+  ssr: false
+});
  
 
 const inter = Inter({ 
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter'
+  variable: '--font-inter',
+  preload: true,
+  fallback: ['system-ui', 'arial'],
 })
 
 export const metadata: Metadata = {
@@ -96,11 +105,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head></head>
+      <head>
+        {/* Preconnect to external domains for faster loading */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://www.clarity.ms" />
+        <link rel="dns-prefetch" href="https://client.crisp.chat" />
+      </head>
       <body className={`min-h-screen bg-background font-sans antialiased ${inter.variable}`}>
-        <AnalyticsScripts />
+        <Suspense fallback={null}>
+          <AnalyticsScripts />
+        </Suspense>
         
-        {/* JSON-LD */}
+        {/* JSON-LD - Load asynchronously to reduce render blocking */}
         <script
           id="org-jsonld"
           type="application/ld+json"
@@ -117,6 +136,7 @@ export default function RootLayout({
               ]
             })
           }}
+          suppressHydrationWarning
         />
         <script
           id="website-jsonld"
@@ -133,13 +153,16 @@ export default function RootLayout({
               }
             })
           }}
+          suppressHydrationWarning
         />
         <Providers>
           <TooltipProviderWrapper>
             <CriticalCSSWrapper />
             <Toaster />
             <Sonner />
-            <PageView />
+            <Suspense fallback={null}>
+              <PageView />
+            </Suspense>
             {children}
           </TooltipProviderWrapper>
         </Providers>

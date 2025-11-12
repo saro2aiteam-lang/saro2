@@ -48,7 +48,7 @@ const Hero = () => {
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1] mb-6">
             <span className="block text-foreground relative inline-block">
               Sora 2
-              <span className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 text-[10px] sm:text-xs md:text-sm font-mono font-bold text-red-500 bg-red-50 dark:bg-red-950/30 px-1.5 sm:px-2 py-0.5 rounded whitespace-nowrap tracking-wider">
+              <span className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 text-[10px] sm:text-xs md:text-sm font-mono font-bold text-red-700 bg-red-100 dark:text-red-300 dark:bg-red-950/50 px-1.5 sm:px-2 py-0.5 rounded whitespace-nowrap tracking-wider">
                 NEW
               </span>
             </span>

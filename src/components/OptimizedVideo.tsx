@@ -222,6 +222,7 @@ const OptimizedVideo: React.FC<OptimizedVideoProps> = ({
         className="w-full h-full object-cover"
         {...props}
       >
+        <track kind="captions" srcLang="en" label="English captions" />
         {children}
       </video>
       
