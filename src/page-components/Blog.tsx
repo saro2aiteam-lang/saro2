@@ -78,70 +78,8 @@ const Blog = () => {
             </div>
           </div>
 
-          {/* Featured Posts */}
-          {selectedCategory === "All" && searchTerm === "" && (
-            <div className="mb-16">
-              <h2 className="text-2xl font-bold mb-8 flex items-center">
-                <TrendingUp className="w-6 h-6 mr-2" />
-                Featured Articles
-              </h2>
-              <div className="grid lg:grid-cols-2 gap-8">
-                {featuredPosts.slice(0, 2).map((post) => (
-                  <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <Link href={`/blog/${post.slug}`}>
-                      <div className="aspect-video relative overflow-hidden cursor-pointer">
-                        <img 
-                          key={post.id}
-                          src={post.image} 
-                          alt={post.title}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        <div className="absolute bottom-0 left-0 right-0 p-4">
-                          <Badge variant="default" className="mb-2">{post.category}</Badge>
-                        </div>
-                      </div>
-                    </Link>
-                    <div className="p-6">
-                      <div className="flex items-center space-x-2 mb-3">
-                        <Badge variant="default">{post.category}</Badge>
-                        <Badge variant="secondary">Featured</Badge>
-                      </div>
-                      <Link href={`/blog/${post.slug}`}>
-                        <h3 className="text-xl font-bold mb-3 line-clamp-2 hover:text-primary cursor-pointer transition-colors">
-                          {post.title}
-                        </h3>
-                      </Link>
-                      <p className="text-muted-foreground mb-4 line-clamp-3">
-                        {post.excerpt}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <User className="w-4 h-4 mr-1" />
-                          <span className="mr-4">{post.author}</span>
-                          <Calendar className="w-4 h-4 mr-1" />
-                          <span>{post.publishedAt}</span>
-                        </div>
-                        <Link href={`/blog/${post.slug}`}>
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                          >
-                            Read More
-                            <ArrowRight className="w-4 h-4 ml-1" />
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* All Posts */}
-          <div>
+          <div className="mb-16">
             <h2 className="text-2xl font-bold mb-8">
               {selectedCategory === "All" ? "Latest Articles" : `${selectedCategory} Articles`}
               <span className="text-sm font-normal text-muted-foreground ml-2">
@@ -228,6 +166,68 @@ const Blog = () => {
               </div>
             )}
           </div>
+
+          {/* Featured Posts */}
+          {selectedCategory === "All" && searchTerm === "" && (
+            <div className="mb-16">
+              <h2 className="text-2xl font-bold mb-8 flex items-center">
+                <TrendingUp className="w-6 h-6 mr-2" />
+                Featured Articles
+              </h2>
+              <div className="grid lg:grid-cols-2 gap-8">
+                {featuredPosts.slice(0, 2).map((post) => (
+                  <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <Link href={`/blog/${post.slug}`}>
+                      <div className="aspect-video relative overflow-hidden cursor-pointer">
+                        <img 
+                          key={post.id}
+                          src={post.image} 
+                          alt={post.title}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                          <Badge variant="default" className="mb-2">{post.category}</Badge>
+                        </div>
+                      </div>
+                    </Link>
+                    <div className="p-6">
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Badge variant="default">{post.category}</Badge>
+                        <Badge variant="secondary">Featured</Badge>
+                      </div>
+                      <Link href={`/blog/${post.slug}`}>
+                        <h3 className="text-xl font-bold mb-3 line-clamp-2 hover:text-primary cursor-pointer transition-colors">
+                          {post.title}
+                        </h3>
+                      </Link>
+                      <p className="text-muted-foreground mb-4 line-clamp-3">
+                        {post.excerpt}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <User className="w-4 h-4 mr-1" />
+                          <span className="mr-4">{post.author}</span>
+                          <Calendar className="w-4 h-4 mr-1" />
+                          <span>{post.publishedAt}</span>
+                        </div>
+                        <Link href={`/blog/${post.slug}`}>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                          >
+                            Read More
+                            <ArrowRight className="w-4 h-4 ml-1" />
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Newsletter Signup */}
           <Card className="mt-16 p-8 text-center bg-primary/5 border-primary/20">

@@ -53,7 +53,7 @@ const Hero = () => {
               </span>
             </span>
             <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-muted-foreground mt-2">
-              Create AI videos with Sora 2 — no watermark, available worldwide, 25s long, accessible from any country.
+              Create AI videos with Sora 2 — no watermark, available worldwide, 25s long, invitation code-free .
             </span>
           </h1>
         </div>

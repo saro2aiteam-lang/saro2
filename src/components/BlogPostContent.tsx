@@ -12,12 +12,12 @@ const BlogPostContent = ({ content }: BlogPostContentProps) => {
   return (
     <div className="prose prose-lg dark:prose-invert max-w-none mx-auto 
       prose-headings:font-sans prose-headings:tracking-normal prose-headings:scroll-mt-20 
-      prose-h1:text-3xl prose-h1:mb-6 prose-h1:mt-8 prose-h1:leading-tight prose-h1:font-normal prose-h1:text-gray-900 dark:prose-h1:text-gray-100 
-      prose-h2:text-2xl prose-h2:mb-6 prose-h2:mt-8 prose-h2:font-normal prose-h2:text-gray-900 dark:prose-h2:text-gray-100 prose-h2:tracking-normal prose-h2:border-none prose-h2:pb-0 prose-h2:leading-[1.5] 
-      prose-h3:text-xl prose-h3:mb-6 prose-h3:mt-6 prose-h3:font-normal prose-h3:text-gray-900 dark:prose-h3:text-gray-100 prose-h3:tracking-normal prose-h3:leading-[1.5] 
-      prose-p:text-base prose-p:leading-[1.6] prose-p:mb-4 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:font-sans prose-p:tracking-normal
-      prose-ul:my-4 prose-ul:space-y-2 prose-ol:my-4 prose-ol:space-y-2 
-      prose-li:text-base prose-li:leading-[1.6] prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-li:font-sans prose-li:marker:text-gray-400 
+      prose-h1:text-4xl prose-h1:mb-8 prose-h1:mt-10 prose-h1:leading-tight prose-h1:font-bold prose-h1:text-gray-900 dark:prose-h1:text-gray-100 
+      prose-h2:text-3xl prose-h2:mb-6 prose-h2:mt-10 prose-h2:font-semibold prose-h2:text-gray-900 dark:prose-h2:text-gray-100 prose-h2:tracking-normal prose-h2:border-none prose-h2:pb-0 prose-h2:leading-[1.4] 
+      prose-h3:text-2xl prose-h3:mb-4 prose-h3:mt-8 prose-h3:font-semibold prose-h3:text-gray-900 dark:prose-h3:text-gray-100 prose-h3:tracking-normal prose-h3:leading-[1.5] 
+      prose-p:text-base prose-p:leading-[1.8] prose-p:mb-6 prose-p:mt-0 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:font-sans prose-p:tracking-normal
+      prose-ul:my-6 prose-ul:space-y-3 prose-ol:my-6 prose-ol:space-y-3 
+      prose-li:text-base prose-li:leading-[1.8] prose-li:mb-2 prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-li:font-sans prose-li:marker:text-gray-400 
       prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-strong:font-medium 
       prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-normal prose-a:no-underline prose-a:bg-transparent prose-a:px-0 prose-a:py-0 prose-a:rounded-none prose-a:border-none hover:prose-a:bg-transparent hover:prose-a:border-none hover:prose-a:shadow-none prose-a:transition-none prose-a:duration-0 prose-a:inline prose-a:mx-0 
       prose-code:text-gray-800 dark:prose-code:text-gray-200 prose-code:bg-gray-100 dark:prose-code:bg-gray-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-sm 
