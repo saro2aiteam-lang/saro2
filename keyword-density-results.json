@@ -1,0 +1,74 @@
+{
+  "keyword": "Sora 2",
+  "totalKeywordCount": 55,
+  "totalWordCount": 1474,
+  "keywordDensity": 3.73,
+  "fileStats": [
+    {
+      "section": "page",
+      "keywordCount": 21,
+      "wordCount": 155,
+      "density": 13.55
+    },
+    {
+      "section": "hero",
+      "keywordCount": 1,
+      "wordCount": 34,
+      "density": 2.94
+    },
+    {
+      "section": "demoGallery",
+      "keywordCount": 2,
+      "wordCount": 34,
+      "density": 5.88
+    },
+    {
+      "section": "whyThisMatters",
+      "keywordCount": 3,
+      "wordCount": 125,
+      "density": 2.4
+    },
+    {
+      "section": "howItWorks",
+      "keywordCount": 7,
+      "wordCount": 119,
+      "density": 5.88
+    },
+    {
+      "section": "faqTeaser",
+      "keywordCount": 14,
+      "wordCount": 443,
+      "density": 3.16
+    },
+    {
+      "section": "testimonials",
+      "keywordCount": 3,
+      "wordCount": 250,
+      "density": 1.2
+    },
+    {
+      "section": "whoThisIsFor",
+      "keywordCount": 0,
+      "wordCount": 95,
+      "density": 0
+    },
+    {
+      "section": "navigation",
+      "keywordCount": 0,
+      "wordCount": 46,
+      "density": 0
+    },
+    {
+      "section": "footer",
+      "keywordCount": 2,
+      "wordCount": 109,
+      "density": 1.83
+    },
+    {
+      "section": "index",
+      "keywordCount": 2,
+      "wordCount": 64,
+      "density": 3.13
+    }
+  ]
+}

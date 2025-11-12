@@ -6,6 +6,7 @@ import { Play, Sparkles, ArrowRight, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { promptExamples } from '@/data/promptExamples';
 import AuthModal from '@/components/AuthModal';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Initialize examples outside component to ensure SSR/client consistency
 const getInitialExamples = (): string[] => {
@@ -16,6 +17,7 @@ const getInitialExamples = (): string[] => {
 
 const Hero = () => {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const [prompt, setPrompt] = useState('');
   const [currentExamples] = useState<string[]>(getInitialExamples);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -86,13 +88,27 @@ const Hero = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setIsAuthModalOpen(true);
+                  if (isAuthenticated) {
+                    handleGenerate();
+                  } else {
+                    setIsAuthModalOpen(true);
+                  }
                 }}
                 className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 sm:px-6 text-sm sm:text-base"
               >
-                <User className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Sign In</span>
-                <span className="sm:hidden">Sign In</span>
+                {isAuthenticated ? (
+                  <>
+                    <Play className="w-4 h-4 mr-2" />
+                    <span className="hidden sm:inline">Generate</span>
+                    <span className="sm:hidden">Generate</span>
+                  </>
+                ) : (
+                  <>
+                    <User className="w-4 h-4 mr-2" />
+                    <span className="hidden sm:inline">Sign In</span>
+                    <span className="sm:hidden">Sign In</span>
+                  </>
+                )}
               </Button>
             </div>
           </div>

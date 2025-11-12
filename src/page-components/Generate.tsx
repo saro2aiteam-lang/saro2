@@ -22,7 +22,7 @@ import { GenerationMode, ModeParams, Sora2Params, ReframeParams, Veo3Params } fr
 import videoApi from "@/services/videoApi";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import AuthModal from "@/components/AuthModal";
 import { getRandomSampleVideo, type SampleVideo } from "@/data/sampleVideos";
 import SubscriptionRequiredModal from "@/components/SubscriptionRequiredModal";
@@ -118,6 +118,7 @@ const Generate = () => {
   );
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
@@ -277,19 +278,24 @@ const Generate = () => {
   const isValid = useMemo(() => /^https:\/\/sora\.chatgpt\.com\//.test(videoUrl.trim()), [videoUrl]);
 
   // Load sample video on mount for all users
+  // Also check for prompt from URL query parameter
   useEffect(() => {
     const sample = getRandomSampleVideo();
     setSampleVideo(sample);
     // Always show sample video for all users
     setShowingSample(true);
-    // Pre-fill the prompt with sample
+    
+    // Check if prompt is provided in URL
+    const urlPrompt = searchParams?.get('prompt');
+    
+    // Pre-fill the prompt with URL parameter if available, otherwise use sample
     setModeParams(prev => {
       if (prev.mode === 'sora2') {
         return {
           mode: 'sora2',
           params: {
             ...prev.params,
-            prompt: sample.prompt,
+            prompt: urlPrompt ? decodeURIComponent(urlPrompt) : sample.prompt,
             aspectRatio: sample.aspectRatio,
             duration: sample.duration
           }
@@ -297,7 +303,17 @@ const Generate = () => {
       }
       return prev;
     });
-  }, [setModeParams]);
+    
+    // Clean up URL parameter after reading
+    if (urlPrompt) {
+      const newSearchParams = new URLSearchParams(searchParams?.toString() || '');
+      newSearchParams.delete('prompt');
+      const newUrl = newSearchParams.toString() 
+        ? `${pathname}?${newSearchParams.toString()}`
+        : pathname;
+      router.replace(newUrl);
+    }
+  }, [setModeParams, searchParams, pathname, router]);
 
   // Polling for job updates
   const onJobUpdate = useCallback((updatedJob: Job) => {
