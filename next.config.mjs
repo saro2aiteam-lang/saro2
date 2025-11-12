@@ -22,8 +22,7 @@ const nextConfig = {
       'react-markdown',
     ], // Optimize icon and component imports
   },
-  // Enable SWC minification for better tree shaking
-  swcMinify: true,
+  // SWC minification is enabled by default in Next.js 15+
   // Optimize production builds
   productionBrowserSourceMaps: false,
   // Externalize packages for better compatibility
@@ -105,9 +104,63 @@ const nextConfig = {
           },
         ],
       },
-      // Image assets caching
+      // Image assets caching - match common image extensions
       {
-        source: '/(.*\\.(jpg|jpeg|png|webp|avif|svg|gif))',
+        source: '/:path*\\.jpg',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/:path*\\.jpeg',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/:path*\\.png',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/:path*\\.webp',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/:path*\\.avif',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/:path*\\.svg',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/:path*\\.gif',
         headers: [
           {
             key: 'Cache-Control',
