@@ -1227,8 +1227,8 @@ const Generate = () => {
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                   {routeFromMode(generationMode) === '/image-to-video'
-                    ? 'Transform your images into cinematic videos with Sora 2 AI technology'
-                    : 'Create cinematic videos from text prompts using Sora 2 AI'}
+                    ? 'Transform your images into cinematic videos with Sora 2 AI technology — no watermark'
+                    : 'Create cinematic videos from text prompts using Sora 2 AI — no watermark'}
                 </p>
               </header>
 

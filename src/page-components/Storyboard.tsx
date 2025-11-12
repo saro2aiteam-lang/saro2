@@ -443,9 +443,12 @@ const Storyboard = () => {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Page Title */}
-          <h1 className="text-4xl font-bold text-foreground mb-8 text-center">
+          <h1 className="text-4xl font-bold text-foreground mb-4 text-center">
             Sora 2 Pro Multi-Scene Video Generator
           </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8 text-center">
+            Create multi-scene AI videos up to 25s for YouTube Shorts, TikTok and Reels — no watermark
+          </p>
           
           {/* Error Display */}
           {Object.keys(errors).length > 0 && (
