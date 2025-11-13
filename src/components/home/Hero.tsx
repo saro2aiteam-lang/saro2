@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, Sparkles, User } from 'lucide-react';
+import { Play, Sparkles, User, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { promptExamples } from '@/data/promptExamples';
 import AuthModal from '@/components/AuthModal';
@@ -12,6 +12,7 @@ const Hero = () => {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [prompt, setPrompt] = useState('');
+  const [mounted, setMounted] = useState(false);
   
   // Initialize examples inside component to ensure SSR/client consistency
   const getInitialExamples = (): string[] => {
@@ -26,10 +27,17 @@ const Hero = () => {
   const [currentExamples] = useState<string[]>(() => getInitialExamples());
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
+  
+  // Demo experience states
+  const [demoPrompt, setDemoPrompt] = useState('');
+  const [isGeneratingDemo, setIsGeneratingDemo] = useState(false);
+  const [showDemoVideo, setShowDemoVideo] = useState(false);
+  const DEMO_VIDEO_PATH = '/videos/sushi.mp4';
 
-  // Set video source on client side only to avoid hydration mismatch
+  // Set video source and mounted state on client side only to avoid hydration mismatch
   useEffect(() => {
     setVideoSrc('/videos/bride.mp4');
+    setMounted(true);
   }, []);
 
   const handleGenerate = () => {
@@ -41,7 +49,25 @@ const Hero = () => {
   };
 
   const handleExampleClick = (examplePrompt: string) => {
-    setPrompt(examplePrompt);
+    // Fill demo input with the example prompt
+    setDemoPrompt(examplePrompt);
+  };
+
+  const handleGenerateDemo = () => {
+    // Always allow demo generation, even without prompt
+    // Reset previous demo if exists
+    setShowDemoVideo(false);
+    setIsGeneratingDemo(true);
+    
+    // Simulate generation delay (1.5-2 seconds)
+    setTimeout(() => {
+      setIsGeneratingDemo(false);
+      setShowDemoVideo(true);
+    }, 1800);
+  };
+
+  const handleDemoExampleClick = (examplePrompt: string) => {
+    setDemoPrompt(examplePrompt);
   };
 
   return (
@@ -93,95 +119,138 @@ const Hero = () => {
             </p>
           </div>
 
-          {/* Disclaimer */}
-          <div className="max-w-3xl mx-auto text-center">
-            <p className="text-xs sm:text-sm text-white/80 drop-shadow-[0_0_8px_rgba(0,0,0,0.3)] px-4" suppressHydrationWarning>
-              Independent third-party platform using Sora-compatible and multi-model engines.  Not affiliated with OpenAI or Sora 2.
-            </p>
-          </div>
-
-          {/* Input Section */}
+          {/* CTA Buttons Section */}
           <div className="w-full max-w-4xl mx-auto">
-          <div className="relative group">
-            {/* Glow effect on focus */}
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-3xl blur opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
-            
-            <div className="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/10 shadow-2xl overflow-hidden">
-              <input
-                type="text"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+              <Button
+                size="lg"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (mounted && isAuthenticated) {
                     handleGenerate();
+                  } else {
+                    setIsAuthModalOpen(true);
                   }
                 }}
-                placeholder='Describe your video idea… (e.g. "a premium product demo with dramatic lighting")'
-                className="w-full px-6 py-5 sm:py-6 text-base sm:text-lg bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none transition-all pr-24 sm:pr-80"
-              />
-              <div className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 flex gap-2 z-10">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="rounded-full hidden sm:flex hover:bg-slate-100 dark:hover:bg-slate-800 transition-all hover:scale-105"
-                  onClick={() => router.push('/multi-scene')}
-                >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Storyboard
-                </Button>
-                <Button
-                  size="lg"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (isAuthenticated) {
-                      handleGenerate();
-                    } else {
-                      setIsAuthModalOpen(true);
-                    }
-                  }}
-                  className="rounded-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground font-semibold px-5 sm:px-7 text-sm sm:text-base shadow-lg hover:shadow-xl transition-all hover:scale-105"
-                >
-                  {isAuthenticated ? (
-                    <>
-                      <Play className="w-4 h-4 mr-2" />
-                      <span className="hidden sm:inline">Start Creating</span>
-                      <span className="sm:hidden">Create</span>
-                    </>
-                  ) : (
-                    <>
-                      <User className="w-4 h-4 mr-2" />
-                      <span className="hidden sm:inline">Start Creating</span>
-                      <span className="sm:hidden">Create</span>
-                    </>
-                  )}
-                </Button>
-              </div>
+                className="w-full sm:w-auto rounded-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground font-semibold px-6 sm:px-8 py-6 sm:py-7 text-base sm:text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105"
+              >
+                {/* Always render User icon initially to match SSR, then update after mount */}
+                {!mounted || !isAuthenticated ? (
+                  <>
+                    <User className="w-5 h-5 mr-2" />
+                    <span>Start Creating</span>
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-5 h-5 mr-2" />
+                    <span>Start Creating</span>
+                  </>
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => router.push('/multi-scene')}
+                className="w-full sm:w-auto rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/20 dark:hover:bg-white/10 text-white font-semibold px-6 sm:px-8 py-6 sm:py-7 text-base sm:text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105"
+              >
+                <Sparkles className="w-5 h-5 mr-2" />
+                <span>Storyboard</span>
+              </Button>
             </div>
           </div>
+
+          {/* Demo Experience Section */}
+          <div className="w-full max-w-4xl mx-auto mt-6 sm:mt-8">
+            <p className="text-center text-sm sm:text-base text-white/80 mb-4 drop-shadow-[0_0_8px_rgba(0,0,0,0.3)]">
+              Or try a quick demo first 👇
+            </p>
+            
+            <div className="relative group">
+              <div className="relative bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-xl border border-white/20 dark:border-white/10 shadow-xl overflow-hidden">
+                <input
+                  type="text"
+                  value={demoPrompt}
+                  onChange={(e) => setDemoPrompt(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !isGeneratingDemo) {
+                      handleGenerateDemo();
+                    }
+                  }}
+                  placeholder="Describe a scene... (e.g., A cat walking in Tokyo)"
+                  disabled={isGeneratingDemo}
+                  className="w-full px-4 py-3 sm:py-4 text-sm sm:text-base bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none transition-all pr-28 sm:pr-32 disabled:opacity-50"
+                />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10">
+                  {isGeneratingDemo ? (
+                    <div className="flex items-center gap-2 px-4 py-2 text-sm bg-white/10 dark:bg-white/5 backdrop-blur-md rounded-full border border-white/20 text-white">
+                      <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                      <span className="hidden sm:inline">Generating with Sora 2...</span>
+                      <span className="sm:hidden">Generating...</span>
+                    </div>
+                  ) : (
+                    <Button
+                      size="sm"
+                      onClick={handleGenerateDemo}
+                      disabled={isGeneratingDemo}
+                      className="rounded-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground font-medium px-4 sm:px-5 text-xs sm:text-sm shadow-md hover:shadow-lg transition-all hover:scale-105 disabled:opacity-50"
+                    >
+                      <Play className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5" />
+                      <span>Generate Demo</span>
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Demo Video Result */}
+            {showDemoVideo && (
+              <div className="mt-6 animate-fade-in">
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black/20 backdrop-blur-sm border border-white/20">
+                  <video
+                    src={DEMO_VIDEO_PATH}
+                    controls
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-auto max-h-[60vh] object-contain"
+                  >
+                    <source src={DEMO_VIDEO_PATH} type="video/mp4" />
+                  </video>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Scrolling Example Prompts */}
           <div className="relative overflow-hidden w-full max-w-6xl mx-auto mt-4 sm:mt-6">
-          <div className="flex gap-3 sm:gap-4 animate-scroll">
-            {currentExamples.map((example, index) => (
-              <button
-                key={index}
-                onClick={() => handleExampleClick(example)}
-                className="flex-shrink-0 flex items-center gap-2.5 sm:gap-3 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 hover:border-primary/50 hover:bg-white/20 dark:hover:bg-white/10 transition-all cursor-pointer group shadow-lg hover:shadow-xl hover:scale-105"
-              >
-                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary group-hover:scale-110 group-hover:rotate-12 transition-transform" />
-                <span className="text-xs sm:text-sm text-white drop-shadow-[0_0_8px_rgba(0,0,0,0.4)] whitespace-nowrap max-w-xs truncate font-medium">
-                  {example}
-                </span>
-              </button>
-            ))}
+            <div className="flex gap-3 sm:gap-4 animate-scroll">
+              {currentExamples.map((example, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleExampleClick(example)}
+                  className="flex-shrink-0 flex items-center gap-2.5 sm:gap-3 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 hover:border-primary/50 hover:bg-white/20 dark:hover:bg-white/10 transition-all cursor-pointer group shadow-lg hover:shadow-xl hover:scale-105"
+                >
+                  <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary group-hover:scale-110 group-hover:rotate-12 transition-transform" />
+                  <span className="text-xs sm:text-sm text-white drop-shadow-[0_0_8px_rgba(0,0,0,0.4)] whitespace-nowrap max-w-xs truncate font-medium">
+                    {example}
+                  </span>
+                </button>
+              ))}
+            </div>
+            
+            {/* Gradient overlays for fade effect */}
+            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-black/40 via-black/20 to-transparent pointer-events-none z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-black/40 via-black/20 to-transparent pointer-events-none z-10" />
           </div>
-          
-          {/* Gradient overlays for fade effect */}
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-black/40 via-black/20 to-transparent pointer-events-none z-10" />
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-black/40 via-black/20 to-transparent pointer-events-none z-10" />
-        </div>
+
+          {/* Disclaimer */}
+          <div className="max-w-3xl mx-auto text-center mt-8 sm:mt-10 mb-8 sm:mb-12">
+            <p className="text-xs sm:text-sm text-white/80 drop-shadow-[0_0_8px_rgba(0,0,0,0.3)] px-4" suppressHydrationWarning>
+              Independent third-party platform using Sora-compatible and multi-model engines.  Not affiliated with OpenAI or Sora 2.
+            </p>
+          </div>
         </div>
 
       </div>
