@@ -23,6 +23,9 @@ const PricingTeaser = () => {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Professional AI video ads generation. Cancel anytime. Annual saves 50%.
           </p>
+          <p className="text-sm text-muted-foreground max-w-2xl mx-auto mt-4">
+            Subscriptions cover compute usage for Sora-compatible models, Veo-compatible models and other third-party AI video engines. Saro.ai is not affiliated with OpenAI or Google.
+          </p>
 
           {/* Billing Toggle removed to avoid duplication */}
         </div>

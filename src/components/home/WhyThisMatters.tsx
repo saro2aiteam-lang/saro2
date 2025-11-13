@@ -30,29 +30,29 @@ const painPoints = [
 const keyFeatures = [
   {
     icon: X,
-    title: "No watermark",
-    description: "Clean, brandable videos ready for commercial use.",
+    title: "Sora 2-Style, No Watermark",
+    description: "Clean, commercial-ready videos.",
     gradient: "from-blue-500/10 to-cyan-500/10",
     iconColor: "text-blue-500"
   },
   {
     icon: DollarSign,
-    title: "Best cost-performance",
-    description: "Up to 10× cheaper with generous credits.",
+    title: "Best Cost-Performance",
+    description: "Up to 10× cheaper than similar AI video tools.",
     gradient: "from-green-500/10 to-emerald-500/10",
     iconColor: "text-green-500"
   },
   {
     icon: Film,
-    title: "Sora 2 Pro Storyboard",
-    description: "25-second multi-scene storytelling for ads and showcases.",
+    title: "Sora-Compatible Multi-Model Pipeline",
+    description: "More stable generation + higher success rate.",
     gradient: "from-purple-500/10 to-pink-500/10",
     iconColor: "text-purple-500"
   },
   {
     icon: Share2,
-    title: "Social-ready",
-    description: "Perfect for TikTok, Reels, Shorts, and paid ads.",
+    title: "25s Sora 2-Style Storyboard",
+    description: "Multi-scene storytelling ideal for ads.",
     gradient: "from-rose-500/10 to-pink-500/10",
     iconColor: "text-rose-500"
   }
@@ -68,10 +68,10 @@ const WhyThisMatters = () => {
             <Sparkles className="w-6 h-6 text-primary" />
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            Why This Matters
+            Why Creators Choose Saro for Sora 2-Style Videos
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Short-form video is exploding — but creators face real challenges. We fix all of that.
+            Short-form video is exploding — but Sora 2 access is limited. Saro.ai helps creators generate Sora 2-style videos instantly using Sora-compatible and multi-model engines.
           </p>
         </div>
 
@@ -155,7 +155,7 @@ const WhyThisMatters = () => {
           <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-xl border border-primary/20 backdrop-blur-sm">
             <CheckCircle2 className="w-5 h-5 text-primary" />
             <p className="text-base font-semibold text-foreground">
-              We fix all of that with Sora 2 and Sora 2 Pro
+              We fix all of that with Sora 2-style generation
             </p>
             <ArrowRight className="w-4 h-4 text-primary/60" />
           </div>

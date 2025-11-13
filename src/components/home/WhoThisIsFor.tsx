@@ -34,7 +34,7 @@ const WhoThisIsFor = () => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-            Who this is for
+            Who Uses Saro for Sora 2-Style Video Creation
           </h2>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Whether you're a creator, marketer, or business owner, Saro2 AI helps you create professional videos without the hassle.

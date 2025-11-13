@@ -25,7 +25,7 @@ const faqs = [
   {
     id: 'item-3',
     question: 'Can I create videos longer than 10 seconds?',
-    answer: 'Yes. Sora 2 supports 25-30 second video generation through our storyboard mode. This addresses a major market pain point, allowing you to create longer-form video ads that actually convert, not just short clips.'
+    answer: 'Yes. Our Sora 2-style generation supports 25-30 second video generation through our storyboard mode. This addresses a major market pain point, allowing you to create longer-form video ads that actually convert, not just short clips.'
   },
   {
     id: 'item-5',
@@ -35,7 +35,17 @@ const faqs = [
   {
     id: 'item-6',
     question: 'Do videos have watermarks?',
-    answer: 'Premium plans include no platform watermark downloads. Your exported AI videos include no platform-added marks and are ready for commercial use. "No Watermark" refers only to watermarks added by this platform. We do not support removing watermarks from copyrighted or stock footage. Not for removing third-party or stock provider watermarks.'
+    answer: 'No — all Sora 2-style videos are watermark-free. Premium plans include no platform watermark downloads. Your exported AI videos include no platform-added marks and are ready for commercial use. "No Watermark" refers only to watermarks added by this platform. We do not support removing watermarks from copyrighted or stock footage. Not for removing third-party or stock provider watermarks.'
+  },
+  {
+    id: 'item-10',
+    question: 'Does Saro use the official Sora 2 model?',
+    answer: 'Saro.ai uses Sora-compatible and Sora 2-style models within our multi-model generation pipeline. This allows creators to produce Sora 2–like results instantly without needing official access.'
+  },
+  {
+    id: 'item-11',
+    question: 'Can I create Sora 2-style 25-second videos?',
+    answer: 'Yes — our Multi-Scene Storyboard feature supports 25-second Sora 2-style multi-scene generation.'
   },
   {
     id: 'item-7',

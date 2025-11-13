@@ -21,10 +21,6 @@ const WhoThisIsFor = dynamic(() => import('@/components/home/WhoThisIsFor'), {
   loading: () => <div className="h-96" />,
   ssr: true
 });
-const Testimonials = dynamic(() => import('@/components/home/Testimonials'), {
-  loading: () => <div className="h-96" />,
-  ssr: true
-});
 const HowItWorks = dynamic(() => import('@/components/home/HowItWorks'), {
   loading: () => <div className="h-96" />,
   ssr: true
@@ -151,20 +147,20 @@ export default function HomePage() {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
       name: 'Sora 2 Video Generator',
-      alternateName: ['Sora 2', 'Sora 2 AI', 'Sora 2 Generator', 'Sora 2 Online'],
+      alternateName: ['Sora 2-style Generator', 'Sora-compatible Video Generator', 'Saro.ai'],
       applicationCategory: 'MultimediaApplication',
       operatingSystem: 'Web',
-      description: 'Sora 2 AI video generator - Create cinematic videos using Sora 2 technology. Sora 2 text-to-video, image-to-video, and multi-scene storyboard. No watermark, no invite code required. Start creating with Sora 2 today!',
+      description: 'Sora 2-style AI video generator - Create cinematic videos using Sora-compatible models and multi-model generation pipeline. Sora 2-style text-to-video, image-to-video, and multi-scene storyboard. No watermark, no invite code required. Saro.ai is an independent platform, not affiliated with OpenAI or Sora 2.',
       url: 'https://saro2.ai',
       offers: {
         '@type': 'Offer',
         price: '0',
         priceCurrency: 'USD',
-        description: 'Sora 2 video generation with credits, paid plans available'
+        description: 'Sora 2-style video generation with credits, paid plans available'
       },
       creator: {
         '@type': 'Organization',
-        name: 'Saro 2',
+        name: 'Saro.ai',
         url: 'https://saro2.ai'
       },
       aggregateRating: {
@@ -175,16 +171,16 @@ export default function HomePage() {
         worstRating: '1'
       },
       featureList: [
-        'Sora 2 text-to-video generation',
-        'Sora 2 image-to-video conversion',
-        'Sora 2 Pro multi-scene storyboard builder',
-        'Sora 2 watermark removal',
+        'Sora 2-style text-to-video generation',
+        'Sora 2-style image-to-video conversion',
+        'Sora 2-style multi-scene storyboard builder',
+        'Sora-compatible multi-model pipeline',
         'Consistent character identity',
         '25-30 second video extension',
         'Ad-ready layouts and templates',
         'Vertical ad generation',
         'No watermark on premium',
-        'Sora 2 access'
+        'Sora 2-style video generation'
       ]
     }
 
@@ -204,8 +200,8 @@ export default function HomePage() {
     const videoJsonLd = {
       '@context': 'https://schema.org',
       '@type': 'VideoObject',
-      name: 'Sora 2 Video Generator Demo - How to Use Sora 2',
-      description: 'Watch how Sora 2 AI generates cinematic videos from text prompts. Learn how to use Sora 2 for text-to-video, image-to-video, and multi-scene storyboard creation.',
+      name: 'Sora 2-Style Video Generator Demo - How to Use Sora 2-Style Generation',
+      description: 'Watch how Saro.ai generates Sora 2-style cinematic videos from text prompts using Sora-compatible models. Learn how to use Sora 2-style generation for text-to-video, image-to-video, and multi-scene storyboard creation. Saro.ai is an independent platform.',
       thumbnailUrl: 'https://saro2.ai/logo.png',
       uploadDate: '2024-01-01T00:00:00Z',
       contentUrl: 'https://saro2.ai',
@@ -213,7 +209,7 @@ export default function HomePage() {
       duration: 'PT30S',
       publisher: {
         '@type': 'Organization',
-        name: 'Saro 2',
+        name: 'Saro.ai',
         logo: {
           '@type': 'ImageObject',
           url: 'https://saro2.ai/logo.png'
@@ -227,34 +223,34 @@ export default function HomePage() {
       mainEntity: [
         {
           '@type': 'Question',
-          name: 'What is Sora 2?',
+          name: 'Does Saro use the official Sora 2 model?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Sora 2 is an AI video generator that creates cinematic videos from text prompts. Sora 2 offers text-to-video, image-to-video, and multi-scene storyboard features. Sora 2 has no watermark and no invite code required.'
+            text: 'Saro.ai uses Sora-compatible and Sora 2-style models within our multi-model generation pipeline. This allows creators to produce Sora 2–like results instantly without needing official access. Saro.ai is not affiliated with OpenAI or Sora 2.'
           }
         },
         {
           '@type': 'Question',
-          name: 'How to use Sora 2?',
+          name: 'Can I create Sora 2-style 25-second videos?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'To use Sora 2, simply enter your text prompt on saro2.ai and click generate. Sora 2 supports text-to-video, image-to-video, and Sora 2 Pro multi-scene storyboard creation. Sora 2 has no watermark.'
+            text: 'Yes — our Multi-Scene Storyboard feature supports 25-second Sora 2-style multi-scene generation.'
           }
         },
         {
           '@type': 'Question',
-          name: 'How much does Sora 2 cost?',
+          name: 'Do videos include a watermark?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Sora 2 offers flexible pricing plans. Video generation uses credits. Advanced Sora 2 Pro features are available with paid plans. Sora 2 has no watermark on premium plans. View pricing at saro2.ai/plans.'
+            text: 'No — all Sora 2-style videos are watermark-free. Premium plans include no platform watermark downloads.'
           }
         },
         {
           '@type': 'Question',
-          name: 'What is Sora 2 Pro?',
+          name: 'How to use Sora 2-style generation?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Sora 2 Pro is the advanced version of Sora 2 that includes multi-scene storyboard creation, longer video durations (up to 25 seconds), and enhanced features. Sora 2 Pro is available on saro2.ai.'
+            text: 'To use Sora 2-style generation, simply enter your text prompt on saro2.ai and click generate. We support Sora 2-style text-to-video, image-to-video, and multi-scene storyboard creation. All Sora 2-style videos are watermark-free.'
           }
         }
       ]
@@ -304,9 +300,6 @@ export default function HomePage() {
         </Suspense>
         <Suspense fallback={<div className="h-96" />}>
           <WhoThisIsFor />
-        </Suspense>
-        <Suspense fallback={<div className="h-96" />}>
-          <Testimonials />
         </Suspense>
         <Suspense fallback={<div className="h-96" />}>
           <HowItWorks />

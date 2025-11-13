@@ -67,7 +67,15 @@ const faqs = [
   },
   {
     q: 'Do videos have watermarks?',
-    a: 'Premium plans include no platform watermark downloads. Your exported AI videos include no platform-added marks and are ready for commercial use. "No Watermark" refers only to watermarks added by this platform. We do not support removing watermarks from copyrighted or stock footage. Not for removing third-party or stock provider watermarks.'
+    a: 'No — all Sora 2-style videos are watermark-free. Premium plans include no platform watermark downloads. Your exported AI videos include no platform-added marks and are ready for commercial use. "No Watermark" refers only to watermarks added by this platform. We do not support removing watermarks from copyrighted or stock footage. Not for removing third-party or stock provider watermarks.'
+  },
+  {
+    q: 'Does Saro use the official Sora 2 model?',
+    a: 'Saro.ai uses Sora-compatible and Sora 2-style models within our multi-model generation pipeline. This allows creators to produce Sora 2–like results instantly without needing official access.'
+  },
+  {
+    q: 'Can I create Sora 2-style 25-second videos?',
+    a: 'Yes — our Multi-Scene Storyboard feature supports 25-second Sora 2-style multi-scene generation.'
   },
   {
     q: 'If I make a payment, will my payment information be safe?',

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     template: '%s | Saro 2',
     default: 'Sora 2 Video Generator | AI Text-to-Video Creator Online'
   },
-  description: 'Sora 2 AI video generator - Create cinematic videos with Sora 2 technology. Sora 2 text-to-video, image-to-video, and multi-scene storyboard. No watermark, no invite code required. Start creating with Sora 2 today!',
+  description: 'Sora 2-style AI video generator - Create cinematic videos with Sora-compatible models. Sora 2-style text-to-video, image-to-video, and multi-scene storyboard. No watermark, no invite code required. Saro.ai is an independent platform, not affiliated with OpenAI or Sora 2.',
   authors: [{ name: 'Saro 2 Team' }],
   creator: 'Saro 2',
   publisher: 'Saro 2',
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     url: 'https://saro2.ai',
     siteName: 'Saro 2',
     title: 'Sora 2 Video Generator | AI Text-to-Video Creator Online | Saro',
-    description: 'Sora 2 AI video generator: Create cinematic videos from text prompts with Sora 2 technology. Advanced motion realism, multi-shot storytelling, and creative control. Sora 2 text-to-video, image-to-video, and multi-scene storyboard creator.',
+    description: 'Sora 2-style AI video generator: Create cinematic videos from text prompts with Sora-compatible models. Advanced motion realism, multi-shot storytelling, and creative control. Sora 2-style text-to-video, image-to-video, and multi-scene storyboard creator. Saro.ai is an independent platform.',
     images: [
       {
         url: 'https://saro2.ai/logo.png',
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Sora 2 Video Generator | AI Text-to-Video Creator Online | Saro',
-    description: 'Sora 2 AI video generator: Create cinematic videos from text prompts with Sora 2 technology. Advanced motion realism, multi-shot storytelling, and creative control.',
+    description: 'Sora 2-style AI video generator: Create cinematic videos from text prompts with Sora-compatible models. Advanced motion realism, multi-shot storytelling, and creative control. Saro.ai is an independent platform.',
     images: ['https://saro2.ai/logo.png'],
     creator: '@saro2_ai',
   },
@@ -110,7 +110,7 @@ export default function RootLayout({
               "name": "Saro 2",
               "url": "https://saro2.ai",
               "logo": "https://saro2.ai/logo.png",
-              "description": "Saro 2 AI video generation platform. Create cinematic videos with Sora 2 text-to-video, image-to-video, and multi-scene storyboard features. Sora 2 video generator with no watermark.",
+              "description": "Saro.ai is an independent AI video generation platform. We use Sora 2–style, Sora-compatible, Veo-compatible and other third-party models to offer multi-model video generation. Create cinematic videos with Sora 2-style text-to-video, image-to-video, and multi-scene storyboard features. Saro.ai is not affiliated with OpenAI, Google or Sora 2.",
               "sameAs": [
                 "https://twitter.com/saro2_ai"
               ]

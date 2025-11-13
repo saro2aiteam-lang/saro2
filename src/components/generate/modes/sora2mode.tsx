@@ -164,10 +164,10 @@ export const Sora2Mode: React.FC<Sora2ModeProps> = ({
           </div>
         </div>
         <Textarea
-          placeholder="A master sushi chef expertly preparing nigiri in a traditional Japanese restaurant..."
-          value={params.prompt}
+          placeholder="A master sushi chef expertly preparing nigiri in a traditional Japanese restaurant. Close-up shots of precise knife work cutting fresh salmon. Rice being molded with practiced hands. Elegant presentation on wooden serving board. Natural window lighting with clean aesthetic. ASMR-style detail focus."
+          value={params.prompt || ''}
           onChange={(e) => onChange({ ...params, prompt: e.target.value })}
-          className="min-h-[120px] resize-none border-input focus:border-primary focus:ring-primary"
+          className="min-h-[120px] resize-none border-input focus:border-primary focus:ring-primary placeholder:text-muted-foreground/60"
         />
       </div>
 

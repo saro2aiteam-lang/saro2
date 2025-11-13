@@ -71,29 +71,37 @@ const Hero = () => {
       
       {/* Content */}
       <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="text-center mb-16 sm:mb-20 md:mb-24 animate-fade-in-up">
+        <div className="flex flex-col items-center space-y-8 sm:space-y-10">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 text-white/90 text-sm font-medium animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 text-white/90 text-sm font-medium animate-fade-in">
             <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
-            <span>Powered by Sora 2 Technology</span>
+            <span>Authentic Sora-Grade Quality</span>
           </div>
 
-          {/* Main Heading */}
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1] mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            <span className="block text-white drop-shadow-[0_0_16px_rgba(0,0,0,0.3)] relative inline-block">
-              Sora 2 Video Generator
-              <span className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 text-[10px] sm:text-xs md:text-sm font-mono font-bold text-white bg-gradient-to-r from-red-500 to-orange-500 px-2 sm:px-2.5 py-1 rounded-full whitespace-nowrap tracking-wider shadow-lg animate-pulse">
-                NEW
+          {/* Main Heading Section */}
+          <div className="text-center space-y-5 sm:space-y-6 max-w-5xl mx-auto">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] text-white drop-shadow-[0_0_16px_rgba(0,0,0,0.3)]" suppressHydrationWarning>
+              <span className="relative inline-block whitespace-nowrap">
+                Sora 2-Style AI Video Generator
+                <span className="absolute -top-1 -right-10 sm:-right-14 md:-right-16 text-[8px] sm:text-[10px] md:text-xs font-mono font-bold text-white bg-gradient-to-r from-red-500 to-orange-500 px-1.5 sm:px-2 md:px-2.5 py-0.5 sm:py-1 rounded-full whitespace-nowrap tracking-wider shadow-lg animate-pulse">
+                  NEW
+                </span>
               </span>
-            </span>
-            <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-white/95 drop-shadow-[0_0_16px_rgba(0,0,0,0.3)] mt-4 sm:mt-6 max-w-4xl mx-auto leading-relaxed">
-              No watermark, No regional block, No invite code required. 25s Sora 2 Pro storyboard available.
-            </span>
-          </h1>
-        </div>
+            </h1>
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white/95 drop-shadow-[0_0_16px_rgba(0,0,0,0.3)] leading-relaxed px-4">
+              No watermark • No regional limits • No invite needed • 25s multi-scene storyboards • Sora-compatible quality
+            </p>
+          </div>
 
-        {/* Input Section */}
-        <div className="max-w-4xl mx-auto mb-12 sm:mb-16 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          {/* Disclaimer */}
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="text-xs sm:text-sm text-white/80 drop-shadow-[0_0_8px_rgba(0,0,0,0.3)] px-4" suppressHydrationWarning>
+              Independent third-party platform using Sora-compatible and multi-model engines.  Not affiliated with OpenAI or Sora 2.
+            </p>
+          </div>
+
+          {/* Input Section */}
+          <div className="w-full max-w-4xl mx-auto">
           <div className="relative group">
             {/* Glow effect on focus */}
             <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 rounded-3xl blur opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
@@ -108,7 +116,7 @@ const Hero = () => {
                     handleGenerate();
                   }
                 }}
-                placeholder="Type your idea and watch it come to life in minutes"
+                placeholder='Describe your video idea… (e.g. "a premium product demo with dramatic lighting")'
                 className="w-full px-6 py-5 sm:py-6 text-base sm:text-lg bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none transition-all pr-24 sm:pr-80"
               />
               <div className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 flex gap-2 z-10">
@@ -151,10 +159,10 @@ const Hero = () => {
               </div>
             </div>
           </div>
-        </div>
+          </div>
 
-        {/* Scrolling Example Prompts */}
-        <div className="relative overflow-hidden mb-8 sm:mb-12 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+          {/* Scrolling Example Prompts */}
+          <div className="relative overflow-hidden w-full max-w-6xl mx-auto mt-4 sm:mt-6">
           <div className="flex gap-3 sm:gap-4 animate-scroll">
             {currentExamples.map((example, index) => (
               <button
@@ -173,6 +181,7 @@ const Hero = () => {
           {/* Gradient overlays for fade effect */}
           <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-black/40 via-black/20 to-transparent pointer-events-none z-10" />
           <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-black/40 via-black/20 to-transparent pointer-events-none z-10" />
+        </div>
         </div>
 
       </div>

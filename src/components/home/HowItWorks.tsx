@@ -7,20 +7,20 @@ const steps = [
   {
     number: '1',
     icon: Palette,
-    title: 'Choose Mode & Enter Prompt',
-    description: 'Select from Sora 2 Text-to-Video, Image-to-Video, Multi-scene Storyboard, or Watermark Remover. Then describe your video vision in detail or upload your starting image.'
+    title: 'Enter prompt or upload image',
+    description: 'Describe your video idea or upload a starting image for Sora 2-style generation.'
   },
   {
     number: '2',
     icon: Sliders,
-    title: 'Configure Settings',
-    description: 'Choose aspect ratio (Portrait/Landscape/Square), duration, and other parameters. For Sora 2 multi-scene videos, allocate timing for each scene.'
+    title: 'Choose ratio, duration or storyboard timing',
+    description: 'Select aspect ratio, video duration, or configure multi-scene Sora 2-style storyboard timing.'
   },
   {
     number: '3',
     icon: Play,
-    title: 'Generate & Download',
-    description: 'Click generate and wait for your Sora 2 AI video to be created. Download HD quality videos with audio when ready for social media, ads, or commercial use.'
+    title: 'Generate & download Sora 2-style HD/4K video',
+    description: 'Generate your Sora 2-style video and download in HD or 4K quality, ready for commercial use.'
   }
 ];
 
@@ -31,10 +31,10 @@ const HowItWorks = () => {
         {/* Section Header */}
         <div className="text-center mb-8">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            How it <span className="text-primary">works</span>
+            How Saro Generates Sora 2-Style Videos
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Create professional AI videos with Sora 2 and multiple models in three simple steps. Sora 2 makes video generation effortless. Learn how Sora 2 works and start using Sora 2 today.
+            Create professional AI videos with Sora 2-style generation in three simple steps.
           </p>
         </div>
 
