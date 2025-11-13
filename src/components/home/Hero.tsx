@@ -87,7 +87,7 @@ const Hero = () => {
               </span>
             </span>
             <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-white/95 drop-shadow-[0_0_16px_rgba(0,0,0,0.3)] mt-4 sm:mt-6 max-w-4xl mx-auto leading-relaxed">
-              Free Sora 2 AI Video Creator - No watermark, No regional block, No invite code required. 25s Sora 2 Pro storyboard available.
+              No watermark, No regional block, No invite code required. 25s Sora 2 Pro storyboard available.
             </span>
           </h1>
         </div>
