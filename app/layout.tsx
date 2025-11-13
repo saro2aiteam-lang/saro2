@@ -1,21 +1,13 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import React, { Suspense } from 'react'
-import dynamic from 'next/dynamic'
+import React from 'react'
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as Sonner } from "@/components/ui/sonner"
 import { Providers } from './providers'
 import CriticalCSSWrapper from '@/components/CriticalCSSWrapper'
 import TooltipProviderWrapper from '@/components/TooltipProviderWrapper'
+import { ClientComponents } from './ClientComponents'
 import './globals.css'
-
-// 延迟加载非关键组件
-const AnalyticsScripts = dynamic(() => import('@/components/AnalyticsScripts'), {
-  ssr: false
-});
-const PageView = dynamic(() => import('./pageview'), {
-  ssr: false
-});
  
 
 const inter = Inter({ 
@@ -115,9 +107,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://client.crisp.chat" />
       </head>
       <body className={`min-h-screen bg-background font-sans antialiased ${inter.variable}`}>
-        <Suspense fallback={null}>
-          <AnalyticsScripts />
-        </Suspense>
+        <ClientComponents />
         
         {/* JSON-LD - Load asynchronously to reduce render blocking */}
         <script
@@ -160,9 +150,6 @@ export default function RootLayout({
             <CriticalCSSWrapper />
             <Toaster />
             <Sonner />
-            <Suspense fallback={null}>
-              <PageView />
-            </Suspense>
             {children}
           </TooltipProviderWrapper>
         </Providers>
