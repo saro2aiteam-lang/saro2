@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     title: 'Privacy Policy | AI video generation service',
     description: 'Privacy Policy for AI video generation service - Learn how we collect, use, and protect your personal information.',
     url: 'https://saro2.ai/privacy',
-    siteName: 'Sora 2',
+    siteName: 'Saro 2',
     images: [
       {
         url: 'https://saro2.ai/logo.png',

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     title: 'Refund Policy | AI video generation service',
     description: 'Refund Policy for AI video generation service - Learn about our case-by-case refund policy for unused credits and service terms.',
     url: 'https://saro2.ai/refund',
-    siteName: 'Sora 2',
+    siteName: 'Saro 2',
     images: [
       {
         url: 'https://saro2.ai/logo.png',

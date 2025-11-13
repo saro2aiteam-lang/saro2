@@ -2,7 +2,7 @@
 title: "Sora 2 Pro Storyboard: Redefining AI Video Generation for 2025"
 slug: "sora-2-pro-storyboard-redefining-ai-video-generation-2025"
 excerpt: "Discover Sora 2 Pro Storyboard — the next-generation AI video model that generates 25-second, multi-scene cinematic videos with no watermark, available worldwide via saro2.ai. Perfect for creators, marketers, and filmmakers."
-author: "Saro2 AI Editorial Team"
+author: "Saro 2 Team"
 publishedAt: "2025-11-15"
 readTime: "8 min read"
 category: "Comparison"

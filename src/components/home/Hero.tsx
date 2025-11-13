@@ -81,13 +81,13 @@ const Hero = () => {
           {/* Main Heading */}
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.1] mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
             <span className="block text-white drop-shadow-[0_0_16px_rgba(0,0,0,0.3)] relative inline-block">
-              Sora 2
+              Sora 2 Video Generator
               <span className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 text-[10px] sm:text-xs md:text-sm font-mono font-bold text-white bg-gradient-to-r from-red-500 to-orange-500 px-2 sm:px-2.5 py-1 rounded-full whitespace-nowrap tracking-wider shadow-lg animate-pulse">
                 NEW
               </span>
             </span>
             <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-white/95 drop-shadow-[0_0_16px_rgba(0,0,0,0.3)] mt-4 sm:mt-6 max-w-4xl mx-auto leading-relaxed">
-              No watermark, No regional block, No invite code required, 25s Sora 2 pro storyborad available.
+              Free Sora 2 AI Video Creator - No watermark, No regional block, No invite code required. 25s Sora 2 Pro storyboard available.
             </span>
           </h1>
         </div>

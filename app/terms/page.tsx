@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     title: 'Terms of Service | AI video generation service',
     description: 'Terms of Service for AI video generation service - Read our terms and conditions for using our AI video generation service.',
     url: 'https://saro2.ai/terms',
-    siteName: 'Sora 2',
+    siteName: 'Saro 2',
     images: [
       {
         url: 'https://saro2.ai/logo.png',

@@ -2,7 +2,7 @@
 title: "Sora 2 vs Veo 3: The Ultimate AI Video Model Showdown (2025 Edition)"
 slug: "sora-2-vs-veo-3-2025"
 excerpt: "A deep, original comparison of Sora 2 and Veo 3 in 2025: prompt control, audio, resolution, 4K, APIs, watermarking, costs, and real-world use cases for creators and studios."
-author: "Sora2 Team"
+author: "Saro 2 Team"
 publishedAt: "2025-10-08"
 readTime: "15–18 min read"
 category: "Comparison"

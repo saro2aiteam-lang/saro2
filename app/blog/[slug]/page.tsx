@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: post.title,
       description: post.excerpt,
       url: `https://saro2.ai/blog/${slug}`,
-      siteName: 'Sora 2',
+      siteName: 'Saro 2',
       images: [
         {
           url: post.image,

@@ -4,13 +4,13 @@ import Image from "next/image";
 const Footer = () => {
   const navigation = {
     product: [
-      { name: "Text to Video", href: "/text-to-video", external: false },
-      { name: "Image to Video", href: "/image-to-video", external: false },
-      { name: "Pricing", href: "/plans", external: false },
-      { name: "FAQ", href: "/faq", external: false },
+      { name: "Sora 2 Text to Video", href: "/text-to-video", external: false },
+      { name: "Sora 2 Image to Video", href: "/image-to-video", external: false },
+      { name: "Sora 2 Pricing", href: "/plans", external: false },
+      { name: "Sora 2 FAQ", href: "/faq", external: false },
     ],
     company: [
-      { name: "Blog", href: "/blog", external: false },
+      { name: "Sora 2 Blog", href: "/blog", external: false },
     ],
     resources: [
       { name: "AI Video Prompt GPT", href: "https://chatgpt.com/g/g-690c3e49fb308191aa623c67543a766a-sarogpt-ai-video-prompt-script-assistant", external: true },
@@ -41,11 +41,11 @@ const Footer = () => {
                 />
               </div>
               <span className="text-xl font-bold text-primary">
-                Sora 2
+                Saro 2
               </span>
             </div>
             <p className="text-muted-foreground text-sm mb-4 max-w-sm">
-              AI Video Ads & Storyboards. Create cinematic storyboards, consistent characters, and 25+ second video ads for TikTok, Shopify, and product promos.
+              Sora 2 AI Video Generator. Create cinematic videos with Sora 2 text-to-video, image-to-video, and multi-scene storyboard. Sora 2 access with no watermark.
             </p>
             <div className="flex space-x-4">
               <a 

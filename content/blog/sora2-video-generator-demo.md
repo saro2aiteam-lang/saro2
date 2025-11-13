@@ -2,7 +2,7 @@
 title: "Sora2 Video Generator: The Real OpenAI Text-to-Video Revolution (Demo Inside)"
 slug: "sora2-video-generator-demo"
 excerpt: "Watch the latest Sora2 demo and learn how to create cinematic videos using OpenAI's Sora2 model. Try the AI video generator at saro2.ai."
-author: "Sora2 Team"
+author: "Saro 2 Team"
 publishedAt: "2025-10-08"
 readTime: "6 min read"
 category: "Demo"
@@ -10,8 +10,6 @@ tags: ["sora2", "demo", "text-to-video", "openai", "ai-video-generator"]
 featured: true
 image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1200&h=600&fit=crop&q=80"
 ---
-
-# 🎬 Sora2 Video Generator: The Real OpenAI Text-to-Video Revolution (Demo Inside)
 
 Should you have anticipated the era where **intelligent systems render content creation trivial**, that time has arrived.
 

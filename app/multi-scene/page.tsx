@@ -3,17 +3,16 @@ import Storyboard from '@/page-components/Storyboard'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'Sora 2 Pro Multi-Scene Video Generator | Storyboard',
-  description: 'Create multi-scene AI videos up to 25s for YouTube Shorts, TikTok and Reels. Control scenes and maintain visual consistency.',
-  keywords: 'sora 2 pro, sora 2 storyboard, sora 2 multi scene, sora 2 pro storyboard, sora 2 multi scene video, sora 2 video generator, sora 2 ai, multi-scene video, storyboard creator, AI video storyboard',
+  title: 'Sora 2 Pro Multi-Scene Video Generator | Storyboard Creator',
+  description: 'Sora 2 Pro multi-scene video generator - Create AI videos up to 25s for YouTube Shorts, TikTok and Reels. Sora 2 Pro storyboard with scene control and visual consistency. No watermark required. Try Sora 2 Pro now!',
   alternates: {
     canonical: 'https://saro2.ai/multi-scene',
   },
   openGraph: {
-    title: 'Sora 2 Pro Multi-Scene Video Generator | Storyboard',
-    description: 'Create multi-scene AI videos up to 25s for YouTube Shorts, TikTok and Reels. Control scenes and maintain visual consistency.',
+    title: 'Sora 2 Pro Multi-Scene Video Generator | Storyboard Creator',
+    description: 'Sora 2 Pro multi-scene video generator - Create AI videos up to 25s for YouTube Shorts, TikTok and Reels. Sora 2 Pro storyboard with scene control. No watermark required. Try Sora 2 Pro now!',
     url: 'https://saro2.ai/multi-scene',
-    siteName: 'Sora 2',
+    siteName: 'Saro 2',
     images: [
       {
         url: 'https://saro2.ai/logo.png',
@@ -27,8 +26,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sora 2 Pro Multi-Scene Video Generator | Storyboard',
-    description: 'Create multi-scene AI videos up to 25s for YouTube Shorts, TikTok and Reels. Control scenes and maintain visual consistency.',
+    title: 'Sora 2 Pro Multi-Scene Video Generator | Storyboard Creator',
+    description: 'Sora 2 Pro multi-scene video generator - Create AI videos up to 25s for YouTube Shorts, TikTok and Reels. Sora 2 Pro storyboard. No watermark required.',
     images: ['https://saro2.ai/logo.png']
   },
 }

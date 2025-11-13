@@ -1,17 +1,16 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Sora 2 FAQ – Frequently Asked Questions',
-  description: 'Find answers about Sora 2 video generation, features, availability, and safety controls.',
-  keywords: 'Sora 2 FAQ, frequently asked questions, Sora 2 help, video generation questions, Sora 2 support',
+  title: 'Sora 2 FAQ | Frequently Asked Questions About Sora 2',
+  description: 'Find answers to common Sora 2 questions: What is Sora 2? How to use Sora 2? Is Sora 2 free? Learn about Sora 2 video generation, features, and more.',
   alternates: {
     canonical: 'https://saro2.ai/faq',
   },
   openGraph: {
-    title: 'Sora 2 FAQ – Frequently Asked Questions',
-    description: 'Find answers about Sora 2 video generation, features, availability, and safety controls.',
+    title: 'Sora 2 FAQ | Frequently Asked Questions About Sora 2',
+    description: 'Find answers to common Sora 2 questions: What is Sora 2? How to use Sora 2? Learn about Sora 2 video generation, features, pricing, and more.',
     url: 'https://saro2.ai/faq',
-    siteName: 'Sora 2',
+    siteName: 'Saro 2',
     images: [
       {
         url: 'https://saro2.ai/logo.png',
@@ -25,8 +24,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sora 2 FAQ – Frequently Asked Questions',
-    description: 'Find answers about Sora 2 video generation, features, availability, and safety controls.',
+    title: 'Sora 2 FAQ | Frequently Asked Questions About Sora 2',
+    description: 'Find answers to common Sora 2 questions: What is Sora 2? How to use Sora 2? Learn about Sora 2 features and pricing.',
     images: ['https://saro2.ai/logo.png']
   },
 }
@@ -87,8 +86,8 @@ const faqs = [
     a: 'No. Simply enter prompts to generate cinematic videos.'
   },
   {
-    q: 'Can I try free credits?',
-    a: 'Yes. You can start generating immediately.'
+    q: 'How do I get started?',
+    a: 'You can start generating videos immediately. Credits are available through our pricing plans. Visit our pricing page to choose a plan that fits your needs.'
   },
   {
     q: 'What is the relationship between Saro2.ai and OpenAI\'s Sora 2?',

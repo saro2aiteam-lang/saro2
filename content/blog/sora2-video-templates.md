@@ -2,7 +2,7 @@
 title: "Sora2 Video Templates – 10 Ready-to-Use AI Video Presets for Every Need"
 slug: "sora2-video-templates"
 excerpt: "Discover our collection of professional video templates optimized for different use cases. From product showcases to TikTok content, these templates will help you create stunning AI videos faster."
-author: "Sora2 Team"
+author: "Saro 2 Team"
 publishedAt: "2025-10-10"
 readTime: "6 min read"
 category: "Templates"

@@ -1390,17 +1390,6 @@ const Generate = () => {
                       Transform your ideas into cinematic videos - just by typing.
                     </p>
                   </div>
-                  
-                  {/* Example Videos Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="aspect-video bg-muted rounded-lg overflow-hidden">
-                        <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                          <Film className="w-8 h-8 text-primary/50" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
                 </section>
 
                 {/* Features Section */}
@@ -1626,17 +1615,6 @@ const Generate = () => {
                     <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
                       Use Sora 2 AI to bring your static images to life with cinematic motion. Sora 2 image-to-video technology creates professional videos from photos with natural movement and realistic effects. Just upload your image and let Sora 2 handle the rest.
                     </p>
-                  </div>
-                  
-                  {/* Example Videos Grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="aspect-video bg-muted rounded-lg overflow-hidden">
-                        <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                          <ImageIcon className="w-8 h-8 text-primary/50" />
-                        </div>
-                      </div>
-                    ))}
                   </div>
                 </section>
 

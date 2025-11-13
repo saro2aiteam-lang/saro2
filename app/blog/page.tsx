@@ -2,17 +2,16 @@ import Blog from '@/page-components/Blog'
 import { getAllBlogPosts } from '@/data/blogPosts'
 
 export const metadata = {
-  title: 'Sora2 Blog | Sora 2 Tutorials & Guides',
-  description: 'Get the latest tips, comparisons, and workflows for creating video with Sora 2. Dive into Sora 2 text-to-video guides and tutorials.',
-  keywords: 'Sora2 blog, Sora 2 tutorials, Sora 2 guide, AI video generation tips, Sora 2 insights, Sora 2 workflows, Sora 2 vs Veo, Sora 2 comparison, Sora 2 video generator',
+  title: 'Sora 2 Blog | Sora 2 Tutorials, Guides & Tips',
+  description: 'Get the latest Sora 2 tips, tutorials, and guides. Learn how to use Sora 2, Sora 2 vs Veo comparisons, Sora 2 workflows, and Sora 2 video generation best practices. Sora 2 tutorials and guides.',
   alternates: {
     canonical: 'https://saro2.ai/blog',
   },
   openGraph: {
-    title: 'Sora2 Blog | Sora 2 Tutorials & Guides',
-    description: 'Get the latest tips, comparisons, and workflows for creating video with Sora 2. Dive into Sora 2 text-to-video guides and tutorials.',
+    title: 'Sora 2 Blog | Sora 2 Tutorials, Guides & Tips',
+    description: 'Get the latest Sora 2 tips, tutorials, and guides. Learn how to use Sora 2, Sora 2 vs Veo comparisons, and Sora 2 video generation best practices. Sora 2 tutorials.',
     url: 'https://saro2.ai/blog',
-    siteName: 'Sora 2',
+    siteName: 'Saro 2',
     images: [
       {
         url: 'https://saro2.ai/logo.png',
@@ -26,8 +25,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sora2 Blog | Sora 2 Tutorials & Guides',
-    description: 'Get the latest tips, comparisons, and workflows for creating video with Sora 2.',
+    title: 'Sora 2 Blog | Sora 2 Tutorials, Guides & Tips',
+    description: 'Get the latest Sora 2 tips, tutorials, and guides. Learn how to use Sora 2 and Sora 2 video generation best practices.',
     images: ['https://saro2.ai/logo.png']
   },
   robots: {

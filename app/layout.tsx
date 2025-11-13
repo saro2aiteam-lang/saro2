@@ -6,28 +6,26 @@ import { Toaster as Sonner } from "@/components/ui/sonner"
 import { Providers } from './providers'
 import CriticalCSSWrapper from '@/components/CriticalCSSWrapper'
 import TooltipProviderWrapper from '@/components/TooltipProviderWrapper'
-import { ClientComponents } from './ClientComponents'
+import AnalyticsScripts from '@/components/AnalyticsScripts'
+import PageView from './pageview'
 import './globals.css'
  
 
 const inter = Inter({ 
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
-  preload: true,
-  fallback: ['system-ui', 'arial'],
+  variable: '--font-inter'
 })
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Saro',
-    default: 'Sora 2 Video Generator | AI Text-to-Video Creator | Saro'
+    template: '%s | Saro 2',
+    default: 'Sora 2 Video Generator | AI Text-to-Video Creator Online'
   },
-  description: 'Sora 2 AI video generator. Create cinematic videos with Sora 2-style AI technology. Text-to-video, image-to-video, multi-scene storyboard. Independent platform.',
-  keywords: 'sora 2, sora 2 ai, sora 2 video generator, sora 2 text to video, sora 2 alternative, sora 2 ai video, sora 2 image to video',
-  authors: [{ name: 'Saro Team' }],
-  creator: 'Saro',
-  publisher: 'Saro',
+  description: 'Sora 2 AI video generator - Create cinematic videos with Sora 2 technology. Sora 2 text-to-video, image-to-video, and multi-scene storyboard. No watermark, no invite code required. Start creating with Sora 2 today!',
+  authors: [{ name: 'Saro 2 Team' }],
+  creator: 'Saro 2',
+  publisher: 'Saro 2',
   formatDetection: {
     email: false,
     address: false,
@@ -41,7 +39,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://saro2.ai',
-    siteName: 'Saro',
+    siteName: 'Saro 2',
     title: 'Sora 2 Video Generator | AI Text-to-Video Creator Online | Saro',
     description: 'Sora 2 AI video generator: Create cinematic videos from text prompts with Sora 2 technology. Advanced motion realism, multi-shot storytelling, and creative control. Sora 2 text-to-video, image-to-video, and multi-scene storyboard creator.',
     images: [
@@ -97,19 +95,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Preconnect to external domains for faster loading */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
-        <link rel="dns-prefetch" href="https://www.clarity.ms" />
-        <link rel="dns-prefetch" href="https://client.crisp.chat" />
-      </head>
+      <head></head>
       <body className={`min-h-screen bg-background font-sans antialiased ${inter.variable}`}>
-        <ClientComponents />
+        <AnalyticsScripts />
         
-        {/* JSON-LD - Load asynchronously to reduce render blocking */}
+        {/* JSON-LD */}
         <script
           id="org-jsonld"
           type="application/ld+json"
@@ -117,16 +107,15 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "Saro",
+              "name": "Saro 2",
               "url": "https://saro2.ai",
               "logo": "https://saro2.ai/logo.png",
-              "description": "Saro provides Sora 2 AI video generation platform. Create cinematic videos with Sora 2 text-to-video, image-to-video, and multi-scene storyboard features.",
+              "description": "Saro 2 AI video generation platform. Create cinematic videos with Sora 2 text-to-video, image-to-video, and multi-scene storyboard features. Sora 2 video generator with no watermark.",
               "sameAs": [
                 "https://twitter.com/saro2_ai"
               ]
             })
           }}
-          suppressHydrationWarning
         />
         <script
           id="website-jsonld"
@@ -143,13 +132,13 @@ export default function RootLayout({
               }
             })
           }}
-          suppressHydrationWarning
         />
         <Providers>
           <TooltipProviderWrapper>
             <CriticalCSSWrapper />
             <Toaster />
             <Sonner />
+            <PageView />
             {children}
           </TooltipProviderWrapper>
         </Providers>

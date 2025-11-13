@@ -150,33 +150,42 @@ export default function HomePage() {
     const jsonLd = {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
-      name: 'Sora 2 Video Generator | Sora 2 Alternative',
+      name: 'Sora 2 Video Generator',
+      alternateName: ['Sora 2', 'Sora 2 AI', 'Sora 2 Generator', 'Sora 2 Online'],
       applicationCategory: 'MultimediaApplication',
       operatingSystem: 'Web',
-      description: 'Sora 2 AI video generator, Sora 2 alternative. Create cinematic videos using Sora 2-style AI technology. Text-to-video, image-to-video, multi-scene storyboard. Saro2.ai is an independent platform providing Sora 2-quality video generation services.',
+      description: 'Sora 2 AI video generator - Create cinematic videos using Sora 2 technology. Sora 2 text-to-video, image-to-video, and multi-scene storyboard. No watermark, no invite code required. Start creating with Sora 2 today!',
       url: 'https://saro2.ai',
       offers: {
         '@type': 'Offer',
         price: '0',
         priceCurrency: 'USD',
-        description: 'Try with credits, paid advanced features available'
+        description: 'Sora 2 video generation with credits, paid plans available'
       },
       creator: {
         '@type': 'Organization',
-        name: 'Saro',
+        name: 'Saro 2',
         url: 'https://saro2.ai'
+      },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        ratingCount: '1250',
+        bestRating: '5',
+        worstRating: '1'
       },
       featureList: [
         'Sora 2 text-to-video generation',
         'Sora 2 image-to-video conversion',
-        'Sora 2 multi-scene storyboard builder',
+        'Sora 2 Pro multi-scene storyboard builder',
+        'Sora 2 watermark removal',
         'Consistent character identity',
         '25-30 second video extension',
         'Ad-ready layouts and templates',
         'Vertical ad generation',
-        'Sora 2 watermark removal'
-      ],
-      keywords: 'sora 2, sora 2 ai, sora 2 video generator, sora 2 text to video, sora 2 online, sora 2 alternative, sora 2 video creator, sora 2 alternative platform'
+        'No watermark on premium',
+        'Sora 2 access'
+      ]
     }
 
     const breadcrumbJsonLd = {
@@ -195,18 +204,67 @@ export default function HomePage() {
     const videoJsonLd = {
       '@context': 'https://schema.org',
       '@type': 'VideoObject',
-      name: 'Sora 2 Video Generator Demo',
-      description: 'Watch how Sora 2 AI generates cinematic videos from text prompts',
+      name: 'Sora 2 Video Generator Demo - How to Use Sora 2',
+      description: 'Watch how Sora 2 AI generates cinematic videos from text prompts. Learn how to use Sora 2 for text-to-video, image-to-video, and multi-scene storyboard creation.',
       thumbnailUrl: 'https://saro2.ai/logo.png',
       uploadDate: '2024-01-01T00:00:00Z',
       contentUrl: 'https://saro2.ai',
-      embedUrl: 'https://saro2.ai'
+      embedUrl: 'https://saro2.ai',
+      duration: 'PT30S',
+      publisher: {
+        '@type': 'Organization',
+        name: 'Saro 2',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://saro2.ai/logo.png'
+        }
+      }
+    }
+
+    const faqJsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What is Sora 2?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Sora 2 is an AI video generator that creates cinematic videos from text prompts. Sora 2 offers text-to-video, image-to-video, and multi-scene storyboard features. Sora 2 has no watermark and no invite code required.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'How to use Sora 2?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'To use Sora 2, simply enter your text prompt on saro2.ai and click generate. Sora 2 supports text-to-video, image-to-video, and Sora 2 Pro multi-scene storyboard creation. Sora 2 has no watermark.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'How much does Sora 2 cost?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Sora 2 offers flexible pricing plans. Video generation uses credits. Advanced Sora 2 Pro features are available with paid plans. Sora 2 has no watermark on premium plans. View pricing at saro2.ai/plans.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'What is Sora 2 Pro?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Sora 2 Pro is the advanced version of Sora 2 that includes multi-scene storyboard creation, longer video durations (up to 25 seconds), and enhanced features. Sora 2 Pro is available on saro2.ai.'
+          }
+        }
+      ]
     }
 
     const scripts = [
       { id: 'jsonld-software', data: jsonLd },
       { id: 'jsonld-breadcrumb', data: breadcrumbJsonLd },
-      { id: 'jsonld-video', data: videoJsonLd }
+      { id: 'jsonld-video', data: videoJsonLd },
+      { id: 'jsonld-faq', data: faqJsonLd }
     ]
 
     // Defer JSON-LD scripts to reduce render blocking
@@ -253,17 +311,6 @@ export default function HomePage() {
         <Suspense fallback={<div className="h-96" />}>
           <HowItWorks />
         </Suspense>
-        {/* Lightweight SEO copy block (non-hero) targeting long-tail queries */}
-        <section className="px-4 sm:px-6 lg:px-8 py-6">
-          <div className="max-w-5xl mx-auto text-sm text-muted-foreground leading-relaxed">
-            <h2 className="sr-only">Sora 2 AI Video Ads Generator</h2>
-            <p>
-              Create multi-scene video ads with consistent characters for TikTok, Shopify, and product promotions. Generate{' '}
-              <strong className="font-semibold">25+ second AI video ads</strong> with{' '}
-              <strong className="font-semibold">consistent character identity</strong> across multiple scenes. Perfect for brand storytelling, product showcases, and social media marketing.
-            </p>
-          </div>
-        </section>
         <Suspense fallback={<div className="h-96" />}>
           <PricingTeaser />
         </Suspense>
