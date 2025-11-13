@@ -1,6 +1,11 @@
 User-agent: *
 Allow: /
 
+# Bing-specific crawler rules
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
 # Sitemap
 Sitemap: https://saro2.ai/sitemap.xml
 

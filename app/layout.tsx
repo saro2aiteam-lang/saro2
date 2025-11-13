@@ -35,6 +35,8 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  keywords: ['Sora 2', 'AI video generator', 'text to video', 'image to video', 'Sora 2-style', 'AI video creator', 'video generation', 'Sora compatible'],
+  category: 'AI Video Generation',
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -62,6 +64,14 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
     googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+    // Bing-specific robots configuration
+    bingbot: {
       index: true,
       follow: true,
       'max-video-preview': -1,
