@@ -28,11 +28,12 @@ const Hero = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
   
-  // Demo experience states
-  const [demoPrompt, setDemoPrompt] = useState('');
+  // Demo experience states - fixed default prompt
+  const DEFAULT_DEMO_PROMPT = 'A high-speed sports car running along highway at sunset';
+  const [demoPrompt] = useState(DEFAULT_DEMO_PROMPT);
   const [isGeneratingDemo, setIsGeneratingDemo] = useState(false);
   const [showDemoVideo, setShowDemoVideo] = useState(false);
-  const DEMO_VIDEO_PATH = '/videos/cyberpunk city.mp4';
+  const DEMO_VIDEO_PATH = '/videos/running car.mp4';
 
   // Set video source and mounted state on client side only to avoid hydration mismatch
   useEffect(() => {
@@ -49,8 +50,8 @@ const Hero = () => {
   };
 
   const handleExampleClick = (examplePrompt: string) => {
-    // Fill demo input with the example prompt
-    setDemoPrompt(examplePrompt);
+    // Demo prompt is now fixed, this function is kept for compatibility but does nothing
+    // The example clicks will still work for the main prompt input if needed
   };
 
   const handleGenerateDemo = () => {
@@ -67,7 +68,7 @@ const Hero = () => {
   };
 
   const handleDemoExampleClick = (examplePrompt: string) => {
-    setDemoPrompt(examplePrompt);
+    // Demo prompt is now fixed, this function is kept for compatibility but does nothing
   };
 
   return (
@@ -171,7 +172,7 @@ const Hero = () => {
                 <input
                   type="text"
                   value={demoPrompt}
-                  onChange={(e) => setDemoPrompt(e.target.value)}
+                  readOnly
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !isGeneratingDemo) {
                       handleGenerateDemo();
@@ -179,7 +180,7 @@ const Hero = () => {
                   }}
                   placeholder="a futuristic cyberpunk city at night"
                   disabled={isGeneratingDemo}
-                  className="w-full px-4 py-3 sm:py-4 text-sm sm:text-base bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none transition-all pr-28 sm:pr-32 disabled:opacity-50"
+                  className="w-full px-4 py-3 sm:py-4 text-sm sm:text-base bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none transition-all pr-28 sm:pr-32 disabled:opacity-50 cursor-default"
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10">
                   {isGeneratingDemo ? (
