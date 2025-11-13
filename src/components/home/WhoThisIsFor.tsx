@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import { Users, ShoppingBag, Building2, BarChart3, Video } from 'lucide-react';
+import { Users, ShoppingBag, Building2, BarChart3 } from 'lucide-react';
 
 const targetAudiences = [
   {
@@ -24,11 +24,6 @@ const targetAudiences = [
     icon: BarChart3,
     title: "Marketers running A/B creative tests",
     description: "Quickly iterate and test different video concepts without breaking the bank."
-  },
-  {
-    icon: Video,
-    title: "Anyone needing clean footage without watermark branding",
-    description: "Commercial-ready videos you can use anywhere, anytime."
   }
 ];
 
@@ -47,7 +42,7 @@ const WhoThisIsFor = () => {
         </div>
 
         {/* Target Audiences Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {targetAudiences.map((audience, index) => {
             const Icon = audience.icon;
             return (

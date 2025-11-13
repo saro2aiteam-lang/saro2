@@ -10,9 +10,13 @@ import SEOHead from "@/components/SEOHead";
 import { Search, Calendar, User, ArrowRight, Zap, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
-import { blogPosts } from "@/data/blogPosts";
+import type { BlogPost } from "@/data/blogPosts";
 
-const Blog = () => {
+interface BlogProps {
+  blogPosts: BlogPost[];
+}
+
+const Blog = ({ blogPosts }: BlogProps) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const categories = ["All", "Templates", "Comparison"];

@@ -131,7 +131,6 @@ function VideoItem({ src }: { src: string }) {
     <div 
       ref={containerRef}
       className="mb-4 sm:mb-6 rounded-xl overflow-hidden border border-border/50 bg-card/50 backdrop-blur-sm break-inside-avoid relative group hover:border-primary/50 transition-all duration-300 hover:shadow-lg"
-      style={{ aspectRatio: '9/16', minHeight: '200px' }}
     >
       {shouldLoad ? (
         <video
@@ -142,7 +141,7 @@ function VideoItem({ src }: { src: string }) {
           preload="none"
           muted={isMuted}
           tabIndex={0}
-          className="w-full h-full object-cover block transition-transform duration-300 group-hover:scale-[1.02]"
+          className="w-full h-auto block transition-transform duration-300 group-hover:scale-[1.02]"
           onMouseEnter={tryPlayWithSound}
           onMouseLeave={pauseAndReset}
           onTouchStart={toggleMute}
@@ -152,7 +151,7 @@ function VideoItem({ src }: { src: string }) {
           loading="lazy"
         />
       ) : (
-        <div className="w-full h-full bg-muted/50 flex items-center justify-center" aria-label="Loading video">
+        <div className="w-full min-h-[200px] bg-muted/50 flex items-center justify-center" aria-label="Loading video">
           <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
         </div>
       )}

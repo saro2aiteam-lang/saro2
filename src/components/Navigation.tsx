@@ -71,7 +71,7 @@ const Navigation = () => {
       <PromoBanner />
       
       {/* Navigation */}
-      <nav className="fixed w-full z-50 bg-background/90 backdrop-blur-lg border-b border-border/50 transition-all duration-300" style={{ top: isMounted ? bannerHeight : '0px' }}>
+      <nav className="fixed w-full z-50 bg-white/85 dark:bg-black/75 backdrop-blur-md border-b border-black/5 dark:border-white/10 transition-all duration-300" style={{ top: isMounted ? bannerHeight : '0px' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -85,7 +85,7 @@ const Navigation = () => {
                 className="w-full h-full object-contain"
               />
             </div>
-            <span className="text-xl font-bold text-primary" suppressHydrationWarning>
+            <span className="text-xl font-bold text-slate-900 dark:text-slate-50" suppressHydrationWarning>
               Saro 2
             </span>
           </Link>
@@ -94,7 +94,7 @@ const Navigation = () => {
           <div className="hidden md:flex items-center space-x-8">
             <Link
               href="/"
-              className="flex items-center space-x-1 text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105 rounded-lg px-3 py-2"
+              className="flex items-center space-x-1 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-100 transition-all duration-300 hover:scale-105 rounded-lg px-3 py-2"
             >
               <Home className="w-4 h-4" />
               <span className="font-medium">Home</span>
@@ -102,7 +102,7 @@ const Navigation = () => {
 
             {/* Generate dropdown */}
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center space-x-1 text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105  rounded-lg px-3 py-2">
+              <DropdownMenuTrigger className="flex items-center space-x-1 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-100 transition-all duration-300 hover:scale-105  rounded-lg px-3 py-2">
                 <Play className="w-4 h-4" />
                 <span className="font-medium">Generate</span>
                 <ChevronDown className="w-4 h-4" />
@@ -157,7 +157,7 @@ const Navigation = () => {
 
             <Link
               href="/plans"
-              className="flex items-center space-x-1 text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105 rounded-lg px-3 py-2"
+              className="flex items-center space-x-1 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-100 transition-all duration-300 hover:scale-105 rounded-lg px-3 py-2"
             >
               <DollarSign className="w-4 h-4" />
               <span className="font-medium">Pricing</span>
@@ -165,7 +165,7 @@ const Navigation = () => {
 
             <Link
               href="/blog"
-              className="flex items-center space-x-1 text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-105 rounded-lg px-3 py-2"
+              className="flex items-center space-x-1 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-100 transition-all duration-300 hover:scale-105 rounded-lg px-3 py-2"
             >
               <BookOpen className="w-4 h-4" />
               <span className="font-medium">Blog</span>
@@ -189,11 +189,11 @@ const Navigation = () => {
                       {getUserInitials()}
                     </div>
                     {/* User Name */}
-                    <span className="text-sm font-medium text-foreground hidden sm:block">
+                    <span className="text-sm font-medium text-slate-900 dark:text-slate-50 hidden sm:block">
                       {getUserDisplayName()}
                     </span>
                     {/* Dropdown Arrow */}
-                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    <ChevronDown className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -278,30 +278,30 @@ const Navigation = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border">
+          <div className="md:hidden py-4 border-t border-black/5 dark:border-white/10">
             <div className="flex flex-col space-y-4">
-              <Link href="/" className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-300 px-2 py-1">
+              <Link href="/" className="flex items-center space-x-2 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-300 px-2 py-1">
                 <Home className="w-4 h-4" />
                 <span>Home</span>
               </Link>
               <div className="px-2 pt-2">
-                <div className="text-xs text-muted-foreground pb-1">Generate</div>
+                <div className="text-xs text-slate-600 dark:text-slate-400 pb-1">Generate</div>
                 <div className="flex flex-col">
-                  <Link href="/text-to-video" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Text to Video</Link>
-                  <Link href="/image-to-video" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Image to Video</Link>
-                  <Link href="/multi-scene" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Multi-scene (25s)</Link>
-                  <Link href="/watermark-remover" className="px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">Sora2 Watermark Remover</Link>
+                  <Link href="/text-to-video" className="px-2 py-1 rounded-md text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">Text to Video</Link>
+                  <Link href="/image-to-video" className="px-2 py-1 rounded-md text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">Image to Video</Link>
+                  <Link href="/multi-scene" className="px-2 py-1 rounded-md text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">Multi-scene (25s)</Link>
+                  <Link href="/watermark-remover" className="px-2 py-1 rounded-md text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">Sora2 Watermark Remover</Link>
                 </div>
               </div>
-              <Link href="/plans" className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-300 px-2 py-1">
+              <Link href="/plans" className="flex items-center space-x-2 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-300 px-2 py-1">
                 <DollarSign className="w-4 h-4" />
                 <span>Pricing</span>
               </Link>
-              <Link href="/blog" className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-300 px-2 py-1">
+              <Link href="/blog" className="flex items-center space-x-2 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-slate-100 transition-colors duration-300 px-2 py-1">
                 <BookOpen className="w-4 h-4" />
                 <span>Blog</span>
               </Link>
-              <div className="flex flex-col space-y-2 pt-4 border-t border-border">
+              <div className="flex flex-col space-y-2 pt-4 border-t border-black/5 dark:border-white/10">
                 {/* Mobile Theme Toggle */}
                 <div className="flex justify-center pb-2">
                   <ThemeToggle />

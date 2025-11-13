@@ -1,4 +1,5 @@
 import Blog from '@/page-components/Blog'
+import { getAllBlogPosts } from '@/data/blogPosts'
 
 export const metadata = {
   title: 'Sora2 Blog | Sora 2 Tutorials & Guides',
@@ -36,7 +37,9 @@ export const metadata = {
 }
 
 export default function BlogPage() {
-  return <Blog />
+  // Read blog posts on the server side
+  const blogPosts = getAllBlogPosts();
+  return <Blog blogPosts={blogPosts} />
 }
 
 // Cache blog index with ISR for 10 minutes
