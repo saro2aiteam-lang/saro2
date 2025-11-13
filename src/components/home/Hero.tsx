@@ -32,7 +32,7 @@ const Hero = () => {
   const [demoPrompt, setDemoPrompt] = useState('');
   const [isGeneratingDemo, setIsGeneratingDemo] = useState(false);
   const [showDemoVideo, setShowDemoVideo] = useState(false);
-  const DEMO_VIDEO_PATH = '/videos/sushi.mp4';
+  const DEMO_VIDEO_PATH = '/videos/cyberpunk city.mp4';
 
   // Set video source and mounted state on client side only to avoid hydration mismatch
   useEffect(() => {
@@ -177,7 +177,7 @@ const Hero = () => {
                       handleGenerateDemo();
                     }
                   }}
-                  placeholder="Describe a scene... (e.g., A cat walking in Tokyo)"
+                  placeholder="a futuristic cyberpunk city at night"
                   disabled={isGeneratingDemo}
                   className="w-full px-4 py-3 sm:py-4 text-sm sm:text-base bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none transition-all pr-28 sm:pr-32 disabled:opacity-50"
                 />
@@ -208,7 +208,7 @@ const Hero = () => {
               <div className="mt-6 animate-fade-in">
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-black/20 backdrop-blur-sm border border-white/20">
                   <video
-                    src={DEMO_VIDEO_PATH}
+                    src={encodeURI(DEMO_VIDEO_PATH)}
                     controls
                     autoPlay
                     loop
@@ -216,7 +216,7 @@ const Hero = () => {
                     playsInline
                     className="w-full h-auto max-h-[60vh] object-contain"
                   >
-                    <source src={DEMO_VIDEO_PATH} type="video/mp4" />
+                    <source src={encodeURI(DEMO_VIDEO_PATH)} type="video/mp4" />
                   </video>
                 </div>
               </div>
