@@ -299,10 +299,10 @@ const Storyboard = () => {
   return (
     <div className="min-h-screen bg-background flex">
       <SEOHead 
-        title="Sora 2 Pro Multi-Scene Video Generator | Storyboard"
-        description="Create multi-scene AI videos up to 25s for YouTube Shorts, TikTok and Reels. Control scenes and maintain visual consistency."
-        canonical="https://saro2.ai/multi-scene"
-        keywords="Sora 2 Pro Storyboard,AI video storyboard,multi-scene video,TikTok video generator,Instagram Reels,YouTube Shorts,AI video creator,Sora 2,storyboard generator,AI video maker,social media video creator"
+        title="Sora 2 Pro Storyboard | Multi-Scene Video Generator"
+        description="Sora 2 Pro Storyboard - Create multi-scene AI videos up to 25s for YouTube Shorts, TikTok and Reels. Control scenes and maintain visual consistency."
+        canonical="https://saro2.ai/sora-2-storyboard"
+        keywords="Sora 2 Pro Storyboard,sora 2 storyboard,AI video storyboard,multi-scene video,TikTok video generator,Instagram Reels,YouTube Shorts,AI video creator,Sora 2,storyboard generator,AI video maker,social media video creator"
         image="https://saro2.ai/og-sora2-storyboard.jpg"
       />
       
@@ -315,7 +315,7 @@ const Storyboard = () => {
             "@type": "SoftwareApplication",
             "name": "Sora 2 Pro Storyboard",
             "description": "Create professional multi-scene AI videos up to 25 seconds perfect for YouTube Shorts, TikTok, Instagram Reels. Design your story with scene-by-scene control and seamless transitions using Sora 2 Pro Storyboard's advanced capabilities.",
-            "url": "https://saro2.ai/multi-scene",
+            "url": "https://saro2.ai/sora-2-storyboard",
             "applicationCategory": "MultimediaApplication",
             "operatingSystem": "Web Browser",
             "offers": {
@@ -444,7 +444,7 @@ const Storyboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Page Title */}
           <h1 className="text-4xl font-bold text-foreground mb-4 text-center">
-            Sora 2 Pro Multi-Scene Video Generator
+            Sora 2 Pro Storyboard
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8 text-center">
             Create multi-scene AI videos up to 25s for YouTube Shorts, TikTok and Reels — no watermark
@@ -497,7 +497,7 @@ const Storyboard = () => {
                     <span className="text-sm font-bold text-foreground uppercase tracking-wide">Output</span>
                   </div>
                   <span className="text-xs font-semibold text-muted-foreground bg-muted px-3 py-1.5 rounded-full border border-border whitespace-nowrap">
-                    Multi-Scene Video
+                    Sora 2 Storyboard Video
                   </span>
                 </div>
 
@@ -591,7 +591,7 @@ const Storyboard = () => {
             {/* What is Sora 2 Pro Storyboard */}
             <div className="mb-12">
               <h2 className="text-3xl font-bold text-foreground mb-4 text-center">
-                What is Sora 2 Pro Storyboard — Multi-Scene AI Video Creator?
+                What is Sora 2 Pro Storyboard?
               </h2>
               <Card className="p-8 bg-card hover:shadow-xl transition-shadow duration-300">
                 <div className="max-w-4xl mx-auto text-center">
@@ -605,7 +605,7 @@ const Storyboard = () => {
                       Up to 25s Duration
                     </span>
                     <span className="inline-flex items-center gap-1 px-3 py-1 bg-card border border-border rounded-full">
-                      Multi-Scene Control
+                      Multi-Scene Control (Storyboard)
                     </span>
                     <span className="inline-flex items-center gap-1 px-3 py-1 bg-card border border-border rounded-full">
                       Social Media Ready
@@ -689,7 +689,7 @@ const Storyboard = () => {
                       <h3 className="text-xl font-semibold text-foreground mb-2">Multi-Scene Sequencing</h3>
                       <p className="text-muted-foreground">
                         With Sora 2 Pro Storyboard, define multiple scenes in order to create coherent storylines. 
-                        The Sora 2 Pro Storyboard engine ensures smooth transitions between scenes.
+                        The Sora 2 Pro Storyboard engine ensures smooth transitions between scenes for seamless multi-scene videos.
                       </p>
                     </div>
                   </div>
@@ -734,7 +734,7 @@ const Storyboard = () => {
                       <h3 className="text-xl font-semibold text-foreground mb-2">Reference Image Support</h3>
                       <p className="text-muted-foreground">
                         Upload a reference image to guide the Sora 2 Pro Storyboard generation process, 
-                        ensuring visual consistency throughout your multi-scene video.
+                        ensuring visual consistency throughout your Sora 2 Storyboard video.
                       </p>
                     </div>
                   </div>
@@ -819,7 +819,7 @@ const Storyboard = () => {
               <Card className="p-6 text-center bg-card hover:shadow-xl transition-shadow duration-300">
                 <Download className="w-10 h-10 text-primary mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-foreground mb-2">Fast Export & Share</h3>
-                <p className="text-muted-foreground">Generate, preview and download your multi-scene videos in minutes.</p>
+                <p className="text-muted-foreground">Generate, preview and download your Sora 2 Storyboard videos in minutes.</p>
               </Card>
             </div>
           </section>
@@ -836,7 +836,7 @@ const Storyboard = () => {
                     <Film className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-foreground mb-2">Multi-Scene AI Videos</h3>
+                    <h3 className="text-xl font-semibold text-foreground mb-2">Sora 2 Storyboard AI Videos</h3>
                     <p className="text-muted-foreground">
                       Sora 2 Pro Storyboard API lets you design complete multi-scene video flows where every shot follows your creative vision. 
                       You define each scene's visuals and pacing using text or image prompts, while the API ensures natural transitions 
@@ -939,7 +939,7 @@ const Storyboard = () => {
                       How can Sora 2 Pro Storyboard API help in creating multi-scene AI videos?
                     </h3>
                     <p className="text-muted-foreground">
-                      Sora 2 Pro Storyboard API lets you design complete multi-scene video flows where every shot follows your creative vision. 
+                      Sora 2 Pro Storyboard API lets you design complete Sora 2 Storyboard video flows where every shot follows your creative vision. 
                       You define each scene's visuals and pacing using text or image prompts, while the API ensures natural transitions 
                       and consistent visual style throughout the video.
                     </p>
@@ -1029,7 +1029,7 @@ const Storyboard = () => {
                     </h3>
                     <p className="text-muted-foreground">
                       Yes, you can upload a reference image to guide the Sora 2 Pro Storyboard generation process. 
-                      This helps ensure visual consistency throughout your multi-scene video. The image is applied globally 
+                      This helps ensure visual consistency throughout your Sora 2 Storyboard video. The image is applied globally 
                       to all scenes in your storyboard.
                     </p>
                   </div>

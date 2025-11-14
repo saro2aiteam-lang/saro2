@@ -21,7 +21,7 @@ const Index = () => {
         ogTitle="Sora 2 AI Video Generator | Text-to-Video with Sora-Level Quality"
         ogDescription="Create cinematic videos from text prompts. Advanced motion realism, multi-shot storytelling, and creative control. Independent platform, easy to use."
         canonical="https://saro2.ai/"
-        keywords="AI video ads, multi-scene storyboard, consistent characters, 25 second AI video, vertical ad templates, TikTok ad generator, Shopify product video, AI storyboard builder"
+        keywords="AI video ads, Sora 2 Storyboard, sora 2 storyboard, multi-scene storyboard, consistent characters, 25 second AI video, vertical ad templates, TikTok ad generator, Shopify product video, AI storyboard builder"
       />
       <ScrollProgress />
       <Navigation />

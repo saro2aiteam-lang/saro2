@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'AI Video Generator | Professional Video Creation Platform | Saro2.ai',
-  description: 'Create professional AI-generated videos with our independent video generation platform. Text-to-video, image-to-video, and multi-scene storyboard features. Commercial licensing included.',
+  description: 'Create professional AI-generated videos with our independent video generation platform. Text-to-video, image-to-video, and Sora 2 Storyboard (multi-scene storyboard) features. Commercial licensing included.',
   robots: {
     index: false,
     follow: false,

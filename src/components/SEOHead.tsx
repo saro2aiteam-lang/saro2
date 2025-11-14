@@ -21,7 +21,7 @@ const SEOHead = ({
   ogDescription = "Create cinematic videos from text prompts. Advanced motion realism, multi-shot storytelling, and creative control. Independent platform, easy to use.",
   canonical,
   noindex = false,
-  keywords = "AI video ads, multi-scene storyboard, consistent characters, 25 second AI video, vertical ad templates, TikTok ad generator, Shopify product video, AI storyboard builder",
+  keywords = "AI video ads, Sora 2 Storyboard, sora 2 storyboard, multi-scene storyboard, consistent characters, 25 second AI video, vertical ad templates, TikTok ad generator, Shopify product video, AI storyboard builder",
   image = "https://saro2.ai/placeholder.svg"
 }: SEOHeadProps) => {
   const pathname = usePathname();
@@ -135,8 +135,8 @@ const SEOHead = ({
     updateTwitterTag('twitter:description', ogDescription);
     updateTwitterTag('twitter:card', 'summary_large_image');
     updateTwitterTag('twitter:image', image);
-    updateTwitterTag('twitter:site', '@saro2_ai');
-    updateTwitterTag('twitter:creator', '@saro2_ai');
+    updateTwitterTag('twitter:site', '@saro2aiteam');
+    updateTwitterTag('twitter:creator', '@saro2aiteam');
 
     // Add structured data for SEO
     const addStructuredData = () => {
@@ -153,7 +153,7 @@ const SEOHead = ({
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "Sora 2",
-        "alternateName": ["Sora 2", "saro2.ai", "AI Video Ads", "Multi-Scene Storyboard"],
+        "alternateName": ["Sora 2", "saro2.ai", "AI Video Ads", "Sora 2 Storyboard", "Multi-Scene Storyboard"],
         "description": "Create cinematic videos from text prompts. Advanced motion realism, multi-shot storytelling, and creative control. Independent platform, easy to use.",
         "url": baseUrl,
         "applicationCategory": "MultimediaApplication",
@@ -181,7 +181,7 @@ const SEOHead = ({
           "worstRating": "1"
         },
         "featureList": [
-          "Multi-scene storyboard builder",
+          "Sora 2 Storyboard builder (multi-scene storyboard)",
           "Consistent character identity",
           "25-30 second video extension",
           "Ad-ready layouts and templates",
@@ -194,7 +194,7 @@ const SEOHead = ({
         "video": {
           "@type": "VideoObject",
           "name": "Sora 2 AI Video Ads Tutorial",
-          "description": "Learn how to create multi-scene video ads with consistent characters",
+          "description": "Learn how to create Sora 2 Storyboard (multi-scene) video ads with consistent characters",
           "thumbnailUrl": `${baseUrl}/placeholder.svg`,
           "uploadDate": "2025-01-01"
         },

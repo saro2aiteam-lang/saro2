@@ -150,7 +150,7 @@ export default function HomePage() {
       alternateName: ['Sora 2-style Generator', 'Sora-compatible Video Generator', 'Saro.ai'],
       applicationCategory: 'MultimediaApplication',
       operatingSystem: 'Web',
-      description: 'Sora 2-style AI video generator - Create cinematic videos using Sora-compatible models and multi-model generation pipeline. Sora 2-style text-to-video, image-to-video, and multi-scene storyboard. No watermark, no invite code required. Saro.ai is an independent platform, not affiliated with OpenAI or Sora 2.',
+      description: 'Sora 2-style AI video generator - Create cinematic videos using Sora-compatible models and multi-model generation pipeline. Sora 2-style text-to-video, image-to-video, and Sora 2 Storyboard (multi-scene storyboard). No watermark, no invite code required. Saro.ai is an independent platform, not affiliated with OpenAI or Sora 2.',
       url: 'https://saro2.ai',
       offers: {
         '@type': 'Offer',
@@ -173,7 +173,7 @@ export default function HomePage() {
       featureList: [
         'Sora 2-style text-to-video generation',
         'Sora 2-style image-to-video conversion',
-        'Sora 2-style multi-scene storyboard builder',
+        'Sora 2 Storyboard builder (multi-scene storyboard)',
         'Sora-compatible multi-model pipeline',
         'Consistent character identity',
         '25-30 second video extension',
@@ -201,7 +201,7 @@ export default function HomePage() {
       '@context': 'https://schema.org',
       '@type': 'VideoObject',
       name: 'Sora 2-Style Video Generator Demo - How to Use Sora 2-Style Generation',
-      description: 'Watch how Saro.ai generates Sora 2-style cinematic videos from text prompts using Sora-compatible models. Learn how to use Sora 2-style generation for text-to-video, image-to-video, and multi-scene storyboard creation. Saro.ai is an independent platform.',
+      description: 'Watch how Saro.ai generates Sora 2-style cinematic videos from text prompts using Sora-compatible models. Learn how to use Sora 2-style generation for text-to-video, image-to-video, and Sora 2 Storyboard (multi-scene storyboard) creation. Saro.ai is an independent platform.',
       thumbnailUrl: 'https://saro2.ai/logo.png',
       uploadDate: '2024-01-01T00:00:00Z',
       contentUrl: 'https://saro2.ai',
@@ -234,7 +234,7 @@ export default function HomePage() {
           name: 'Can I create Sora 2-style 25-second videos?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes — our Multi-Scene Storyboard feature supports 25-second Sora 2-style multi-scene generation.'
+            text: 'Yes — our Sora 2 Storyboard feature supports 25-second Sora 2-style multi-scene generation.'
           }
         },
         {
@@ -250,7 +250,7 @@ export default function HomePage() {
           name: 'How to use Sora 2-style generation?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'To use Sora 2-style generation, simply enter your text prompt on saro2.ai and click generate. We support Sora 2-style text-to-video, image-to-video, and multi-scene storyboard creation. All Sora 2-style videos are watermark-free.'
+            text: 'To use Sora 2-style generation, simply enter your text prompt on saro2.ai and click generate. We support Sora 2-style text-to-video, image-to-video, and Sora 2 Storyboard (multi-scene storyboard) creation. All Sora 2-style videos are watermark-free.'
           }
         }
       ]

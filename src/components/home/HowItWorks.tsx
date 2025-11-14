@@ -14,7 +14,7 @@ const steps = [
     number: '2',
     icon: Sliders,
     title: 'Choose ratio, duration or storyboard timing',
-    description: 'Select aspect ratio, video duration, or configure multi-scene Sora 2-style storyboard timing.'
+    description: 'Select aspect ratio, video duration, or configure Sora 2 Storyboard timing for multi-scene videos.'
   },
   {
     number: '3',

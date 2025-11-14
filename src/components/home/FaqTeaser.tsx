@@ -15,12 +15,12 @@ const faqs = [
   {
     id: 'item-1',
     question: 'What makes Sora 2 different from other AI video generators?',
-    answer: 'Sora 2 specializes in multi-scene video ads with consistent characters. While other tools generate 10-second single shots, we create 25+ second narratives perfect for TikTok, Shopify, and product promos. Our storyboard builder lets you control continuity, maintain character identity across scenes, and produce ad-ready content with templates.'
+    answer: 'Sora 2 specializes in Sora 2 Storyboard video ads with consistent characters. While other tools generate 10-second single shots, we create 25+ second narratives perfect for TikTok, Shopify, and product promos. Our Sora 2 Storyboard builder lets you control continuity, maintain character identity across scenes, and produce ad-ready content with templates.'
   },
   {
     id: 'item-2',
     question: 'How does character consistency work across multiple scenes?',
-    answer: 'Our multi-scene storyboard feature maintains appearance, clothing, and hairstyle consistency across all scenes in your video. This is essential for brand storytelling, mascot videos, and product demos where the same character appears in different settings.'
+    answer: 'Our Sora 2 Storyboard feature maintains appearance, clothing, and hairstyle consistency across all scenes in your video. This is essential for brand storytelling, mascot videos, and product demos where the same character appears in different settings.'
   },
   {
     id: 'item-3',
@@ -45,7 +45,7 @@ const faqs = [
   {
     id: 'item-11',
     question: 'Can I create Sora 2-style 25-second videos?',
-    answer: 'Yes — our Multi-Scene Storyboard feature supports 25-second Sora 2-style multi-scene generation.'
+    answer: 'Yes — our Sora 2 Storyboard feature supports 25-second Sora 2-style multi-scene generation.'
   },
   {
     id: 'item-7',

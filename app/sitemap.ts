@@ -22,10 +22,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.95,
     },
     {
-      url: `${baseUrl}/multi-scene`,
+      url: `${baseUrl}/sora-2-storyboard`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.95,
+    },
+    {
+      url: `${baseUrl}/multi-scene`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/image-to-video`,

@@ -75,7 +75,7 @@ const faqs = [
   },
   {
     q: 'Can I create Sora 2-style 25-second videos?',
-    a: 'Yes — our Multi-Scene Storyboard feature supports 25-second Sora 2-style multi-scene generation.'
+    a: 'Yes — our Sora 2 Storyboard feature supports 25-second Sora 2-style multi-scene generation.'
   },
   {
     q: 'If I make a payment, will my payment information be safe?',

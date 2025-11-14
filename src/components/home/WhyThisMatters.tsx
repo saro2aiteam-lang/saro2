@@ -18,7 +18,7 @@ const painPoints = [
   {
     icon: Layout,
     title: "Complex storyboarding",
-    description: "Multi-scene videos require technical expertise."
+    description: "Sora 2 Storyboard videos require technical expertise."
   },
   {
     icon: Clock,
@@ -52,7 +52,7 @@ const keyFeatures = [
   {
     icon: Share2,
     title: "25s Sora 2-Style Storyboard",
-    description: "Multi-scene storytelling ideal for ads.",
+    description: "Sora 2 Storyboard storytelling ideal for ads.",
     gradient: "from-rose-500/10 to-pink-500/10",
     iconColor: "text-rose-500"
   }

@@ -45,11 +45,13 @@ const Footer = () => {
               </span>
             </div>
             <p className="text-muted-foreground text-sm mb-4 max-w-sm">
-              Sora 2 AI Video Generator. Create cinematic videos with Sora 2 text-to-video, image-to-video, and multi-scene storyboard. Sora 2 access with no watermark.
+              Sora 2 AI Video Generator. Create cinematic videos with Sora 2 text-to-video, image-to-video, and Sora 2 Storyboard (multi-scene storyboard). Sora 2 access with no watermark.
             </p>
             <div className="flex space-x-4">
               <a 
-                href="#" 
+                href="https://x.com/saro2aiteam" 
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
                 aria-label="Twitter"
               >

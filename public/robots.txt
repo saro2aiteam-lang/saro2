@@ -17,6 +17,7 @@ Disallow: /dashboard/
 
 # Allow important pages
 Allow: /text-to-video
+Allow: /sora-2-storyboard
 Allow: /multi-scene
 Allow: /image-to-video
 Allow: /watermark-remover

@@ -6,7 +6,7 @@ author: "Saro 2 Team"
 publishedAt: "2025-11-15"
 readTime: "8 min read"
 category: "Comparison"
-tags: ["sora-2", "sora-2-pro", "storyboard", "ai-video-generation", "multi-scene", "no-watermark", "saro2-ai", "2025", "cinematic-video", "text-to-video", "ai-filmmaking"]
+tags: ["sora-2", "sora-2-pro", "storyboard", "sora-2-storyboard", "ai-video-generation", "multi-scene", "no-watermark", "saro2-ai", "2025", "cinematic-video", "text-to-video", "ai-filmmaking"]
 featured: true
 image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop&q=80"
 ---

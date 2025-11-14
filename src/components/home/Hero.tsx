@@ -115,8 +115,8 @@ const Hero = () => {
                 </span>
               </span>
             </h1>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white/95 drop-shadow-[0_0_16px_rgba(0,0,0,0.3)] leading-relaxed px-4">
-              No watermark • No regional limits • No invite needed • 25s multi-scene storyboards • Sora-compatible quality
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white/95 drop-shadow-[0_0_16px_rgba(0,0,0,0.3)] leading-relaxed px-4" suppressHydrationWarning>
+              No watermark • No regional limits • No invite needed • 25s Sora 2 Storyboard • Sora-compatible quality
             </p>
           </div>
 
@@ -152,7 +152,7 @@ const Hero = () => {
               <Button
                 variant="outline"
                 size="lg"
-                onClick={() => router.push('/multi-scene')}
+                onClick={() => router.push('/sora-2-storyboard')}
                 className="w-full sm:w-auto rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/20 dark:hover:bg-white/10 text-white font-semibold px-6 sm:px-8 py-6 sm:py-7 text-base sm:text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105"
               >
                 <Sparkles className="w-5 h-5 mr-2" />

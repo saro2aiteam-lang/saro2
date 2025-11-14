@@ -25,8 +25,8 @@ const navItems: NavItem[] = [
     icon: FileText,
   },
   {
-    name: "Multi-scene (25s)",
-    href: "/multi-scene",
+    name: "Sora 2 Storyboard",
+    href: "/sora-2-storyboard",
     icon: Clapperboard,
   },
   {

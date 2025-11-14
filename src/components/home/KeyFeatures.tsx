@@ -77,7 +77,7 @@ const KeyFeatures = () => {
               </h3>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Multi-scene storytelling for ads, trailers, product showcases, and cinematic short films.
+              Sora 2 Storyboard storytelling for ads, trailers, product showcases, and cinematic short films.
             </p>
           </Card>
 

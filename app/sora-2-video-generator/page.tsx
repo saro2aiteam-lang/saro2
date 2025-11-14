@@ -51,8 +51,8 @@ const features = [
   {
     icon: Clapperboard,
     title: '25s Sora 2-Style Storyboard',
-    description: 'Create multi-scene Sora 2-style storyboards up to 25 seconds. Ideal for ads, narratives, and longer-form content.',
-    href: '/multi-scene'
+    description: 'Create Sora 2 Storyboard (multi-scene) videos up to 25 seconds. Ideal for ads, narratives, and longer-form content.',
+    href: '/sora-2-storyboard'
   },
 ]
 
