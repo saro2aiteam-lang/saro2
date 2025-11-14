@@ -116,7 +116,7 @@ const Hero = () => {
               </span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white/95 drop-shadow-[0_0_16px_rgba(0,0,0,0.3)] leading-relaxed px-4" suppressHydrationWarning>
-              No watermark • No regional limits • No invite needed • 25s Sora 2 Storyboard • Sora-compatible quality
+              No watermark • No regional limits • No invite code needed • 25s Sora 2 Storyboard • Sora-compatible quality
             </p>
           </div>
 
