@@ -165,16 +165,11 @@ export const Sora2Mode: React.FC<Sora2ModeProps> = ({
         </div>
         <div className="relative">
           <Textarea
-            placeholder=""
+            placeholder="Describe the video you want to create..."
             value={params.prompt || ''}
             onChange={(e) => onChange({ ...params, prompt: e.target.value })}
             className="min-h-[120px] resize-none border-input focus:border-primary focus:ring-primary relative z-10 bg-transparent"
           />
-          {!params.prompt && (
-            <div className="absolute inset-0 pointer-events-none z-0 px-3 py-2 text-sm text-muted-foreground/40 leading-relaxed whitespace-pre-wrap break-words flex items-start pt-2">
-              <span>A master sushi chef expertly preparing nigiri in a traditional Japanese restaurant. Close-up shots of precise knife work cutting fresh salmon. Rice being molded with practiced hands. Elegant presentation on wooden serving board. Natural window lighting with clean aesthetic. ASMR-style detail focus.</span>
-            </div>
-          )}
         </div>
       </div>
 

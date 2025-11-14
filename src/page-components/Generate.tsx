@@ -40,7 +40,7 @@ import {
 import { User, Settings, LogOut, ChevronDown } from "lucide-react";
 
 const createDefaultSora2Params = (): Sora2Params => ({
-  prompt: 'A master sushi chef expertly preparing nigiri in a traditional Japanese restaurant. Close-up shots of precise knife work cutting fresh salmon. Rice being molded with practiced hands. Elegant presentation on wooden serving board. Natural window lighting with clean aesthetic. ASMR-style detail focus.',
+  prompt: '',
   negative_prompt: '',
   duration: 8,
   aspectRatio: '16:9',
@@ -288,21 +288,21 @@ const Generate = () => {
     // Check if prompt is provided in URL
     const urlPrompt = searchParams?.get('prompt');
     
-    // Pre-fill the prompt with URL parameter if available, otherwise use sample
-    setModeParams(prev => {
-      if (prev.mode === 'sora2') {
-        return {
-          mode: 'sora2',
-          params: {
-            ...prev.params,
-            prompt: urlPrompt ? decodeURIComponent(urlPrompt) : sample.prompt,
-            aspectRatio: sample.aspectRatio,
-            duration: sample.duration
-          }
-        };
-      }
-      return prev;
-    });
+    // Pre-fill the prompt with URL parameter if available, otherwise keep empty
+    if (urlPrompt) {
+      setModeParams(prev => {
+        if (prev.mode === 'sora2') {
+          return {
+            mode: 'sora2',
+            params: {
+              ...prev.params,
+              prompt: decodeURIComponent(urlPrompt),
+            }
+          };
+        }
+        return prev;
+      });
+    }
     
     // Clean up URL parameter after reading
     if (urlPrompt) {
