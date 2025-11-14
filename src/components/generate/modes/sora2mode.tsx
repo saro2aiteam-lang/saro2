@@ -227,7 +227,7 @@ export const Sora2Mode: React.FC<Sora2ModeProps> = ({
           Reset
         </Button>
         <Button 
-          className="flex-[2] h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02]"
+          className="flex-[2] h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-lg hover:shadow-xl transition-shadow duration-200 hover:scale-[1.02]"
           onClick={onGenerate}
           disabled={isGenerating || !params.prompt}
         >

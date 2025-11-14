@@ -113,7 +113,7 @@ const Hero = () => {
                       handleGenerate();
                     }}
                     disabled={false}
-                    className="rounded-full bg-gradient-to-r from-primary via-primary to-primary/90 hover:from-primary/90 hover:via-primary hover:to-primary/80 text-primary-foreground font-bold px-6 sm:px-8 py-6 sm:py-7 text-sm sm:text-base shadow-2xl hover:shadow-primary/50 transition-all hover:scale-110 active:scale-105 animate-pulse hover:animate-none"
+                    className="rounded-full bg-gradient-to-r from-primary via-primary to-primary/90 hover:from-primary/90 hover:via-primary hover:to-primary/80 text-primary-foreground font-bold px-6 sm:px-8 py-6 sm:py-7 text-sm sm:text-base shadow-2xl hover:shadow-primary/50 transition-all hover:scale-110 active:scale-105"
                   >
                     <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                     <span>Generate</span>

@@ -291,7 +291,7 @@ export const ReframeMode: React.FC<ReframeModeProps> = ({
 
         {/* Generate Button */}
         <Button 
-          className="w-full h-10 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-200"
+          className="w-full h-10 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-shadow duration-200"
           onClick={onGenerate}
           disabled={isGenerating || !params.prompt || !params.sourceVideo}
         >

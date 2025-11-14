@@ -253,7 +253,7 @@ const Veo3ImageMode: React.FC<Veo3ImageModeProps> = ({
         {/* Generate Button */}
         <div className="space-y-3 pt-4">
           <Button 
-            className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-lg hover:shadow-xl transition-all duration-200"
+            className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-lg hover:shadow-xl transition-shadow duration-200"
             onClick={onGenerate}
             disabled={isGenerating || !params.prompt || (!params.startFrame && !params.endFrame)}
           >

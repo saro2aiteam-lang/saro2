@@ -2071,7 +2071,7 @@ const Generate = () => {
             {/* Mobile: Fixed Generate Button */}
             <div className="lg:hidden fixed bottom-4 left-4 right-4 z-40">
               <button
-                className="w-full bg-primary text-primary-foreground font-bold py-4 px-6 rounded-2xl shadow-2xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-xl hover:scale-105 transition-all duration-200 backdrop-blur-sm"
+                className="w-full bg-primary text-primary-foreground font-bold py-4 px-6 rounded-2xl shadow-2xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-xl hover:scale-105 transition-shadow duration-200 backdrop-blur-sm"
                 onClick={handleGenerate}
                 disabled={isGenerating || userCredits <= 0}
               >
