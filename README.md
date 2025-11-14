@@ -1,5 +1,11 @@
-# Saro2.ai
+# Saro2.ai – Independent Multi-Model Video Generator
 
-An independent multi-model video generator supporting Sora2-style motion, 10s clips and 25s storyboards.
+Saro2.ai is an independent AI video generation platform supporting:
 
-Try the live version → https://saro2.ai
+- Sora-style motion
+- 10-second cinematic clips
+- 25-second multi-scene storyboards
+- watermark-free output
+- globally accessible models
+
+Live demo → https://saro2.ai
