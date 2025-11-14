@@ -102,20 +102,20 @@ const Hero = () => {
                     }
                   }}
                   placeholder="Describe the video you want to create..."
-                  className="w-full px-4 py-3 sm:py-4 text-sm sm:text-base bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none transition-all pr-28 sm:pr-32"
+                  className="w-full px-4 py-3 sm:py-4 text-sm sm:text-base bg-transparent text-foreground placeholder:text-muted-foreground/60 focus:outline-none transition-all pr-36 sm:pr-40"
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10">
                   <Button
-                    size="sm"
+                    size="lg"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
                       handleGenerate();
                     }}
                     disabled={false}
-                    className="rounded-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground font-medium px-4 sm:px-5 text-xs sm:text-sm shadow-md hover:shadow-lg transition-all hover:scale-105"
+                    className="rounded-full bg-gradient-to-r from-primary via-primary to-primary/90 hover:from-primary/90 hover:via-primary hover:to-primary/80 text-primary-foreground font-bold px-6 sm:px-8 py-6 sm:py-7 text-sm sm:text-base shadow-2xl hover:shadow-primary/50 transition-all hover:scale-110 active:scale-105 animate-pulse hover:animate-none"
                   >
-                    <Play className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5" />
+                    <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                     <span>Generate</span>
                   </Button>
                 </div>

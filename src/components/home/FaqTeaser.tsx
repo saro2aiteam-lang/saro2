@@ -81,22 +81,24 @@ const FaqTeaser = () => {
 
         {/* FAQ Accordion */}
         <Card className="p-8">
-          <Accordion type="single" collapsible className="w-full space-y-4">
-            {faqs.map((faq) => (
-              <AccordionItem 
-                key={faq.id} 
-                value={faq.id}
-                className="border border-border/50 rounded-lg px-6 py-2 data-[state=open]:bg-muted/50"
-              >
-                <AccordionTrigger className="text-left font-semibold hover:no-underline hover:text-primary">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground pt-2 pb-4">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+          <div suppressHydrationWarning>
+            <Accordion type="single" collapsible className="w-full space-y-4">
+              {faqs.map((faq) => (
+                <AccordionItem 
+                  key={faq.id} 
+                  value={faq.id}
+                  className="border border-border/50 rounded-lg px-6 py-2 data-[state=open]:bg-muted/50"
+                >
+                  <AccordionTrigger className="text-left font-semibold hover:no-underline hover:text-primary">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pt-2 pb-4">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
         </Card>
 
         {/* Bottom CTA */}
