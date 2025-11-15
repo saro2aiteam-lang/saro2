@@ -182,12 +182,17 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const webhookId = `webhook_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+  console.log(`[WEBHOOK-${webhookId}] ========================================`);
+  console.log(`[WEBHOOK-${webhookId}] 🚀 Starting webhook processing...`);
+  console.log(`[WEBHOOK-${webhookId}] Timestamp: ${new Date().toISOString()}`);
+  
   try {
-    console.log('[WEBHOOK] Starting webhook processing...');
     const body = await request.text();
-    console.log('[WEBHOOK] Received webhook request', {
+    console.log(`[WEBHOOK-${webhookId}] Received webhook request`, {
       headers: sanitizeHeaders(request.headers),
       bodyLength: body.length,
+      bodyPreview: body.substring(0, 500), // 前500字符用于调试
     });
     
     // 检查 Creem 使用的签名头名称（支持多种可能的头名称）
@@ -220,11 +225,11 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    console.log('[WEBHOOK] Signature verified successfully');
+    console.log(`[WEBHOOK-${webhookId}] ✅ Signature verified successfully`);
 
-    console.log('[WEBHOOK] Parsing event body...');
+    console.log(`[WEBHOOK-${webhookId}] Parsing event body...`);
     const event = JSON.parse(body);
-    console.log('[WEBHOOK] Event parsed successfully');
+    console.log(`[WEBHOOK-${webhookId}] ✅ Event parsed successfully`);
     
     // Normalize event type and payload shape from Creem
     // According to Creem docs: events have "eventType" field and "object" payload
@@ -233,14 +238,20 @@ export async function POST(request: NextRequest) {
     const eventId = event?.id || null;
     const createdAt = event?.created_at || null;
     
-    console.log('[WEBHOOK] Event type:', eventType);
-    console.log('[WEBHOOK] Event ID:', eventId);
-    console.log('[WEBHOOK] Event created_at:', createdAt);
+    console.log(`[WEBHOOK-${webhookId}] 📋 Event Details:`, {
+      eventType,
+      eventId,
+      createdAt,
+      hasPayload: !!payload,
+      payloadKeys: payload && typeof payload === 'object' ? Object.keys(payload) : null,
+    });
+    console.log(`[WEBHOOK-${webhookId}] Event summary:`, summarizeEventForLog({ type: eventType, data: payload }));
+    
+    // 打印完整 payload（用于调试）
+    console.log(`[WEBHOOK-${webhookId}] Full payload:`, JSON.stringify(payload, null, 2));
+    console.log(`[WEBHOOK-${webhookId}] Full event object:`, JSON.stringify(event, null, 2));
 
-    console.log('[WEBHOOK] Received webhook event:', eventType);
-    console.log('[WEBHOOK] Event has payload:', !!payload);
-    console.log('[WEBHOOK] Event summary:', summarizeEventForLog({ type: eventType, data: payload }));
-
+    console.log(`[WEBHOOK-${webhookId}] 🔀 Routing to event handler for: ${eventType}`);
     switch (eventType) {
       case 'subscription.active': {
         // According to Creem docs: Use only for synchronization
@@ -463,7 +474,21 @@ export async function POST(request: NextRequest) {
       case 'checkout.completed': {
         // According to Creem docs: A checkout session was completed
         // Returns all information about payment and order
-        await handleCheckoutCompleted(payload);
+        console.log(`[WEBHOOK-${webhookId}] 🛒 Processing checkout.completed event`);
+        console.log(`[WEBHOOK-${webhookId}] Payload structure:`, {
+          hasOrder: !!payload?.order,
+          hasProduct: !!payload?.product,
+          hasCustomer: !!payload?.customer,
+          hasSubscription: !!payload?.subscription,
+          hasMetadata: !!payload?.metadata,
+        });
+        try {
+          await handleCheckoutCompleted(payload);
+          console.log(`[WEBHOOK-${webhookId}] ✅ checkout.completed processed successfully`);
+        } catch (error) {
+          console.error(`[WEBHOOK-${webhookId}] ❌ Error processing checkout.completed:`, error);
+          throw error;
+        }
         break;
       }
       
@@ -483,21 +508,33 @@ export async function POST(request: NextRequest) {
       }
       
       default:
-        console.log('Unhandled event type:', eventType);
+        console.log(`[WEBHOOK-${webhookId}] ⚠️ Unhandled event type:`, eventType);
+        console.log(`[WEBHOOK-${webhookId}] Full event data:`, JSON.stringify({ eventType, payload }, null, 2));
     }
 
-    return NextResponse.json({ received: true });
+    console.log(`[WEBHOOK-${webhookId}] ✅ Webhook processing completed successfully`);
+    console.log(`[WEBHOOK-${webhookId}] ========================================`);
+    return NextResponse.json({ received: true, webhookId, eventType });
 
   } catch (error) {
-    console.error('Webhook error:', error);
+    console.error(`[WEBHOOK-${webhookId}] ❌❌❌ WEBHOOK ERROR:`, error);
+    console.error(`[WEBHOOK-${webhookId}] Error details:`, {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : 'UnknownError'
+    });
+    
     if (error instanceof WebhookProcessingError) {
+      console.error(`[WEBHOOK-${webhookId}] WebhookProcessingError - Status: ${error.status}`);
       return NextResponse.json(
-        { error: error.message },
+        { error: error.message, webhookId },
         { status: error.status }
       );
     }
+    
+    console.error(`[WEBHOOK-${webhookId}] Returning 500 error response`);
     return NextResponse.json(
-      { error: 'Webhook processing failed' },
+      { error: 'Webhook processing failed', webhookId },
       { status: 500 }
     );
   }
@@ -1203,7 +1240,12 @@ async function handlePaymentSucceeded(data: any) {
 }
 
 async function handleCheckoutCompleted(checkout: any) {
-  console.log('[WEBHOOK] Processing checkout.completed event');
+  const handlerId = `checkout_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+  console.log(`[WEBHOOK-${handlerId}] ========================================`);
+  console.log(`[WEBHOOK-${handlerId}] 🛒 Processing checkout.completed event`);
+  console.log(`[WEBHOOK-${handlerId}] Timestamp: ${new Date().toISOString()}`);
+  console.log(`[WEBHOOK-${handlerId}] Full checkout object:`, JSON.stringify(checkout, null, 2));
+  
   const supabaseAdmin = getSupabaseAdmin();
   
   const order = checkout.order;
@@ -1211,30 +1253,63 @@ async function handleCheckoutCompleted(checkout: any) {
   const customer = checkout.customer;
   const subscription = checkout.subscription;
   
+  console.log(`[WEBHOOK-${handlerId}] Extracted data:`, {
+    hasOrder: !!order,
+    hasProduct: !!product,
+    hasCustomer: !!customer,
+    hasSubscription: !!subscription,
+    orderType: order?.type,
+    productId: product?.id,
+    productName: product?.name,
+    billingType: product?.billing_type,
+    customerEmail: customer?.email,
+    customerId: customer?.id,
+  });
+  
   if (!order || !product || !customer) {
-    console.error('[WEBHOOK] Missing required data in checkout.completed');
+    console.error(`[WEBHOOK-${handlerId}] ❌ Missing required data in checkout.completed`, {
+      hasOrder: !!order,
+      hasProduct: !!product,
+      hasCustomer: !!customer,
+    });
     return;
   }
   
-  console.log('[WEBHOOK] Checkout details:', {
+  console.log(`[WEBHOOK-${handlerId}] 📋 Checkout details:`, {
     orderType: order.type,
+    orderId: order.id,
+    orderAmount: order.amount,
+    orderCurrency: order.currency,
+    orderTransaction: order.transaction,
     productId: product.id,
     productName: product.name,
     billingType: product.billing_type,
     hasSubscription: !!subscription,
-    customerEmail: customer.email
+    subscriptionId: subscription?.id,
+    customerEmail: customer.email,
+    customerId: customer.id,
+    customerName: customer.name,
   });
   
   // 如果是订阅产品，调用订阅处理函数
   if (product.billing_type === 'recurring' && subscription) {
-    console.log('[WEBHOOK] This is a subscription product, calling handleSubscriptionCreated');
+    console.log(`[WEBHOOK-${handlerId}] 📅 This is a subscription product, calling handleSubscriptionCreated`);
+    console.log(`[WEBHOOK-${handlerId}] Subscription details:`, {
+      subscriptionId: subscription.id,
+      status: subscription.status,
+      customerEmail: customer.email
+    });
     
     // 先查找用户
+    console.log(`[WEBHOOK-${handlerId}] Looking up user for subscription...`);
     const userId = await findUserByEmail(customer.email);
     if (!userId) {
-      console.error('[WEBHOOK] Cannot process subscription - user not found for email:', customer.email);
+      console.error(`[WEBHOOK-${handlerId}] ❌ Cannot process subscription - user not found for email:`, customer.email);
+      console.error(`[WEBHOOK-${handlerId}] ABORTING subscription processing`);
       return;
     }
+    
+    console.log(`[WEBHOOK-${handlerId}] ✅ User found for subscription:`, userId);
     
     // 获取 checkout metadata（包含 planId）
     const checkoutMetadata = checkout.metadata || {};
@@ -1279,34 +1354,56 @@ async function handleCheckoutCompleted(checkout: any) {
     return;
   }
   
-  // 查找用户
-  console.log('[WEBHOOK] Looking up user by email:', customer.email);
-  const { data: user, error: userError } = await supabaseAdmin
-    .from('users')
-    .select('id, email, credits_balance, credits_total')
-    .eq('email', customer.email)
-    .maybeSingle();
+  // 查找用户（使用支持大小写不敏感的查找函数）
+  console.log(`[WEBHOOK-${handlerId}] 🔍 Step 1: Looking up user by email:`, customer.email);
+  const userId = await findUserByEmail(customer.email);
   
-  if (userError) {
-    console.error('[WEBHOOK] Failed to lookup user by email:', userError);
-    return;
-  }
-  
-  if (!user) {
-    console.error('[WEBHOOK] User not found for email:', customer.email);
-    console.error('[WEBHOOK] Available users in database:');
+  if (!userId) {
+    console.error(`[WEBHOOK-${handlerId}] ❌ User not found for email:`, customer.email);
+    console.error(`[WEBHOOK-${handlerId}] Searching for similar emails...`);
+    
+    // 尝试查找所有用户，看看是否有相似的邮箱
     const { data: allUsers } = await supabaseAdmin
       .from('users')
       .select('id, email')
-      .limit(10);
-    console.error('[WEBHOOK] Sample users:', allUsers);
+      .limit(20);
+    console.error(`[WEBHOOK-${handlerId}] Available users in database (first 20):`, allUsers);
+    
+    // 尝试模糊匹配
+    const emailLower = customer.email.toLowerCase();
+    const similarUsers = allUsers?.filter(u => 
+      u.email?.toLowerCase().includes(emailLower) || 
+      emailLower.includes(u.email?.toLowerCase() || '')
+    );
+    if (similarUsers && similarUsers.length > 0) {
+      console.error(`[WEBHOOK-${handlerId}] ⚠️ Found similar emails:`, similarUsers);
+    }
+    
+    await logUnmatchedEmail(customer.email, checkout);
+    console.error(`[WEBHOOK-${handlerId}] ❌ ABORTING: Cannot proceed without user ID`);
     return;
   }
   
-  console.log('[WEBHOOK] User found:', {
+  console.log(`[WEBHOOK-${handlerId}] ✅ Step 1: User found - ID: ${userId}`);
+  
+  // 获取用户详细信息（包括积分）
+  const { data: user, error: userError } = await supabaseAdmin
+    .from('users')
+    .select('id, email, credits_balance, credits_total, flex_credits_balance, subscription_credits_balance')
+    .eq('id', userId)
+    .single();
+  
+  if (userError || !user) {
+    console.error('[WEBHOOK] Failed to load user details:', userError);
+    return;
+  }
+  
+  console.log(`[WEBHOOK-${handlerId}] ✅ Step 2: User details loaded:`, {
     id: user.id,
     email: user.email,
     currentCredits: user.credits_balance,
+    flexCredits: user.flex_credits_balance,
+    subscriptionCredits: user.subscription_credits_balance,
     totalCredits: user.credits_total
   });
   
@@ -1316,20 +1413,24 @@ async function handleCheckoutCompleted(checkout: any) {
   const orderMetadata = order?.metadata || {};
   const productMetadata = product?.metadata || {};
   
-  console.log('[WEBHOOK] Looking for plan config with productId:', product.id);
-  console.log('[WEBHOOK] Checkout metadata:', checkoutMetadata);
-  console.log('[WEBHOOK] Order metadata:', orderMetadata);
-  console.log('[WEBHOOK] Product metadata:', productMetadata);
-  console.log('[WEBHOOK] Environment variables check:');
-  console.log('[WEBHOOK] NEXT_PUBLIC_CREEM_PACK_STARTER_ID:', process.env.NEXT_PUBLIC_CREEM_PACK_STARTER_ID);
-  console.log('[WEBHOOK] NEXT_PUBLIC_CREEM_PACK_CREATOR_ID:', process.env.NEXT_PUBLIC_CREEM_PACK_CREATOR_ID);
-  console.log('[WEBHOOK] NEXT_PUBLIC_CREEM_PACK_DEV_ID:', process.env.NEXT_PUBLIC_CREEM_PACK_DEV_ID);
+  console.log(`[WEBHOOK-${handlerId}] 🔍 Step 3: Looking for plan config`);
+  console.log(`[WEBHOOK-${handlerId}] Product ID from Creem:`, product.id);
+  console.log(`[WEBHOOK-${handlerId}] Checkout metadata:`, JSON.stringify(checkoutMetadata, null, 2));
+  console.log(`[WEBHOOK-${handlerId}] Order metadata:`, JSON.stringify(orderMetadata, null, 2));
+  console.log(`[WEBHOOK-${handlerId}] Product metadata:`, JSON.stringify(productMetadata, null, 2));
   
-  console.log('[WEBHOOK] Available plans:', Object.values(creemPlansById).map(p => ({ 
+  console.log(`[WEBHOOK-${handlerId}] Environment variables check:`, {
+    NEXT_PUBLIC_CREEM_PACK_STARTER_ID: process.env.NEXT_PUBLIC_CREEM_PACK_STARTER_ID ? 'SET' : 'NOT SET',
+    NEXT_PUBLIC_CREEM_PACK_CREATOR_ID: process.env.NEXT_PUBLIC_CREEM_PACK_CREATOR_ID ? 'SET' : 'NOT SET',
+    NEXT_PUBLIC_CREEM_PACK_DEV_ID: process.env.NEXT_PUBLIC_CREEM_PACK_DEV_ID ? 'SET' : 'NOT SET',
+  });
+  
+  console.log(`[WEBHOOK-${handlerId}] Available plans in creemPlansById:`, Object.values(creemPlansById).map(p => ({ 
     id: p.id, 
     productId: p.productId, 
     name: p.name,
-    category: p.category 
+    category: p.category,
+    credits: p.credits
   })));
   
   // 尝试多种方式查找 planConfig
@@ -1342,11 +1443,12 @@ async function handleCheckoutCompleted(checkout: any) {
     planConfig = creemPlansById[planIdFromMetadata];
   }
   
-  console.log('[WEBHOOK] Plan config found:', planConfig ? {
+  console.log(`[WEBHOOK-${handlerId}] ${planConfig ? '✅' : '❌'} Step 3: Plan config ${planConfig ? 'found' : 'NOT FOUND'}:`, planConfig ? {
     id: planConfig.id,
     name: planConfig.name,
     credits: planConfig.credits,
-    category: planConfig.category
+    category: planConfig.category,
+    productId: planConfig.productId
   } : 'null');
   
   // 确定积分数量：优先使用 planConfig，其次使用 metadata 中的 credits
@@ -1403,7 +1505,7 @@ async function handleCheckoutCompleted(checkout: any) {
   }
   const paymentId = order.transaction;
   
-  console.log('[WEBHOOK] Checkout completed details:', {
+  console.log(`[WEBHOOK-${handlerId}] 📊 Step 4: Final details before processing:`, {
     userId: user.id,
     email: customer.email,
     productId: product.id,
@@ -1411,16 +1513,21 @@ async function handleCheckoutCompleted(checkout: any) {
     creditAmount,
     paymentId,
     amount: order.amount,
-    currency: order.currency
+    currency: order.currency,
+    planId: planId,
+    planCategory: planCategory,
+    foundViaMetadata: !planConfig
   });
   
   // 检查是否已经处理过这个支付
+  console.log(`[WEBHOOK-${handlerId}] 🔍 Step 5: Checking for duplicate payment`);
   let alreadyCredited = false;
   
   if (paymentId) {
+    console.log(`[WEBHOOK-${handlerId}] Checking credit_transactions for paymentId:`, paymentId);
     const { data: existingTx, error: txError } = await supabaseAdmin
       .from('credit_transactions')
-      .select('id, amount, created_at')
+      .select('id, amount, created_at, metadata')
       .eq('user_id', user.id)
       .eq('metadata->>paymentId', paymentId)
       .eq('reason', 'creem_payment')
@@ -1428,24 +1535,59 @@ async function handleCheckoutCompleted(checkout: any) {
       .maybeSingle();
     
     if (txError) {
-      console.error('[WEBHOOK] Failed to check existing credit transaction:', txError);
+      console.error(`[WEBHOOK-${handlerId}] ❌ Failed to check existing credit transaction:`, txError);
     } else {
       alreadyCredited = !!existingTx;
       if (alreadyCredited) {
-        console.log('[WEBHOOK] Duplicate payment detected:', { paymentId, userId: user.id });
+        console.log(`[WEBHOOK-${handlerId}] ⚠️ Duplicate payment detected:`, { 
+          paymentId, 
+          userId: user.id,
+          existingTxId: existingTx.id,
+          existingTxAmount: existingTx.amount,
+          existingTxCreatedAt: existingTx.created_at
+        });
+      } else {
+        console.log(`[WEBHOOK-${handlerId}] ✅ No duplicate found - proceeding with credit`);
       }
     }
+  } else {
+    console.warn(`[WEBHOOK-${handlerId}] ⚠️ No paymentId in order.transaction - cannot check for duplicates`);
   }
   
+  console.log(`[WEBHOOK-${handlerId}] 🔍 Step 6: Credit decision:`, {
+    alreadyCredited,
+    creditAmount,
+    willCredit: !alreadyCredited && creditAmount > 0
+  });
+  
   if (!alreadyCredited && creditAmount > 0) {
-    console.log('[WEBHOOK] Attempting to credit flex credits via RPC:', {
+    console.log(`[WEBHOOK-${handlerId}] 💰 Step 6: Attempting to credit flex credits via RPC:`, {
       userId: user.id,
       amount: creditAmount,
       reason: 'creem_payment',
-      paymentId: paymentId
+      paymentId: paymentId,
+      planId: planId,
+      planCategory: planCategory
     });
 
     try {
+      console.log(`[WEBHOOK-${handlerId}] Calling RPC: credit_user_credits_transaction with params:`, {
+        p_user_id: user.id,
+        p_amount: creditAmount,
+        p_reason: 'creem_payment',
+        p_bucket: 'flex',
+        p_metadata: {
+          planId: planId ?? planConfig?.id ?? 'unknown',
+          planCategory: planCategory ?? planConfig?.category ?? 'pack',
+          paymentId: paymentId ?? null,
+          source: 'webhook',
+          eventType: 'checkout.completed',
+          productId: product.id,
+          productName: product.name,
+          foundViaMetadata: !planConfig
+        }
+      });
+      
       const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc('credit_user_credits_transaction', {
         p_user_id: user.id,
         p_amount: creditAmount,
@@ -1464,14 +1606,38 @@ async function handleCheckoutCompleted(checkout: any) {
       });
 
       if (rpcError) {
-        console.error('[WEBHOOK] Failed to credit flex credits via RPC:', rpcError);
+        console.error(`[WEBHOOK-${handlerId}] ❌ Failed to credit flex credits via RPC:`, {
+          error: rpcError,
+          code: rpcError.code,
+          message: rpcError.message,
+          details: rpcError.details,
+          hint: rpcError.hint,
+          userId: user.id,
+          amount: creditAmount
+        });
       } else {
         const row = Array.isArray(rpcData) ? (rpcData as any[])[0] : null;
-        console.log('[WEBHOOK] ✅ Flex credits credited via RPC!', { userId: user.id, amount: creditAmount, snapshot: row });
+        console.log(`[WEBHOOK-${handlerId}] ✅✅✅ Step 6: Flex credits credited via RPC!`, { 
+          userId: user.id, 
+          amount: creditAmount,
+          snapshot: row,
+          newBalance: row?.credits_balance,
+          newFlexBalance: row?.flex_credits_balance,
+          newTotal: row?.credits_total
+        });
+        
+        // 验证积分确实被加上了
+        const { data: verifyUser } = await supabaseAdmin
+          .from('users')
+          .select('credits_balance, flex_credits_balance, credits_total')
+          .eq('id', user.id)
+          .single();
+        
+        console.log(`[WEBHOOK-${handlerId}] ✅ Verification - User credits after RPC:`, verifyUser);
       }
     } catch (error) {
-      console.error('[WEBHOOK] Exception crediting flex credits via RPC:', error);
-      console.error('[WEBHOOK] Exception details:', {
+      console.error(`[WEBHOOK-${handlerId}] ❌ Exception crediting flex credits via RPC:`, error);
+      console.error(`[WEBHOOK-${handlerId}] Exception details:`, {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
         userId: user.id,
@@ -1479,43 +1645,76 @@ async function handleCheckoutCompleted(checkout: any) {
       });
     }
   } else {
-    console.log('[WEBHOOK] Skipping credit:', {
+    console.log(`[WEBHOOK-${handlerId}] ⚠️ Skipping credit:`, {
       alreadyCredited,
       creditAmount,
-      userId: user.id
+      userId: user.id,
+      reason: alreadyCredited ? 'Already credited' : creditAmount === 0 ? 'Credit amount is 0' : 'Unknown'
     });
   }
   
   // 记录支付信息
+  console.log(`[WEBHOOK-${handlerId}] 💳 Step 7: Recording payment information`);
   if (paymentId) {
+    console.log(`[WEBHOOK-${handlerId}] Checking for existing payment record with creem_payment_id:`, paymentId);
     const { data: existingPayment, error: paymentLookupError } = await supabaseAdmin
       .from('payments')
-      .select('id')
+      .select('id, status, amount, created_at')
       .eq('creem_payment_id', paymentId)
       .maybeSingle();
     
     if (paymentLookupError) {
-      console.error('[WEBHOOK] Failed to look up payment record:', paymentLookupError);
-    } else if (!existingPayment) {
-      const { error: insertError } = await supabaseAdmin
+      console.error(`[WEBHOOK-${handlerId}] ❌ Failed to look up payment record:`, paymentLookupError);
+    } else if (existingPayment) {
+      console.log(`[WEBHOOK-${handlerId}] ℹ️ Payment record already exists:`, {
+        id: existingPayment.id,
+        status: existingPayment.status,
+        amount: existingPayment.amount,
+        createdAt: existingPayment.created_at
+      });
+    } else {
+      console.log(`[WEBHOOK-${handlerId}] Creating new payment record...`);
+      const paymentData = {
+        user_id: user.id,
+        subscription_id: null, // 一次性包没有订阅ID
+        amount: order.amount,
+        currency: order.currency,
+        status: 'succeeded',
+        payment_method: 'creem',
+        creem_payment_id: paymentId,
+      };
+      console.log(`[WEBHOOK-${handlerId}] Payment data to insert:`, paymentData);
+      
+      const { data: insertedPayment, error: insertError } = await supabaseAdmin
         .from('payments')
-        .insert({
-          user_id: user.id,
-          subscription_id: null, // 一次性包没有订阅ID
-          amount: order.amount,
-          currency: order.currency,
-          status: 'succeeded',
-          payment_method: 'creem',
-          creem_payment_id: paymentId,
-        });
+        .insert(paymentData)
+        .select()
+        .single();
       
       if (insertError) {
-        console.error('[WEBHOOK] Failed to insert payment record:', insertError);
+        console.error(`[WEBHOOK-${handlerId}] ❌ Failed to insert payment record:`, {
+          error: insertError,
+          code: insertError.code,
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint
+        });
       } else {
-        console.log('[WEBHOOK] Payment record created:', { paymentId, userId: user.id });
+        console.log(`[WEBHOOK-${handlerId}] ✅✅✅ Step 7: Payment record created successfully:`, { 
+          paymentId, 
+          userId: user.id,
+          insertedId: insertedPayment.id,
+          amount: insertedPayment.amount,
+          status: insertedPayment.status
+        });
       }
     }
+  } else {
+    console.warn(`[WEBHOOK-${handlerId}] ⚠️ No paymentId (order.transaction) - cannot record payment`);
   }
+  
+  console.log(`[WEBHOOK-${handlerId}] ========================================`);
+  console.log(`[WEBHOOK-${handlerId}] ✅ Checkout.completed processing completed`);
 }
 
 async function handlePaymentFailed(data: any) {

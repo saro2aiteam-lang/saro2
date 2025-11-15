@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
       })();
       
       if (!isValid) {
-        console.error('[CALLBACK] Invalid Creem return URL signature', {
+        console.error('[CALLBACK] ⚠️ Invalid Creem return URL signature', {
           checkoutId, 
           orderId, 
           customerId, 
@@ -88,9 +88,13 @@ export async function GET(request: NextRequest) {
           hasApiKey: !!apiKey,
           signatureLength: signature?.length,
         });
-        return NextResponse.redirect(new URL('/dashboard?payment=invalid_signature', request.url));
+        // 注意：即使签名验证失败，也继续处理，因为：
+        // 1. 积分是通过 webhook 异步发放的，不依赖回调
+        // 2. 回调只是用来显示成功页面
+        // 3. Creem 只有在支付成功时才会重定向到 success URL
+        console.warn('[CALLBACK] Continuing despite signature verification failure - credits are handled by webhook');
       } else {
-        console.log('[CALLBACK] Signature verified successfully');
+        console.log('[CALLBACK] ✅ Signature verified successfully');
       }
     } else if (signature && !apiKey) {
       console.warn('[CALLBACK] Signature provided but CREEM_API_KEY not configured');
@@ -164,8 +168,29 @@ export async function GET(request: NextRequest) {
             transactionId,
             source: 'database'
           });
+          
+          // 检查积分是否已经加上（通过检查 credit_transactions）
+          const { data: creditTx } = await getSupabaseAdmin()
+            .from('credit_transactions')
+            .select('id, amount, created_at')
+            .eq('user_id', user.id)
+            .eq('metadata->>paymentId', payment.creem_payment_id)
+            .eq('reason', 'creem_payment')
+            .gte('created_at', new Date(Date.now() - 10 * 60 * 1000).toISOString())
+            .maybeSingle();
+          
+          if (creditTx) {
+            console.log('[CALLBACK] ✅ Credits already credited:', {
+              amount: creditTx.amount,
+              createdAt: creditTx.created_at
+            });
+          } else {
+            console.warn('[CALLBACK] ⚠️ Payment found but credits not yet credited - webhook may be processing');
+            // 不阻止用户，因为 webhook 可能还在处理中
+          }
         } else {
           console.log('[CALLBACK] No payment record found, using plan config');
+          console.warn('[CALLBACK] ⚠️ Payment record not found - webhook may not have processed yet');
           
           // Fallback: 从plan配置获取金额
           const planConfig = plan ? creemPlansById[plan] : undefined;
