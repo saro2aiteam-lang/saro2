@@ -56,6 +56,7 @@ export async function GET(request: NextRequest) {
     const testPaymentData = {
       user_id: testUsers?.[0]?.id || '00000000-0000-0000-0000-000000000000', // 使用测试用户ID或占位符
       subscription_id: null,
+      payment_id: `test_payment_${testId}`, // 🔥 添加 payment_id 字段
       amount: 1,
       currency: 'USD',
       status: 'succeeded',
@@ -107,8 +108,8 @@ export async function GET(request: NextRequest) {
       user_id: testUsers?.[0]?.id || '00000000-0000-0000-0000-000000000000',
       amount: 1,
       reason: 'test_write_permission',
-      metadata: { testId },
-      bucket: 'flex'
+      metadata: { testId }
+      // 🔥 移除 bucket 字段，因为表中没有这个字段
     };
     
     const { data: insertedCredit, error: creditError } = await supabaseAdmin
@@ -152,12 +153,12 @@ export async function GET(request: NextRequest) {
     // Step 5: 测试 RPC 调用
     results.steps.push({ step: '5', action: 'Testing RPC call (credit_user_credits_transaction)' });
     if (testUsers?.[0]?.id) {
+      // 🔥 修复：根据错误提示，RPC 函数不需要 p_bucket 参数
       const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc('credit_user_credits_transaction', {
         p_user_id: testUsers[0].id,
         p_amount: 1,
         p_reason: 'test_rpc',
-        p_metadata: { testId },
-        p_bucket: 'flex'
+        p_metadata: { testId, bucket: 'flex' } // bucket 放在 metadata 中
       });
       
       if (rpcError) {

@@ -825,6 +825,7 @@ async function handleSubscriptionCreated(data: any) {
         let creditErr;
         
         // 首先尝试使用 p_bucket 参数（新版本函数）
+        // 🔥 修复：RPC 函数不需要 p_bucket 参数，bucket 放在 metadata 中
         const rpcCall = await supabaseAdmin.rpc('credit_user_credits_transaction', {
           p_user_id: customer_id,
           p_amount: creditAmount,
@@ -834,9 +835,9 @@ async function handleSubscriptionCreated(data: any) {
             planCategory: planConfig?.category,
             subscriptionId: subscription_id,
             source: 'webhook',
-            eventType: 'subscription.created'
-          },
-          p_bucket: 'subscription'
+            eventType: 'subscription.created',
+            bucket: 'subscription' // 🔥 bucket 放在 metadata 中
+          }
         });
         
         creditResult = rpcCall.data;
@@ -1234,12 +1235,19 @@ async function handlePaymentSucceeded(data: any) {
 
     if (!alreadyCredited) {
       try {
+        // 🔥 修复：RPC 函数不需要 p_bucket 参数，bucket 放在 metadata 中
         const { data: creditData, error: creditError } = await getSupabaseAdmin().rpc('credit_user_credits_transaction', {
           p_user_id: finalUserId,
           p_amount: creditAmount,
           p_reason: 'creem_payment',
-          p_metadata: { planId: planId ?? null, planCategory: planConfig?.category ?? data?.metadata?.planCategory ?? null, paymentId: paymentId ?? null, source: 'webhook', eventType: 'payment.succeeded' },
-          p_bucket: 'flex',
+          p_metadata: { 
+            planId: planId ?? null, 
+            planCategory: planConfig?.category ?? data?.metadata?.planCategory ?? null, 
+            paymentId: paymentId ?? null, 
+            source: 'webhook', 
+            eventType: 'payment.succeeded',
+            bucket: 'flex' // 🔥 bucket 放在 metadata 中
+          }
         });
         if (creditError) {
           console.error('[Webhook] Failed to credit flex credits', creditError);
@@ -1291,11 +1299,13 @@ async function handlePaymentSucceeded(data: any) {
       console.log('[WEBHOOK] Payment record updated:', { paymentId: finalPaymentId, amount, currency });
     }
   } else {
+    // 🔥 修复：payments 表需要 payment_id 字段（非空约束）
     const { error: insertError } = await getSupabaseAdmin()
       .from('payments')
       .insert({
         user_id: finalUserId,
         subscription_id: subscriptionRecord?.id ?? null,
+        payment_id: finalPaymentId, // 🔥 添加 payment_id 字段（必需）
         amount: amount ?? 0,
         currency,
         status: 'succeeded',
@@ -1879,6 +1889,7 @@ async function handleCheckoutCompleted(checkout: any) {
         console.error(`[WEBHOOK-${handlerId}] 🔥 Permission test failed:`, permTestError);
       }
       
+      // 🔥 修复：RPC 函数不需要 p_bucket 参数，bucket 放在 metadata 中
       const rpcParams = {
         p_user_id: user.id,
         p_amount: creditAmount,
@@ -1891,9 +1902,9 @@ async function handleCheckoutCompleted(checkout: any) {
           eventType: 'checkout.completed',
           productId: product.id,
           productName: product.name,
-          foundViaMetadata: !planConfig
-        },
-        p_bucket: 'flex'
+          foundViaMetadata: !planConfig,
+          bucket: 'flex' // 🔥 bucket 放在 metadata 中
+        }
       };
       
       console.log(`[WEBHOOK-${handlerId}] 🔍 Calling RPC with params:`, JSON.stringify(rpcParams, null, 2));
@@ -2010,9 +2021,11 @@ async function handleCheckoutCompleted(checkout: any) {
       });
     } else {
       console.log(`[WEBHOOK-${handlerId}] Creating new payment record...`);
+      // 🔥 修复：payments 表需要 payment_id 字段（非空约束）
       const paymentData = {
         user_id: user.id,
         subscription_id: null, // 一次性包没有订阅ID
+        payment_id: finalPaymentId, // 🔥 添加 payment_id 字段（必需）
         amount: order.amount,
         currency: order.currency,
         status: 'succeeded',
@@ -2192,16 +2205,19 @@ async function handlePaymentFailed(data: any) {
     return;
   }
 
-      const { error: insertError } = await supabaseAdmin
-    .from('payments')
-    .insert({
-      user_id: subscription.user_id,
-      subscription_id: subscription.id,
-      amount: amount ?? 0,
-      currency,
-      status: 'failed',
-      creem_payment_id: paymentId,
-    });
+    // 🔥 修复：payments 表需要 payment_id 字段（非空约束）
+    const { error: insertError } = await supabaseAdmin
+      .from('payments')
+      .insert({
+        user_id: subscription.user_id,
+        subscription_id: subscription.id,
+        payment_id: paymentId || `failed_${Date.now()}`, // 🔥 添加 payment_id 字段（必需）
+        amount: amount ?? 0,
+        currency,
+        status: 'failed',
+        payment_method: 'creem',
+        creem_payment_id: paymentId,
+      });
 
   if (insertError) {
     console.error('[Webhook] Failed to record failed payment', insertError);
