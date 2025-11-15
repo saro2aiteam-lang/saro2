@@ -197,6 +197,11 @@ export async function POST(request: NextRequest) {
   console.log(">>> TIMESTAMP:", new Date().toISOString());
   
   const webhookId = `webhook_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+  const debugInfo: any[] = [];
+  
+  debugInfo.push(`[${new Date().toISOString()}] 🚀 Starting webhook processing...`);
+  debugInfo.push(`[${new Date().toISOString()}] Webhook ID: ${webhookId}`);
+  
   console.log(`[WEBHOOK-${webhookId}] ========================================`);
   console.log(`[WEBHOOK-${webhookId}] 🚀 Starting webhook processing...`);
   console.log(`[WEBHOOK-${webhookId}] Timestamp: ${new Date().toISOString()}`);
@@ -578,7 +583,16 @@ export async function POST(request: NextRequest) {
 
     console.log(`[WEBHOOK-${webhookId}] ✅ Webhook processing completed successfully`);
     console.log(`[WEBHOOK-${webhookId}] ========================================`);
-    return NextResponse.json({ received: true, webhookId, eventType });
+    
+    // 🔥 在响应中包含调试信息，这样即使看不到日志也能知道发生了什么
+    return NextResponse.json({ 
+      received: true, 
+      webhookId, 
+      eventType,
+      timestamp: new Date().toISOString(),
+      debug: debugInfo.slice(-20), // 只返回最后20条调试信息
+      note: 'Check Supabase database for payment and credit records'
+    });
 
   } catch (error) {
     console.error(`[WEBHOOK-${webhookId}] ❌❌❌ WEBHOOK ERROR:`, error);
@@ -1382,12 +1396,31 @@ async function handleCheckoutCompleted(checkout: any) {
     const productMetadata = product?.metadata || {};
     const subscriptionMetadata = subscription?.metadata || {};
     
-    // 优先使用 checkout.metadata.planId，其次使用其他 metadata 中的 planId
-    const planIdFromMetadata = 
-      checkoutMetadata.planId ?? 
-      orderMetadata.planId ?? 
-      productMetadata.planId ?? 
-      subscriptionMetadata.planId;
+    // 优先使用 metadata 中的 planId（兼容大小写和下划线风格）
+    const extractPlanId = (...candidates: Array<Record<string, any>>) => {
+      for (const source of candidates) {
+        if (!source || typeof source !== 'object') continue;
+        const maybe =
+          source.planId ??
+          source.plan_id ??
+          source.planID ??
+          source.plan ??
+          source.PlanId ??
+          source.PlanID ??
+          source.PLAN_ID;
+        if (typeof maybe === 'string' && maybe.trim()) {
+          return maybe.trim();
+        }
+      }
+      return undefined;
+    };
+    
+    const planIdFromMetadata = extractPlanId(
+      checkoutMetadata,
+      orderMetadata,
+      productMetadata,
+      subscriptionMetadata
+    );
     
     // 确定 plan_id：优先使用 metadata 中的 planId，其次使用 product.id
     // planId 是我们在 creemPlansById 中的 key（如 "basic_monthly"）
@@ -1424,15 +1457,20 @@ async function handleCheckoutCompleted(checkout: any) {
   const userId = await findUserByEmail(customer.email);
   
   if (!userId) {
-    console.error(`[WEBHOOK-${handlerId}] ❌ User not found for email:`, customer.email);
+    console.error(`[WEBHOOK-${handlerId}] ❌❌❌ CRITICAL: User not found for email:`, customer.email);
     console.error(`[WEBHOOK-${handlerId}] Searching for similar emails...`);
     
     // 尝试查找所有用户，看看是否有相似的邮箱
-    const { data: allUsers } = await supabaseAdmin
+    const { data: allUsers, error: allUsersError } = await supabaseAdmin
       .from('users')
       .select('id, email')
       .limit(20);
-    console.error(`[WEBHOOK-${handlerId}] Available users in database (first 20):`, allUsers);
+    
+    console.error(`[WEBHOOK-${handlerId}] Available users query result:`, {
+      count: allUsers?.length || 0,
+      error: allUsersError?.message,
+      users: allUsers
+    });
     
     // 尝试模糊匹配
     const emailLower = customer.email.toLowerCase();
@@ -1446,7 +1484,25 @@ async function handleCheckoutCompleted(checkout: any) {
     
     await logUnmatchedEmail(customer.email, checkout);
     console.error(`[WEBHOOK-${handlerId}] ❌ ABORTING: Cannot proceed without user ID`);
-    return;
+    console.error(`[WEBHOOK-${handlerId}] This means:`);
+    console.error(`[WEBHOOK-${handlerId}]   1. Payment will NOT be recorded`);
+    console.error(`[WEBHOOK-${handlerId}]   2. Credits will NOT be added`);
+    console.error(`[WEBHOOK-${handlerId}]   3. User needs to register with email: ${customer.email}`);
+    
+    // 🔥 即使找不到用户，也返回结果，这样至少能看到错误
+    return {
+      success: false,
+      handlerId,
+      error: 'USER_NOT_FOUND',
+      message: `User not found for email: ${customer.email}`,
+      customerEmail: customer.email,
+      finalSummary: {
+        userFound: false,
+        creditAmount: 0,
+        creditsAdded: false,
+        paymentRecorded: false
+      }
+    };
   }
   
   console.log(`[WEBHOOK-${handlerId}] ✅ Step 1: User found - ID: ${userId}`);
@@ -1501,11 +1557,47 @@ async function handleCheckoutCompleted(checkout: any) {
   // 尝试多种方式查找 planConfig
   let planConfig = Object.values(creemPlansById).find(plan => plan.productId === product.id);
   
-  // 如果通过 productId 找不到，尝试通过 metadata 中的 planId 查找（按优先级）
-  const planIdFromMetadata = checkoutMetadata.planId ?? orderMetadata.planId ?? productMetadata.planId;
+  const extractPlanId = (...candidates: Array<Record<string, any>>) => {
+    for (const source of candidates) {
+      if (!source || typeof source !== 'object') continue;
+      const maybe =
+        source.planId ??
+        source.plan_id ??
+        source.plan ??
+        source.planID ??
+        source.PlanId ??
+        source.PlanID ??
+        source.PLAN_ID;
+      if (typeof maybe === 'string' && maybe.trim()) {
+        return maybe.trim();
+      }
+    }
+    return undefined;
+  };
+  
+  const planIdFromMetadata = extractPlanId(checkoutMetadata, orderMetadata, productMetadata);
   if (!planConfig && planIdFromMetadata) {
     console.log('[WEBHOOK] Trying to find plan by planId from metadata:', planIdFromMetadata);
-    planConfig = creemPlansById[planIdFromMetadata];
+    const normalizedPlanId = planIdFromMetadata.trim().toLowerCase();
+    planConfig =
+      creemPlansById[planIdFromMetadata] ||
+      creemPlansById[normalizedPlanId as keyof typeof creemPlansById] ||
+      Object.values(creemPlansById).find(plan => plan.id.toLowerCase() === normalizedPlanId);
+  }
+  
+  // 如果仍然找不到，尝试通过产品名称模糊匹配
+  if (!planConfig && typeof product?.name === 'string' && product.name.trim()) {
+    const productName = product.name.trim().toLowerCase();
+    planConfig = Object.values(creemPlansById).find((plan) => {
+      const planName = plan.name.trim().toLowerCase();
+      return planName === productName || planName.includes(productName) || productName.includes(planName);
+    });
+    if (planConfig) {
+      console.log('[WEBHOOK] Fallback matched plan by product name:', {
+        productName: product.name,
+        planId: planConfig.id
+      });
+    }
   }
   
   console.log(`[WEBHOOK-${handlerId}] ${planConfig ? '✅' : '❌'} Step 3: Plan config ${planConfig ? 'found' : 'NOT FOUND'}:`, planConfig ? {
@@ -1589,6 +1681,19 @@ async function handleCheckoutCompleted(checkout: any) {
     planCategory,
     source: planConfig ? 'planConfig' : (creditAmount > 0 ? 'metadata' : 'none')
   });
+  // 🔥 详细的 paymentId 查找逻辑
+  console.log(`[WEBHOOK-${handlerId}] 🔍 Searching for paymentId in order object:`, {
+    'order.transaction_id': order.transaction_id,
+    'order.transactionId': order.transactionId,
+    'order.transaction': order.transaction,
+    'order.transaction?.id': order.transaction?.id,
+    'order.metadata?.transaction_id': order.metadata?.transaction_id,
+    'order.metadata?.paymentId': order.metadata?.paymentId,
+    'order.metadata?.transactionId': order.metadata?.transactionId,
+    'order.id': order.id,
+    'order object keys': Object.keys(order || {}),
+  });
+
   const paymentId =
     order.transaction_id ??
     order.transactionId ??
@@ -1597,6 +1702,20 @@ async function handleCheckoutCompleted(checkout: any) {
     order.metadata?.paymentId ??
     order.metadata?.transactionId ??
     order.id; // fall back to order id so payments table still records something
+
+  console.log(`[WEBHOOK-${handlerId}] 🔍 PaymentId resolved:`, {
+    paymentId,
+    paymentIdType: typeof paymentId,
+    paymentIdLength: paymentId?.length,
+    source: paymentId === order.transaction_id ? 'order.transaction_id' :
+            paymentId === order.transactionId ? 'order.transactionId' :
+            paymentId === order.transaction ? 'order.transaction (string)' :
+            paymentId === order.transaction?.id ? 'order.transaction.id' :
+            paymentId === order.metadata?.transaction_id ? 'order.metadata.transaction_id' :
+            paymentId === order.metadata?.paymentId ? 'order.metadata.paymentId' :
+            paymentId === order.metadata?.transactionId ? 'order.metadata.transactionId' :
+            paymentId === order.id ? 'order.id (fallback)' : 'unknown'
+  });
 
   console.log(`[WEBHOOK-${handlerId}] 📊 Step 4: Final details before processing:`, {
     userId: user.id,
@@ -1860,12 +1979,24 @@ async function handleCheckoutCompleted(checkout: any) {
   
   // 记录支付信息
   console.log(`[WEBHOOK-${handlerId}] 💳 Step 7: Recording payment information`);
-  if (paymentId) {
-    console.log(`[WEBHOOK-${handlerId}] Checking for existing payment record with creem_payment_id:`, paymentId);
+  console.log(`[WEBHOOK-${handlerId}] 🔍 PaymentId check:`, {
+    paymentId,
+    isTruthy: !!paymentId,
+    type: typeof paymentId,
+    value: paymentId,
+    orderId: order.id,
+    willRecord: !!paymentId
+  });
+  
+  // 🔥 修复：确保总是记录支付，即使 paymentId 是 order.id
+  const finalPaymentId = paymentId || order.id;
+  
+  if (finalPaymentId) {
+    console.log(`[WEBHOOK-${handlerId}] Checking for existing payment record with creem_payment_id:`, finalPaymentId);
     const { data: existingPayment, error: paymentLookupError } = await supabaseAdmin
       .from('payments')
       .select('id, status, amount, created_at')
-      .eq('creem_payment_id', paymentId)
+      .eq('creem_payment_id', finalPaymentId)
       .maybeSingle();
     
     if (paymentLookupError) {
@@ -1886,8 +2017,15 @@ async function handleCheckoutCompleted(checkout: any) {
         currency: order.currency,
         status: 'succeeded',
         payment_method: 'creem',
-        creem_payment_id: paymentId,
+        creem_payment_id: finalPaymentId,
       };
+      
+      console.log(`[WEBHOOK-${handlerId}] 🔍 Using paymentId:`, {
+        finalPaymentId,
+        originalPaymentId: paymentId,
+        isOrderId: finalPaymentId === order.id,
+        note: finalPaymentId === order.id ? 'Using order.id as payment identifier' : 'Using transaction ID'
+      });
       console.log(`[WEBHOOK-${handlerId}] Payment data to insert:`, paymentData);
       
       console.log(`[WEBHOOK-${handlerId}] 🔍 Attempting to insert payment record...`);
@@ -1928,11 +2066,12 @@ async function handleCheckoutCompleted(checkout: any) {
         }
       } else {
         console.log(`[WEBHOOK-${handlerId}] ✅✅✅ Step 7: Payment record created successfully:`, { 
-          paymentId, 
+          paymentId: finalPaymentId, 
           userId: user.id,
           insertedId: insertedPayment.id,
           amount: insertedPayment.amount,
-          status: insertedPayment.status
+          status: insertedPayment.status,
+          creemPaymentId: insertedPayment.creem_payment_id
         });
         
         // 验证记录确实存在
@@ -1975,20 +2114,27 @@ async function handleCheckoutCompleted(checkout: any) {
   }
   
   // 返回处理结果，用于调试
-  return {
+  const finalResult = {
     success: true,
     handlerId,
     userId: user?.id,
     creditAmount,
-    paymentRecorded: !!paymentId,
+    paymentRecorded: !!finalPaymentId,
     finalSummary: {
       userFound: !!user,
       planConfigFound: !!planConfig,
       creditAmount,
       creditsAdded: !alreadyCredited && creditAmount > 0,
-      paymentRecorded: !!paymentId
+      paymentRecorded: !!finalPaymentId,
+      paymentId: finalPaymentId,
+      paymentIdSource: finalPaymentId === order.transaction_id ? 'order.transaction_id' :
+                      finalPaymentId === order.id ? 'order.id' : 'other'
     }
   };
+  
+  console.log(`[WEBHOOK-${handlerId}] 📊 Final result:`, JSON.stringify(finalResult, null, 2));
+  
+  return finalResult;
 }
 
 async function handlePaymentFailed(data: any) {
