@@ -222,6 +222,7 @@ export async function POST(request: NextRequest) {
     });
     
     // 检查 Creem 使用的签名头名称（支持多种可能的头名称）
+    // 根据 Creem 文档：https://docs.creem.io/learn/webhooks/verify-webhook-requests
     // Creem 可能使用: creem-signature, x-creem-signature, X-Creem-Signature 等
     const signature = 
       request.headers.get('creem-signature') ||
@@ -229,24 +230,47 @@ export async function POST(request: NextRequest) {
       request.headers.get('X-Creem-Signature') ||
       request.headers.get('Creem-Signature');
     
-    console.log('[WEBHOOK] Signature header check:', {
+    // 检查时间戳头（某些 webhook 服务需要）
+    const timestamp = 
+      request.headers.get('x-creem-timestamp') ||
+      request.headers.get('creem-timestamp') ||
+      request.headers.get('X-Creem-Timestamp');
+    
+    console.log(`[WEBHOOK-${webhookId}] Signature header check:`, {
       'creem-signature': request.headers.get('creem-signature') ? 'present' : 'missing',
       'x-creem-signature': request.headers.get('x-creem-signature') ? 'present' : 'missing',
       'X-Creem-Signature': request.headers.get('X-Creem-Signature') ? 'present' : 'missing',
       'Creem-Signature': request.headers.get('Creem-Signature') ? 'present' : 'missing',
-      found: signature ? 'yes' : 'no'
+      'x-creem-timestamp': request.headers.get('x-creem-timestamp') ? 'present' : 'missing',
+      signatureFound: signature ? 'yes' : 'no',
+      timestampFound: timestamp ? 'yes' : 'no',
     });
-    console.log('[WEBHOOK] All headers:', Object.fromEntries(request.headers.entries()));
+    console.log(`[WEBHOOK-${webhookId}] All headers:`, Object.fromEntries(request.headers.entries()));
 
     // 验证Webhook签名（根据Creem文档要求）
-    if (!verifyWebhookSignature(body, signature)) {
-      console.error('[WEBHOOK] Invalid signature - rejecting webhook', {
+    // 根据 Creem 文档，签名验证可能需要时间戳
+    const signatureValid = verifyWebhookSignature(body, signature, timestamp);
+    
+    if (!signatureValid) {
+      console.error(`[WEBHOOK-${webhookId}] ❌❌❌ Invalid signature - rejecting webhook`, {
         hasSignature: !!signature,
         bodyLength: body.length,
+        signaturePrefix: signature?.substring(0, 20) || 'N/A',
         headers: Object.fromEntries(request.headers.entries())
       });
+      
+      // 即使签名验证失败，也记录事件类型以便调试
+      try {
+        const event = JSON.parse(body);
+        const eventType = event?.eventType || event?.type || event?.event_type || 'unknown';
+        console.error(`[WEBHOOK-${webhookId}] Event type was: ${eventType}`);
+        console.error(`[WEBHOOK-${webhookId}] Full event:`, JSON.stringify(event, null, 2));
+      } catch (e) {
+        console.error(`[WEBHOOK-${webhookId}] Could not parse event body`);
+      }
+      
       return NextResponse.json(
-        { error: 'Invalid webhook signature' },
+        { error: 'Invalid webhook signature', webhookId },
         { status: 401 }
       );
     }

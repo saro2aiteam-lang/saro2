@@ -50,9 +50,11 @@ if (!creemConfig.webhookSecret) {
 const creem = new Creem();
 
 // Webhook 签名验证函数
+// 根据 Creem 文档：https://docs.creem.io/learn/webhooks/verify-webhook-requests
 export function verifyWebhookSignature(
   body: string,
-  signature: string | null
+  signature: string | null,
+  timestamp?: string | null
 ): boolean {
   if (!signature) {
     console.error('[WEBHOOK] No signature provided for webhook verification');
@@ -65,18 +67,35 @@ export function verifyWebhookSignature(
   }
 
   try {
-    // 使用 HMAC-SHA256 生成预期签名
-    // 根据 Creem 文档：使用 webhook secret 作为 key，request payload 作为 message
-    const expectedSignature = crypto
-      .createHmac('sha256', creemConfig.webhookSecret)
-      .update(body)
-      .digest('hex');
+    let expectedSignature: string;
+    
+    // 如果提供了时间戳，使用 timestamp.payload 格式（某些 webhook 服务使用这种方式）
+    // 否则直接使用 body（Creem 的标准方式）
+    if (timestamp) {
+      const payload = `${timestamp}.${body}`;
+      expectedSignature = crypto
+        .createHmac('sha256', creemConfig.webhookSecret)
+        .update(payload)
+        .digest('hex');
+      
+      console.log('[WEBHOOK] Using timestamp-based signature verification');
+    } else {
+      // 标准方式：直接使用 body
+      expectedSignature = crypto
+        .createHmac('sha256', creemConfig.webhookSecret)
+        .update(body)
+        .digest('hex');
+      
+      console.log('[WEBHOOK] Using body-only signature verification');
+    }
     
     // 清理签名字符串（移除可能的空格、换行等）
     const cleanedSignature = signature.trim();
     const cleanedExpected = expectedSignature.trim();
     
     console.log('[WEBHOOK] Signature verification:', {
+      hasTimestamp: !!timestamp,
+      timestamp: timestamp || 'N/A',
       receivedLength: cleanedSignature.length,
       expectedLength: cleanedExpected.length,
       receivedPrefix: cleanedSignature.substring(0, 16) + '...',
