@@ -107,6 +107,7 @@ export async function GET(request: NextRequest) {
     const testCreditData = {
       user_id: testUsers?.[0]?.id || '00000000-0000-0000-0000-000000000000',
       amount: 1,
+      transaction_type: 'credit', // 🔥 添加 transaction_type 字段（必需）
       reason: 'test_write_permission',
       metadata: { testId }
       // 🔥 移除 bucket 字段，因为表中没有这个字段
