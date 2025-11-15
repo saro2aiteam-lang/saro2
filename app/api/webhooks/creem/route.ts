@@ -196,7 +196,24 @@ export async function POST(request: NextRequest) {
   console.log(`[WEBHOOK-${webhookId}] 🚀 Starting webhook processing...`);
   console.log(`[WEBHOOK-${webhookId}] Timestamp: ${new Date().toISOString()}`);
   
+  // 🔍 关键检查 1: Supabase 配置
+  console.log(`[WEBHOOK-${webhookId}] 🔍 Supabase Config Check:`, {
+    hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+    hasServiceRoleKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    urlPrefix: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30) || 'NOT SET',
+    serviceRoleKeyPrefix: process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 20) || 'NOT SET',
+  });
+  
   try {
+    // 测试 Supabase 连接
+    try {
+      const testClient = getSupabaseAdmin();
+      console.log(`[WEBHOOK-${webhookId}] ✅ Supabase admin client created successfully`);
+    } catch (supabaseError) {
+      console.error(`[WEBHOOK-${webhookId}] ❌❌❌ CRITICAL: Failed to create Supabase admin client:`, supabaseError);
+      throw supabaseError;
+    }
+    
     const body = await request.text();
     console.log(`[WEBHOOK-${webhookId}] Received webhook request`, {
       headers: sanitizeHeaders(request.headers),
@@ -1618,7 +1635,19 @@ async function handleCheckoutCompleted(checkout: any) {
         }
       });
       
-      const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc('credit_user_credits_transaction', {
+      // 🔍 关键检查 2: 确认参数
+      console.log(`[WEBHOOK-${handlerId}] 🔍 Pre-RPC Check:`, {
+        userId: user.id,
+        userIdType: typeof user.id,
+        userIdLength: user.id?.length,
+        creditAmount,
+        creditAmountType: typeof creditAmount,
+        paymentId,
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30),
+        hasServiceRoleKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      });
+      
+      const rpcParams = {
         p_user_id: user.id,
         p_amount: creditAmount,
         p_reason: 'creem_payment',
@@ -1633,17 +1662,50 @@ async function handleCheckoutCompleted(checkout: any) {
           foundViaMetadata: !planConfig
         },
         p_bucket: 'flex'
+      };
+      
+      console.log(`[WEBHOOK-${handlerId}] 🔍 Calling RPC with params:`, JSON.stringify(rpcParams, null, 2));
+      
+      const rpcStartTime = Date.now();
+      const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc('credit_user_credits_transaction', rpcParams);
+      const rpcDuration = Date.now() - rpcStartTime;
+      
+      console.log(`[WEBHOOK-${handlerId}] 🔍 RPC Call Result (${rpcDuration}ms):`, {
+        hasData: !!rpcData,
+        hasError: !!rpcError,
+        dataType: Array.isArray(rpcData) ? 'array' : typeof rpcData,
+        dataLength: Array.isArray(rpcData) ? rpcData.length : 'N/A',
+        errorCode: rpcError?.code,
+        errorMessage: rpcError?.message,
+        errorDetails: rpcError?.details,
+        errorHint: rpcError?.hint,
       });
 
       if (rpcError) {
-        console.error(`[WEBHOOK-${handlerId}] ❌ Failed to credit flex credits via RPC:`, {
+        console.error(`[WEBHOOK-${handlerId}] ❌❌❌ CRITICAL: Failed to credit flex credits via RPC:`, {
           error: rpcError,
           code: rpcError.code,
           message: rpcError.message,
           details: rpcError.details,
           hint: rpcError.hint,
           userId: user.id,
-          amount: creditAmount
+          amount: creditAmount,
+          rpcParams: JSON.stringify(rpcParams, null, 2),
+        });
+        
+        // 尝试直接更新 users 表来验证权限
+        console.log(`[WEBHOOK-${handlerId}] 🔍 Testing direct users table update to verify permissions...`);
+        const { data: testUpdate, error: testError } = await supabaseAdmin
+          .from('users')
+          .update({ updated_at: new Date().toISOString() })
+          .eq('id', user.id)
+          .select('id')
+          .single();
+        
+        console.log(`[WEBHOOK-${handlerId}] 🔍 Direct update test result:`, {
+          success: !testError,
+          error: testError?.message,
+          updatedRows: testUpdate ? 1 : 0
         });
       } else {
         const row = Array.isArray(rpcData) ? (rpcData as any[])[0] : null;
@@ -1715,20 +1777,42 @@ async function handleCheckoutCompleted(checkout: any) {
       };
       console.log(`[WEBHOOK-${handlerId}] Payment data to insert:`, paymentData);
       
+      console.log(`[WEBHOOK-${handlerId}] 🔍 Attempting to insert payment record...`);
+      console.log(`[WEBHOOK-${handlerId}] 🔍 Payment data:`, JSON.stringify(paymentData, null, 2));
+      
+      const insertStartTime = Date.now();
       const { data: insertedPayment, error: insertError } = await supabaseAdmin
         .from('payments')
         .insert(paymentData)
         .select()
         .single();
+      const insertDuration = Date.now() - insertStartTime;
+      
+      console.log(`[WEBHOOK-${handlerId}] 🔍 Payment insert result (${insertDuration}ms):`, {
+        hasData: !!insertedPayment,
+        hasError: !!insertError,
+        insertedId: insertedPayment?.id,
+        errorCode: insertError?.code,
+        errorMessage: insertError?.message,
+        errorDetails: insertError?.details,
+        errorHint: insertError?.hint,
+      });
       
       if (insertError) {
-        console.error(`[WEBHOOK-${handlerId}] ❌ Failed to insert payment record:`, {
+        console.error(`[WEBHOOK-${handlerId}] ❌❌❌ CRITICAL: Failed to insert payment record:`, {
           error: insertError,
           code: insertError.code,
           message: insertError.message,
           details: insertError.details,
-          hint: insertError.hint
+          hint: insertError.hint,
+          paymentData: JSON.stringify(paymentData, null, 2),
         });
+        
+        // 检查是否是权限问题
+        if (insertError.message?.includes('row-level security') || insertError.message?.includes('RLS')) {
+          console.error(`[WEBHOOK-${handlerId}] ⚠️⚠️⚠️ RLS POLICY ISSUE DETECTED!`);
+          console.error(`[WEBHOOK-${handlerId}] This means the service_role key might not be working correctly`);
+        }
       } else {
         console.log(`[WEBHOOK-${handlerId}] ✅✅✅ Step 7: Payment record created successfully:`, { 
           paymentId, 
@@ -1736,6 +1820,19 @@ async function handleCheckoutCompleted(checkout: any) {
           insertedId: insertedPayment.id,
           amount: insertedPayment.amount,
           status: insertedPayment.status
+        });
+        
+        // 验证记录确实存在
+        const { data: verifyPayment } = await supabaseAdmin
+          .from('payments')
+          .select('id, status, created_at')
+          .eq('id', insertedPayment.id)
+          .single();
+        
+        console.log(`[WEBHOOK-${handlerId}] 🔍 Payment record verification:`, {
+          found: !!verifyPayment,
+          id: verifyPayment?.id,
+          status: verifyPayment?.status
         });
       }
     }
