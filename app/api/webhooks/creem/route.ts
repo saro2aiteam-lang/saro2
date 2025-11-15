@@ -1622,6 +1622,8 @@ async function handleCheckoutCompleted(checkout: any) {
   let creditAmount = 0;
   let planCategory: string | undefined;
   let planId: string | undefined;
+  let rpcSuccess: boolean | null = null; // 用于跟踪 RPC 调用结果
+  let rpcErrorDetails: any = null; // 用于记录 RPC 错误详情
   
   if (planConfig) {
     creditAmount = planConfig.credits;
@@ -1792,12 +1794,14 @@ async function handleCheckoutCompleted(checkout: any) {
       planCategory: planCategory
     });
 
+    rpcSuccess = false;
+    rpcErrorDetails = null;
     try {
-      console.log(`[WEBHOOK-${handlerId}] Calling RPC: credit_user_credits_transaction with params:`, {
+      // 注意：实际 RPC 调用不包含 p_bucket 参数，bucket 在 metadata 中
+      console.log(`[WEBHOOK-${handlerId}] 📋 RPC call parameters (for logging only):`, {
         p_user_id: user.id,
         p_amount: creditAmount,
         p_reason: 'creem_payment',
-        p_bucket: 'flex',
         p_metadata: {
           planId: planId ?? planConfig?.id ?? 'unknown',
           planCategory: planCategory ?? planConfig?.category ?? 'pack',
@@ -1806,7 +1810,8 @@ async function handleCheckoutCompleted(checkout: any) {
           eventType: 'checkout.completed',
           productId: product.id,
           productName: product.name,
-          foundViaMetadata: !planConfig
+          foundViaMetadata: !planConfig,
+          bucket: 'flex' // bucket 在 metadata 中，不是独立参数
         }
       });
       
@@ -1925,6 +1930,12 @@ async function handleCheckoutCompleted(checkout: any) {
       });
 
       if (rpcError) {
+        rpcErrorDetails = {
+          code: rpcError.code,
+          message: rpcError.message,
+          details: rpcError.details,
+          hint: rpcError.hint,
+        };
         console.error(`[WEBHOOK-${handlerId}] ❌❌❌ CRITICAL: Failed to credit flex credits via RPC:`, {
           error: rpcError,
           code: rpcError.code,
@@ -1951,6 +1962,7 @@ async function handleCheckoutCompleted(checkout: any) {
           updatedRows: testUpdate ? 1 : 0
         });
       } else {
+        rpcSuccess = true;
         const row = Array.isArray(rpcData) ? (rpcData as any[])[0] : null;
         console.log(`[WEBHOOK-${handlerId}] ✅✅✅ Step 6: Flex credits credited via RPC!`, { 
           userId: user.id, 
@@ -1971,6 +1983,11 @@ async function handleCheckoutCompleted(checkout: any) {
         console.log(`[WEBHOOK-${handlerId}] ✅ Verification - User credits after RPC:`, verifyUser);
       }
     } catch (error) {
+      rpcErrorDetails = {
+        exception: true,
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      };
       console.error(`[WEBHOOK-${handlerId}] ❌ Exception crediting flex credits via RPC:`, error);
       console.error(`[WEBHOOK-${handlerId}] Exception details:`, {
         error: error instanceof Error ? error.message : String(error),
@@ -1978,6 +1995,12 @@ async function handleCheckoutCompleted(checkout: any) {
         userId: user.id,
         amount: creditAmount
       });
+    }
+    
+    // 记录 RPC 调用结果
+    if (!rpcSuccess) {
+      console.error(`[WEBHOOK-${handlerId}] ⚠️⚠️⚠️ CRITICAL: RPC call failed - credits were NOT added!`);
+      console.error(`[WEBHOOK-${handlerId}] Error details:`, rpcErrorDetails);
     }
   } else {
     console.log(`[WEBHOOK-${handlerId}] ⚠️ Skipping credit:`, {
@@ -2133,15 +2156,18 @@ async function handleCheckoutCompleted(checkout: any) {
     userId: user?.id,
     creditAmount,
     paymentRecorded: !!finalPaymentId,
+    rpcSuccess: rpcSuccess,
+    rpcError: rpcErrorDetails,
     finalSummary: {
       userFound: !!user,
       planConfigFound: !!planConfig,
       creditAmount,
-      creditsAdded: !alreadyCredited && creditAmount > 0,
+      creditsAdded: !alreadyCredited && creditAmount > 0 && (rpcSuccess === null || rpcSuccess === true),
       paymentRecorded: !!finalPaymentId,
       paymentId: finalPaymentId,
       paymentIdSource: finalPaymentId === order.transaction_id ? 'order.transaction_id' :
-                      finalPaymentId === order.id ? 'order.id' : 'other'
+                      finalPaymentId === order.id ? 'order.id' : 'other',
+      rpcFailed: rpcSuccess === false
     }
   };
   

@@ -200,6 +200,7 @@ export const videoApi = {
     if (!response.ok) {
       const error = await response.json().catch(() => ({ error: 'Failed to generate video' }));
       const detailCandidates = [
+        error?.hint, // 优先显示提示信息
         error?.details,
         error?.message,
         error?.error,
@@ -211,9 +212,9 @@ export const videoApi = {
         detailCandidates.find((value): value is string => typeof value === 'string' && value.trim().length > 0) ??
         null;
       const codeCandidate =
+        error?.code ??
         error?.response?.code ??
         error?.response?.status ??
-        error?.code ??
         error?.status;
       const codeText =
         typeof codeCandidate === 'string' || typeof codeCandidate === 'number'

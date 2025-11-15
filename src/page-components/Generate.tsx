@@ -623,8 +623,12 @@ const Generate = () => {
         }
       } else if (errorMessage.includes('upload') || errorMessage.includes('video')) {
         setErrors({ reference_image: errorMessage });
-      } else if (errorMessage.includes('credit')) {
-        setErrors({ prompt: 'Credit system error. Please contact support if this persists.' });
+      } else if (errorMessage.includes('credit') || errorMessage.includes('Failed to deduct credits')) {
+        // 提供更详细的错误信息
+        const detailedError = errorMessage.includes('Failed to deduct credits') 
+          ? `Credit deduction failed: ${errorMessage}. This may be due to a database issue. Please try again or contact support.`
+          : `Credit system error: ${errorMessage}. Please contact support if this persists.`;
+        setErrors({ prompt: detailedError });
       } else {
         setErrors({ prompt: errorMessage });
       }

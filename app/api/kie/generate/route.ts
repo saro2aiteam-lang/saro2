@@ -153,8 +153,18 @@ export async function POST(request: NextRequest) {
             { status: 402 }
           );
         }
+        // 返回更详细的错误信息
+        const errorDetails = debitError.message || debitError.details || 'Unknown database error';
         return NextResponse.json(
-          { error: 'Failed to deduct credits' },
+          { 
+            error: 'Failed to deduct credits',
+            details: errorDetails,
+            code: debitError.code || 'UNKNOWN',
+            hint: debitError.code === 'P0005' ? 'User not found in database' 
+                  : debitError.code === 'P0007' ? 'Database update failed' 
+                  : debitError.code === 'P0003' ? 'Invalid credit amount' 
+                  : 'Please try again or contact support'
+          },
           { status: 500 }
         );
       }
@@ -165,8 +175,13 @@ export async function POST(request: NextRequest) {
       console.log(`[API] Successfully deducted ${requiredCredits} credits from user ${userId}`);
     } catch (error) {
       console.error('Credit deduction failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return NextResponse.json(
-        { error: 'Failed to deduct credits' },
+        { 
+          error: 'Failed to deduct credits',
+          details: errorMessage,
+          hint: 'This may be due to a database connection issue. Please try again.'
+        },
         { status: 500 }
       );
     }
