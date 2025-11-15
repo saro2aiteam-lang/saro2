@@ -1155,7 +1155,8 @@ async function handlePaymentSucceeded(data: any) {
 
   if (paymentLookupError) {
     console.error('[Webhook] Failed to look up payment record', paymentLookupError);
-    return;
+    // 不直接返回，尝试继续插入支付记录（可能是新支付）
+    console.log('[WEBHOOK] Will attempt to insert payment record despite lookup error');
   }
 
   if (existingPayment) {
