@@ -1345,6 +1345,7 @@ async function handleCheckoutCompleted(checkout: any) {
     orderAmount: order.amount,
     orderCurrency: order.currency,
     orderTransaction: order.transaction,
+    orderTransactionId: order.transaction_id ?? order.transaction?.id ?? null,
     productId: product.id,
     productName: product.name,
     billingType: product.billing_type,
@@ -1588,8 +1589,15 @@ async function handleCheckoutCompleted(checkout: any) {
     planCategory,
     source: planConfig ? 'planConfig' : (creditAmount > 0 ? 'metadata' : 'none')
   });
-  const paymentId = order.transaction;
-  
+  const paymentId =
+    order.transaction_id ??
+    order.transactionId ??
+    (typeof order.transaction === 'string' ? order.transaction : order.transaction?.id) ??
+    order.metadata?.transaction_id ??
+    order.metadata?.paymentId ??
+    order.metadata?.transactionId ??
+    order.id; // fall back to order id so payments table still records something
+
   console.log(`[WEBHOOK-${handlerId}] 📊 Step 4: Final details before processing:`, {
     userId: user.id,
     email: customer.email,
@@ -1636,7 +1644,7 @@ async function handleCheckoutCompleted(checkout: any) {
       }
     }
   } else {
-    console.warn(`[WEBHOOK-${handlerId}] ⚠️ No paymentId in order.transaction - cannot check for duplicates`);
+    console.warn(`[WEBHOOK-${handlerId}] ⚠️ No payment identifier resolved from checkout payload - cannot check for duplicates`);
   }
   
   console.log(`[WEBHOOK-${handlerId}] 🔍 Step 6: Credit decision:`, {
@@ -1673,7 +1681,7 @@ async function handleCheckoutCompleted(checkout: any) {
         }
       });
       
-      // 🔍 关键检查 2: 确认参数
+      // 🔍 关键检查 2: 确认参数和 Supabase 权限
       console.log(`[WEBHOOK-${handlerId}] 🔍 Pre-RPC Check:`, {
         userId: user.id,
         userIdType: typeof user.id,
@@ -1683,7 +1691,74 @@ async function handleCheckoutCompleted(checkout: any) {
         paymentId,
         supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30),
         hasServiceRoleKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+        serviceRoleKeyPrefix: process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 20) || 'NOT SET',
       });
+      
+      // 🔥 测试 Supabase 权限 - 验证 service_role key 是否真的能绕过 RLS
+      console.log(`[WEBHOOK-${handlerId}] 🔥 Testing Supabase permissions...`);
+      try {
+        // 测试 1: 直接更新 users 表
+        const { data: testUpdate, error: testUpdateError } = await supabaseAdmin
+          .from('users')
+          .update({ updated_at: new Date().toISOString() })
+          .eq('id', user.id)
+          .select('id, updated_at')
+          .single();
+        
+        console.log(`[WEBHOOK-${handlerId}] 🔥 Test 1 - Direct users table update:`, {
+          success: !testUpdateError,
+          error: testUpdateError?.message,
+          errorCode: testUpdateError?.code,
+          errorDetails: testUpdateError?.details,
+          updatedRows: testUpdate ? 1 : 0,
+          isRLSError: testUpdateError?.message?.includes('row-level security') || testUpdateError?.message?.includes('RLS')
+        });
+        
+        // 测试 2: 插入 credit_transactions 表
+        const { data: testInsert, error: testInsertError } = await supabaseAdmin
+          .from('credit_transactions')
+          .insert({
+            user_id: user.id,
+            amount: 1, // 测试用 1 积分
+            reason: 'test_permission_check',
+            metadata: { test: true, handlerId }
+          })
+          .select('id')
+          .single();
+        
+        console.log(`[WEBHOOK-${handlerId}] 🔥 Test 2 - Direct credit_transactions insert:`, {
+          success: !testInsertError,
+          error: testInsertError?.message,
+          errorCode: testInsertError?.code,
+          errorDetails: testInsertError?.details,
+          insertedId: testInsert?.id,
+          isRLSError: testInsertError?.message?.includes('row-level security') || testInsertError?.message?.includes('RLS')
+        });
+        
+        // 如果测试插入成功，立即删除（避免污染数据）
+        if (testInsert?.id) {
+          await supabaseAdmin
+            .from('credit_transactions')
+            .delete()
+            .eq('id', testInsert.id);
+          console.log(`[WEBHOOK-${handlerId}] 🔥 Test record cleaned up`);
+        }
+        
+        // 如果发现 RLS 错误，这是严重问题
+        if (testUpdateError?.message?.includes('row-level security') || 
+            testUpdateError?.message?.includes('RLS') ||
+            testInsertError?.message?.includes('row-level security') || 
+            testInsertError?.message?.includes('RLS')) {
+          console.error(`[WEBHOOK-${handlerId}] ❌❌❌ RLS POLICY ISSUE DETECTED!`);
+          console.error(`[WEBHOOK-${handlerId}] Service role key is NOT bypassing RLS!`);
+          console.error(`[WEBHOOK-${handlerId}] This means either:`);
+          console.error(`[WEBHOOK-${handlerId}]   1. SUPABASE_SERVICE_ROLE_KEY is not set correctly`);
+          console.error(`[WEBHOOK-${handlerId}]   2. The key is actually an anon key, not service_role key`);
+          console.error(`[WEBHOOK-${handlerId}]   3. RLS policies are blocking even service_role`);
+        }
+      } catch (permTestError) {
+        console.error(`[WEBHOOK-${handlerId}] 🔥 Permission test failed:`, permTestError);
+      }
       
       const rpcParams = {
         p_user_id: user.id,
@@ -1875,7 +1950,7 @@ async function handleCheckoutCompleted(checkout: any) {
       }
     }
   } else {
-    console.warn(`[WEBHOOK-${handlerId}] ⚠️ No paymentId (order.transaction) - cannot record payment`);
+    console.warn(`[WEBHOOK-${handlerId}] ⚠️ No payment identifier resolved from checkout payload - cannot record payment`);
   }
   
   // 最终总结
