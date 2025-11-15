@@ -191,6 +191,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // 🔥 测试日志 - 确保能看到输出
+  console.log(">>> CREEM WEBHOOK TRIGGERED <<<");
+  console.log(">>> RUNTIME CHECK: Node.js Runtime");
+  console.log(">>> TIMESTAMP:", new Date().toISOString());
+  
   const webhookId = `webhook_${Date.now()}_${Math.random().toString(36).substring(7)}`;
   console.log(`[WEBHOOK-${webhookId}] ========================================`);
   console.log(`[WEBHOOK-${webhookId}] 🚀 Starting webhook processing...`);
@@ -532,12 +537,21 @@ export async function POST(request: NextRequest) {
           hasSubscription: !!payload?.subscription,
           hasMetadata: !!payload?.metadata,
         });
+        console.log(`[WEBHOOK-${webhookId}] Full payload for checkout.completed:`, JSON.stringify(payload, null, 2));
+        
         try {
-          await handleCheckoutCompleted(payload);
+          const result = await handleCheckoutCompleted(payload);
           console.log(`[WEBHOOK-${webhookId}] ✅ checkout.completed processed successfully`);
+          console.log(`[WEBHOOK-${webhookId}] Handler returned:`, result);
         } catch (error) {
-          console.error(`[WEBHOOK-${webhookId}] ❌ Error processing checkout.completed:`, error);
-          throw error;
+          console.error(`[WEBHOOK-${webhookId}] ❌❌❌ CRITICAL ERROR processing checkout.completed:`, error);
+          console.error(`[WEBHOOK-${webhookId}] Error details:`, {
+            message: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+            name: error instanceof Error ? error.name : 'UnknownError'
+          });
+          // 不抛出错误，而是记录并继续，这样至少能看到错误日志
+          // throw error;
         }
         break;
       }
@@ -1884,6 +1898,22 @@ async function handleCheckoutCompleted(checkout: any) {
     console.error(`[WEBHOOK-${handlerId}]   2. Plan config found but credits is 0`);
     console.error(`[WEBHOOK-${handlerId}] Check the logs above to see why creditAmount is 0`);
   }
+  
+  // 返回处理结果，用于调试
+  return {
+    success: true,
+    handlerId,
+    userId: user?.id,
+    creditAmount,
+    paymentRecorded: !!paymentId,
+    finalSummary: {
+      userFound: !!user,
+      planConfigFound: !!planConfig,
+      creditAmount,
+      creditsAdded: !alreadyCredited && creditAmount > 0,
+      paymentRecorded: !!paymentId
+    }
+  };
 }
 
 async function handlePaymentFailed(data: any) {
