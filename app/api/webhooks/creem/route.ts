@@ -294,10 +294,20 @@ export async function POST(request: NextRequest) {
             }
           }
           
+          // 优先从 metadata 中获取 planId，其次使用 product.id
+          const planIdFromMetadata = sub?.metadata?.planId;
+          const plan_id = planIdFromMetadata || sub?.product?.id;
+          
+          console.log('[WEBHOOK] subscription.active - plan identification:', {
+            planIdFromMetadata,
+            productId: sub?.product?.id,
+            finalPlanId: plan_id
+          });
+          
           await handleSubscriptionCreated({
             subscription_id: sub?.id,
             customer_id: userId,
-            plan_id: sub?.product?.id,
+            plan_id: plan_id, // 优先使用 metadata 中的 planId
             status: sub?.status ?? 'active',
             current_period_start: sub?.current_period_start_date ?? sub?.current_period_start ?? null,
             current_period_end: sub?.current_period_end_date ?? sub?.current_period_end ?? null,
@@ -329,11 +339,21 @@ export async function POST(request: NextRequest) {
             break;
           }
           
+          // 优先从 metadata 中获取 planId，其次使用 product.id
+          const planIdFromMetadata = sub?.metadata?.planId;
+          const plan_id = planIdFromMetadata || sub?.product?.id;
+          
+          console.log('[WEBHOOK] subscription.paid - plan identification:', {
+            planIdFromMetadata,
+            productId: sub?.product?.id,
+            finalPlanId: plan_id
+          });
+          
           // Activate subscription and credits
           await handleSubscriptionCreated({
             subscription_id: sub?.id,
             customer_id: userId,
-            plan_id: sub?.product?.id,
+            plan_id: plan_id, // 优先使用 metadata 中的 planId
             status: sub?.status ?? 'active',
             current_period_start: sub?.current_period_start_date ?? sub?.current_period_start ?? null,
             current_period_end: sub?.current_period_end_date ?? sub?.current_period_end ?? null,
@@ -350,7 +370,8 @@ export async function POST(request: NextRequest) {
             customer_id: userId,
             metadata: {
               customerId: userId,
-              planId: sub?.product?.id,
+              planId: plan_id, // 使用确定的 planId
+              productId: sub?.product?.id, // 也包含 productId 用于查找
             }
           };
           await handlePaymentSucceeded(normalized);
@@ -395,10 +416,20 @@ export async function POST(request: NextRequest) {
         if (email) {
           const userId = await findUserByEmail(String(email));
           if (userId) {
+            // 优先从 metadata 中获取 planId，其次使用 product.id
+            const planIdFromMetadata = sub?.metadata?.planId;
+            const plan_id = planIdFromMetadata || sub?.product?.id;
+            
+            console.log('[WEBHOOK] subscription.trialing - plan identification:', {
+              planIdFromMetadata,
+              productId: sub?.product?.id,
+              finalPlanId: plan_id
+            });
+            
             await handleSubscriptionCreated({
               subscription_id: sub?.id,
               customer_id: userId,
-              plan_id: sub?.product?.id,
+              plan_id: plan_id, // 优先使用 metadata 中的 planId
               status: 'trialing',
               current_period_start: sub?.current_period_start_date ?? sub?.current_period_start ?? null,
               current_period_end: sub?.current_period_end_date ?? sub?.current_period_end ?? null,
@@ -613,25 +644,53 @@ async function handleSubscriptionCreated(data: any) {
   
   if (!skipCredits && creditAmount > 0) {
     try {
-      // 避免重复发放：若该订阅已记录过发放，则跳过
+      // 避免重复发放：检查是否在短时间内（24小时）已经为该订阅发放过积分
+      // 注意：如果用户升级订阅计划，应该允许加新计划的积分
       let alreadyCredited = false;
       if (subscription_id) {
         const { data: existingTx, error: txCheckError } = await supabaseAdmin
           .from('credit_transactions')
-          .select('id')
+          .select('id, amount, metadata, created_at')
           .eq('user_id', customer_id)
           .eq('reason', 'subscription_created')
           .eq('metadata->>subscriptionId', subscription_id)
+          .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+          .order('created_at', { ascending: false })
+          .limit(1)
           .maybeSingle();
 
         if (txCheckError) {
           console.error('[WEBHOOK] Failed to check existing subscription credit transaction:', txCheckError);
+        } else if (existingTx) {
+          // 检查是否是相同的计划（通过 planId 或 credits 数量）
+          const existingPlanId = existingTx.metadata?.planId;
+          const existingCredits = existingTx.amount;
+          
+          // 如果是相同的计划且积分数量相同，则认为是重复
+          if (existingPlanId === planConfig?.id && existingCredits === creditAmount) {
+            alreadyCredited = true;
+            console.log('[WEBHOOK] Duplicate subscription credit detected (same plan and amount), skipping', { 
+              subscription_id, 
+              userId: customer_id,
+              planId: existingPlanId,
+              credits: existingCredits
+            });
+          } else {
+            // 如果是不同的计划或不同的积分数量，可能是升级/降级，允许加积分
+            console.log('[WEBHOOK] Subscription plan changed or credits amount different, will credit new amount', {
+              subscription_id,
+              userId: customer_id,
+              existingPlanId,
+              newPlanId: planConfig?.id,
+              existingCredits,
+              newCredits: creditAmount
+            });
+          }
         }
-        alreadyCredited = !!existingTx;
       }
 
       if (alreadyCredited) {
-        console.log('[WEBHOOK] Duplicate subscription credit detected, skipping', { subscription_id, userId: customer_id });
+        // 已跳过，不需要处理
       } else {
         console.log('[WEBHOOK] Crediting subscription:', {
           userId: customer_id,
@@ -950,11 +1009,25 @@ async function handlePaymentSucceeded(data: any) {
   
   console.log('[WEBHOOK] Final user ID determined:', finalUserId);
 
-  const planConfig = planId ? creemPlansById[planId] : undefined;
-  const creditsFromMetadata = data?.metadata?.credits;
+  // 尝试多种方式查找 planConfig
+  let planConfig = planId ? creemPlansById[planId] : undefined;
+  
+  // 如果通过 planId 找不到，尝试通过 productId 查找
+  const productId = data?.product_id ?? data?.productId ?? data?.metadata?.productId;
+  if (!planConfig && productId) {
+    console.log('[WEBHOOK] Trying to find plan by productId:', productId);
+    planConfig = Object.values(creemPlansById).find(plan => plan.productId === productId);
+  }
+  
+  // 从 metadata 中获取 credits
+  const creditsFromMetadata = 
+    data?.metadata?.credits ?? 
+    data?.metadata?.planCredits;
   const parsedCredits = typeof creditsFromMetadata === 'string' || typeof creditsFromMetadata === 'number'
     ? Number(creditsFromMetadata)
     : 0;
+  
+  // 确定积分数量：优先使用 metadata，其次使用 planConfig
   const creditAmount = parsedCredits > 0
     ? parsedCredits
     : planConfig?.credits ?? 0;
@@ -969,17 +1042,52 @@ async function handlePaymentSucceeded(data: any) {
 
   // If it's a subscription renewal (has subscriptionId and plan), reset subscription bucket; else credit flex for add-ons
   if (subscriptionId && planConfig?.credits) {
+    // 订阅续费：重置订阅积分到新周期的积分（不累加，每个周期重置）
+    console.log('[WEBHOOK] Processing subscription renewal - resetting subscription credits', {
+      userId: finalUserId,
+      subscriptionId,
+      planId: planConfig.id,
+      credits: planConfig.credits,
+      planCategory: planConfig.category
+    });
+    
     try {
-      const { error: resetError } = await getSupabaseAdmin().rpc('reset_subscription_credits_for_period', {
+      // 先获取当前订阅积分余额，用于日志记录
+      const { data: currentUser } = await getSupabaseAdmin()
+        .from('users')
+        .select('subscription_credits_balance, flex_credits_balance, credits_balance')
+        .eq('id', finalUserId)
+        .single();
+      
+      const previousSubscriptionCredits = currentUser?.subscription_credits_balance ?? 0;
+      
+      const { data: resetResult, error: resetError } = await getSupabaseAdmin().rpc('reset_subscription_credits_for_period', {
         p_user_id: finalUserId,
         p_period_credits: planConfig.credits,
         p_reason: 'subscription_period_reset',
-        p_metadata: { planId, subscriptionId, paymentId, source: 'webhook', eventType: 'payment.succeeded' },
+        p_metadata: { 
+          planId: planConfig.id, 
+          planCategory: planConfig.category,
+          subscriptionId, 
+          paymentId, 
+          source: 'webhook', 
+          eventType: 'payment.succeeded',
+          previousCredits: previousSubscriptionCredits
+        },
       });
+      
       if (resetError) {
         console.error('[Webhook] Failed to reset subscription credits on payment.succeeded', resetError);
       } else {
-        console.log('[Webhook] Subscription credits reset on payment.succeeded', { userId: finalUserId, planId, credits: planConfig.credits });
+        const snapshot = Array.isArray(resetResult) ? (resetResult as any[])[0] : resetResult;
+        console.log('[WEBHOOK] ✅ Subscription credits reset on payment.succeeded', { 
+          userId: finalUserId, 
+          planId: planConfig.id, 
+          credits: planConfig.credits,
+          previousCredits: previousSubscriptionCredits,
+          newCredits: snapshot?.subscription_credits_balance,
+          snapshot
+        });
       }
     } catch (e) {
       console.error('[Webhook] Exception during subscription credits reset', e);
@@ -1127,14 +1235,45 @@ async function handleCheckoutCompleted(checkout: any) {
       return;
     }
     
+    // 获取 checkout metadata（包含 planId）
+    const checkoutMetadata = checkout.metadata || {};
+    const orderMetadata = order?.metadata || {};
+    const productMetadata = product?.metadata || {};
+    const subscriptionMetadata = subscription?.metadata || {};
+    
+    // 优先使用 checkout.metadata.planId，其次使用其他 metadata 中的 planId
+    const planIdFromMetadata = 
+      checkoutMetadata.planId ?? 
+      orderMetadata.planId ?? 
+      productMetadata.planId ?? 
+      subscriptionMetadata.planId;
+    
+    // 确定 plan_id：优先使用 metadata 中的 planId，其次使用 product.id
+    // planId 是我们在 creemPlansById 中的 key（如 "basic_monthly"）
+    // product.id 是 Creem 的产品ID，需要通过 productId 查找
+    const plan_id = planIdFromMetadata || product.id;
+    
+    console.log('[WEBHOOK] Subscription checkout - plan identification:', {
+      planIdFromMetadata,
+      productId: product.id,
+      finalPlanId: plan_id,
+      checkoutMetadata: checkoutMetadata,
+      subscriptionMetadata: subscriptionMetadata
+    });
+    
     await handleSubscriptionCreated({
       subscription_id: subscription.id,
       customer_id: userId, // 使用 Supabase 用户ID
-      plan_id: product.id,
+      plan_id: plan_id, // 使用 metadata 中的 planId 或 product.id
       status: subscription.status,
       current_period_start: subscription.current_period_start_date,
       current_period_end: subscription.current_period_end_date,
-      metadata: subscription.metadata, // Pass metadata so credits can be read from it
+      metadata: {
+        ...subscriptionMetadata,
+        ...checkoutMetadata,
+        // 确保 credits 从 metadata 中传递
+        credits: checkoutMetadata.credits ?? subscriptionMetadata.credits ?? orderMetadata.credits
+      },
     });
     return;
   }
@@ -1171,7 +1310,15 @@ async function handleCheckoutCompleted(checkout: any) {
   });
   
   // 根据产品ID查找计划配置
+  // 注意：metadata 可能在 checkout.metadata、order.metadata 或 product.metadata 中
+  const checkoutMetadata = checkout.metadata || {};
+  const orderMetadata = order?.metadata || {};
+  const productMetadata = product?.metadata || {};
+  
   console.log('[WEBHOOK] Looking for plan config with productId:', product.id);
+  console.log('[WEBHOOK] Checkout metadata:', checkoutMetadata);
+  console.log('[WEBHOOK] Order metadata:', orderMetadata);
+  console.log('[WEBHOOK] Product metadata:', productMetadata);
   console.log('[WEBHOOK] Environment variables check:');
   console.log('[WEBHOOK] NEXT_PUBLIC_CREEM_PACK_STARTER_ID:', process.env.NEXT_PUBLIC_CREEM_PACK_STARTER_ID);
   console.log('[WEBHOOK] NEXT_PUBLIC_CREEM_PACK_CREATOR_ID:', process.env.NEXT_PUBLIC_CREEM_PACK_CREATOR_ID);
@@ -1184,7 +1331,15 @@ async function handleCheckoutCompleted(checkout: any) {
     category: p.category 
   })));
   
-  const planConfig = Object.values(creemPlansById).find(plan => plan.productId === product.id);
+  // 尝试多种方式查找 planConfig
+  let planConfig = Object.values(creemPlansById).find(plan => plan.productId === product.id);
+  
+  // 如果通过 productId 找不到，尝试通过 metadata 中的 planId 查找（按优先级）
+  const planIdFromMetadata = checkoutMetadata.planId ?? orderMetadata.planId ?? productMetadata.planId;
+  if (!planConfig && planIdFromMetadata) {
+    console.log('[WEBHOOK] Trying to find plan by planId from metadata:', planIdFromMetadata);
+    planConfig = creemPlansById[planIdFromMetadata];
+  }
   
   console.log('[WEBHOOK] Plan config found:', planConfig ? {
     id: planConfig.id,
@@ -1193,18 +1348,58 @@ async function handleCheckoutCompleted(checkout: any) {
     category: planConfig.category
   } : 'null');
   
-  if (!planConfig) {
-    console.error('[WEBHOOK] Plan config not found for product:', product.id);
-    console.error('[WEBHOOK] This means the productId in creemPlansById does not match the webhook product.id');
-    console.error('[WEBHOOK] Please check environment variables NEXT_PUBLIC_CREEM_PACK_*_ID');
-    console.error('[WEBHOOK] Current environment variables:');
-    console.error('[WEBHOOK] NEXT_PUBLIC_CREEM_PACK_STARTER_ID:', process.env.NEXT_PUBLIC_CREEM_PACK_STARTER_ID);
-    console.error('[WEBHOOK] NEXT_PUBLIC_CREEM_PACK_CREATOR_ID:', process.env.NEXT_PUBLIC_CREEM_PACK_CREATOR_ID);
-    console.error('[WEBHOOK] NEXT_PUBLIC_CREEM_PACK_DEV_ID:', process.env.NEXT_PUBLIC_CREEM_PACK_DEV_ID);
-    return;
-  }
+  // 确定积分数量：优先使用 planConfig，其次使用 metadata 中的 credits
+  let creditAmount = 0;
+  let planCategory: string | undefined;
+  let planId: string | undefined;
   
-  const creditAmount = planConfig.credits;
+  if (planConfig) {
+    creditAmount = planConfig.credits;
+    planCategory = planConfig.category;
+    planId = planConfig.id;
+  } else {
+    // 如果找不到 planConfig，尝试从 metadata 中获取 credits（按优先级检查）
+    const creditsFromMetadata = 
+      checkoutMetadata.credits ?? 
+      orderMetadata.credits ?? 
+      productMetadata.credits ?? 
+      checkoutMetadata.planCredits ?? 
+      orderMetadata.planCredits ?? 
+      productMetadata.planCredits;
+    
+    if (creditsFromMetadata) {
+      const parsedCredits = typeof creditsFromMetadata === 'string' 
+        ? parseInt(creditsFromMetadata, 10) 
+        : Number(creditsFromMetadata);
+      
+      if (!isNaN(parsedCredits) && parsedCredits > 0) {
+        creditAmount = parsedCredits;
+        planCategory = checkoutMetadata.planCategory ?? orderMetadata.planCategory ?? productMetadata.planCategory ?? 'pack';
+        planId = planIdFromMetadata ?? 'unknown';
+        
+        console.log('[WEBHOOK] Using credits from metadata:', {
+          creditAmount,
+          planCategory,
+          planId,
+          source: 'metadata'
+        });
+      }
+    }
+    
+    if (creditAmount === 0) {
+      console.error('[WEBHOOK] Plan config not found and no credits in metadata for product:', product.id);
+      console.error('[WEBHOOK] This means the productId in creemPlansById does not match the webhook product.id');
+      console.error('[WEBHOOK] Please check environment variables NEXT_PUBLIC_CREEM_PACK_*_ID');
+      console.error('[WEBHOOK] Current environment variables:');
+      console.error('[WEBHOOK] NEXT_PUBLIC_CREEM_PACK_STARTER_ID:', process.env.NEXT_PUBLIC_CREEM_PACK_STARTER_ID);
+      console.error('[WEBHOOK] NEXT_PUBLIC_CREEM_PACK_CREATOR_ID:', process.env.NEXT_PUBLIC_CREEM_PACK_CREATOR_ID);
+      console.error('[WEBHOOK] NEXT_PUBLIC_CREEM_PACK_DEV_ID:', process.env.NEXT_PUBLIC_CREEM_PACK_DEV_ID);
+      console.error('[WEBHOOK] Checkout metadata:', JSON.stringify(checkoutMetadata, null, 2));
+      console.error('[WEBHOOK] Order metadata:', JSON.stringify(orderMetadata, null, 2));
+      console.error('[WEBHOOK] Product metadata:', JSON.stringify(productMetadata, null, 2));
+      // 不再直接返回，而是继续处理，creditAmount 为 0 时会在后面跳过加积分
+    }
+  }
   const paymentId = order.transaction;
   
   console.log('[WEBHOOK] Checkout completed details:', {
@@ -1255,13 +1450,14 @@ async function handleCheckoutCompleted(checkout: any) {
         p_amount: creditAmount,
         p_reason: 'creem_payment',
         p_metadata: {
-          planId: planConfig.id,
-          planCategory: planConfig.category,
+          planId: planId ?? planConfig?.id ?? 'unknown',
+          planCategory: planCategory ?? planConfig?.category ?? 'pack',
           paymentId: paymentId ?? null,
           source: 'webhook',
           eventType: 'checkout.completed',
           productId: product.id,
-          productName: product.name
+          productName: product.name,
+          foundViaMetadata: !planConfig
         },
         p_bucket: 'flex'
       });
