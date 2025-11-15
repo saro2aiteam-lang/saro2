@@ -171,11 +171,20 @@ const summarizeEventForLog = (event: any) => ({
 
 // 支持 GET 方法用于测试和健康检查
 export async function GET(request: NextRequest) {
+  const testId = `test_${Date.now()}`;
+  console.log(`[WEBHOOK-TEST-${testId}] ========================================`);
+  console.log(`[WEBHOOK-TEST-${testId}] 🧪 Test endpoint called`);
+  console.log(`[WEBHOOK-TEST-${testId}] Timestamp: ${new Date().toISOString()}`);
+  console.log(`[WEBHOOK-TEST-${testId}] This is a test log to verify logging works`);
+  console.log(`[WEBHOOK-TEST-${testId}] ========================================`);
+  
   return NextResponse.json(
     { 
       message: 'Creem webhook endpoint is active',
       methods: ['POST'],
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      testId,
+      note: 'Check Vercel logs for [WEBHOOK-TEST- logs to verify logging works'
     },
     { status: 200 }
   );
@@ -1480,29 +1489,50 @@ async function handleCheckoutCompleted(checkout: any) {
         planCategory = checkoutMetadata.planCategory ?? orderMetadata.planCategory ?? productMetadata.planCategory ?? 'pack';
         planId = planIdFromMetadata ?? 'unknown';
         
-        console.log('[WEBHOOK] Using credits from metadata:', {
+        console.log(`[WEBHOOK-${handlerId}] ✅ Using credits from metadata:`, {
           creditAmount,
           planCategory,
           planId,
-          source: 'metadata'
+          source: 'metadata',
+          creditsFromMetadata
+        });
+      } else {
+        console.warn(`[WEBHOOK-${handlerId}] ⚠️ Credits from metadata is invalid:`, {
+          creditsFromMetadata,
+          parsedCredits,
+          isValid: !isNaN(parsedCredits) && parsedCredits > 0
         });
       }
+    } else {
+      console.warn(`[WEBHOOK-${handlerId}] ⚠️ No credits found in metadata`);
     }
     
     if (creditAmount === 0) {
-      console.error('[WEBHOOK] Plan config not found and no credits in metadata for product:', product.id);
-      console.error('[WEBHOOK] This means the productId in creemPlansById does not match the webhook product.id');
-      console.error('[WEBHOOK] Please check environment variables NEXT_PUBLIC_CREEM_PACK_*_ID');
-      console.error('[WEBHOOK] Current environment variables:');
-      console.error('[WEBHOOK] NEXT_PUBLIC_CREEM_PACK_STARTER_ID:', process.env.NEXT_PUBLIC_CREEM_PACK_STARTER_ID);
-      console.error('[WEBHOOK] NEXT_PUBLIC_CREEM_PACK_CREATOR_ID:', process.env.NEXT_PUBLIC_CREEM_PACK_CREATOR_ID);
-      console.error('[WEBHOOK] NEXT_PUBLIC_CREEM_PACK_DEV_ID:', process.env.NEXT_PUBLIC_CREEM_PACK_DEV_ID);
-      console.error('[WEBHOOK] Checkout metadata:', JSON.stringify(checkoutMetadata, null, 2));
-      console.error('[WEBHOOK] Order metadata:', JSON.stringify(orderMetadata, null, 2));
-      console.error('[WEBHOOK] Product metadata:', JSON.stringify(productMetadata, null, 2));
+      console.error(`[WEBHOOK-${handlerId}] ❌❌❌ CRITICAL: creditAmount is 0!`);
+      console.error(`[WEBHOOK-${handlerId}] Plan config not found and no credits in metadata for product:`, product.id);
+      console.error(`[WEBHOOK-${handlerId}] This means the productId in creemPlansById does not match the webhook product.id`);
+      console.error(`[WEBHOOK-${handlerId}] Please check environment variables NEXT_PUBLIC_CREEM_PACK_*_ID`);
+      console.error(`[WEBHOOK-${handlerId}] Current environment variables:`, {
+        NEXT_PUBLIC_CREEM_PACK_STARTER_ID: process.env.NEXT_PUBLIC_CREEM_PACK_STARTER_ID ? 'SET' : 'NOT SET',
+        NEXT_PUBLIC_CREEM_PACK_CREATOR_ID: process.env.NEXT_PUBLIC_CREEM_PACK_CREATOR_ID ? 'SET' : 'NOT SET',
+        NEXT_PUBLIC_CREEM_PACK_DEV_ID: process.env.NEXT_PUBLIC_CREEM_PACK_DEV_ID ? 'SET' : 'NOT SET',
+      });
+      console.error(`[WEBHOOK-${handlerId}] Checkout metadata:`, JSON.stringify(checkoutMetadata, null, 2));
+      console.error(`[WEBHOOK-${handlerId}] Order metadata:`, JSON.stringify(orderMetadata, null, 2));
+      console.error(`[WEBHOOK-${handlerId}] Product metadata:`, JSON.stringify(productMetadata, null, 2));
+      console.error(`[WEBHOOK-${handlerId}] Product ID from Creem:`, product.id);
+      console.error(`[WEBHOOK-${handlerId}] Available productIds in creemPlansById:`, Object.values(creemPlansById).map(p => p.productId));
       // 不再直接返回，而是继续处理，creditAmount 为 0 时会在后面跳过加积分
     }
   }
+  
+  console.log(`[WEBHOOK-${handlerId}] 📊 Step 3 Result:`, {
+    planConfigFound: !!planConfig,
+    creditAmount,
+    planId,
+    planCategory,
+    source: planConfig ? 'planConfig' : (creditAmount > 0 ? 'metadata' : 'none')
+  });
   const paymentId = order.transaction;
   
   console.log(`[WEBHOOK-${handlerId}] 📊 Step 4: Final details before processing:`, {
@@ -1713,8 +1743,26 @@ async function handleCheckoutCompleted(checkout: any) {
     console.warn(`[WEBHOOK-${handlerId}] ⚠️ No paymentId (order.transaction) - cannot record payment`);
   }
   
+  // 最终总结
+  console.log(`[WEBHOOK-${handlerId}] ========================================`);
+  console.log(`[WEBHOOK-${handlerId}] 📊 FINAL SUMMARY:`);
+  console.log(`[WEBHOOK-${handlerId}]   - User found: ${user ? 'YES' : 'NO'} (ID: ${user?.id})`);
+  console.log(`[WEBHOOK-${handlerId}]   - Plan config found: ${planConfig ? 'YES' : 'NO'} (ID: ${planConfig?.id || 'N/A'})`);
+  console.log(`[WEBHOOK-${handlerId}]   - Credit amount: ${creditAmount}`);
+  console.log(`[WEBHOOK-${handlerId}]   - Already credited: ${alreadyCredited}`);
+  console.log(`[WEBHOOK-${handlerId}]   - Credits added: ${!alreadyCredited && creditAmount > 0 ? 'YES' : 'NO'}`);
+  console.log(`[WEBHOOK-${handlerId}]   - Payment recorded: ${paymentId ? 'CHECK PAYMENTS TABLE' : 'NO paymentId'}`);
   console.log(`[WEBHOOK-${handlerId}] ========================================`);
   console.log(`[WEBHOOK-${handlerId}] ✅ Checkout.completed processing completed`);
+  
+  // 如果 creditAmount 为 0，这是一个严重问题，需要特别标记
+  if (creditAmount === 0) {
+    console.error(`[WEBHOOK-${handlerId}] ⚠️⚠️⚠️ WARNING: creditAmount is 0! Credits will NOT be added!`);
+    console.error(`[WEBHOOK-${handlerId}] This means either:`);
+    console.error(`[WEBHOOK-${handlerId}]   1. Plan config not found AND metadata has no credits`);
+    console.error(`[WEBHOOK-${handlerId}]   2. Plan config found but credits is 0`);
+    console.error(`[WEBHOOK-${handlerId}] Check the logs above to see why creditAmount is 0`);
+  }
 }
 
 async function handlePaymentFailed(data: any) {
