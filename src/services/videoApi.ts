@@ -239,9 +239,28 @@ export const videoApi = {
       timestamp: new Date().toISOString()
     });
 
+    // Map API status to JobStatus
+    const mapStatus = (apiStatus: string): JobStatus => {
+      const status = (apiStatus || 'processing').toLowerCase();
+      if (status === 'completed' || status === 'success') {
+        return 'SUCCEEDED';
+      } else if (status === 'failed' || status === 'error') {
+        return 'FAILED';
+      } else if (status === 'running') {
+        return 'RUNNING';
+      } else if (status === 'queued') {
+        return 'QUEUED';
+      } else if (status === 'pending') {
+        return 'PENDING';
+      } else {
+        // Default to PENDING for 'processing' or unknown statuses
+        return 'PENDING';
+      }
+    };
+
     return {
       jobId: data.generation_id,
-      status: (data.status || 'processing').toUpperCase() as JobStatus,
+      status: mapStatus(data.status),
       message: data.message,
     };
   },
@@ -255,13 +274,19 @@ export const videoApi = {
     
     console.log('🔍 Getting job status for:', jobId);
     
-    const token = await getAuthToken();
-    console.log('🔑 Auth token obtained:', token ? 'Yes' : 'No');
+    let token: string;
+    try {
+      token = await getAuthToken();
+      console.log('🔑 Auth token obtained:', token ? 'Yes' : 'No');
+    } catch (authError) {
+      console.error('❌ Authentication failed:', authError);
+      throw new Error('Authentication required. Please sign in again.');
+    }
     
     const url = `${API_BASE}/status/${jobId}`;
     console.log('🌐 API URL:', url);
     
-    const response = await fetch(url, {
+    let response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -271,8 +296,36 @@ export const videoApi = {
     
     console.log('📡 Response status:', response.status, response.statusText);
 
+    // If 401, try refreshing session and retry once
+    if (response.status === 401) {
+      console.log('🔄 Got 401, refreshing session and retrying...');
+      try {
+        // Force refresh the session
+        const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession();
+        if (refreshError || !refreshedSession?.access_token) {
+          throw new Error('Failed to refresh session');
+        }
+        
+        const refreshedToken = refreshedSession.access_token;
+        response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${refreshedToken}`,
+          },
+        });
+        
+        console.log('📡 Retry response status:', response.status, response.statusText);
+      } catch (retryError) {
+        console.error('❌ Retry after refresh failed:', retryError);
+        throw new Error('Authentication failed. Please sign in again.');
+      }
+    }
+
     if (!response.ok) {
-      throw new Error(`Failed to get job status: ${response.status}`);
+      const errorText = await response.text().catch(() => '');
+      const errorMessage = errorText ? `Failed to get job status: ${response.status} - ${errorText}` : `Failed to get job status: ${response.status}`;
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();

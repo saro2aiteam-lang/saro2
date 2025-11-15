@@ -51,12 +51,20 @@ async function diagnoseCreditError() {
   console.log('\n🔍 测试 RPC 函数调用...');
   try {
     // 使用 0 金额来触发参数验证错误，这样可以测试函数是否存在而不实际扣除积分
-    const { data: testResult, error: testError } = await supabase.rpc('debit_user_credits_transaction', {
+    const rpcCall = supabase.rpc('debit_user_credits_transaction', {
       p_user_id: user.id,
       p_amount: 0, // 使用 0 来触发参数验证错误，而不是实际扣除
       p_reason: 'diagnostic_test',
       p_metadata: { test: true }
     });
+    
+    // 确保 rpcCall 是一个 Promise
+    if (!rpcCall || typeof rpcCall.then !== 'function') {
+      console.error('❌ supabase.rpc() 没有返回 Promise');
+      return;
+    }
+    
+    const { data: testResult, error: testError } = await rpcCall;
     
     if (testError) {
       if (testError.code === 'P0003') {

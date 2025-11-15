@@ -1320,8 +1320,8 @@ const Generate = () => {
                     </span>
                   </div>
 
-                  {/* Show sample video for all users */}
-                  {showingSample && sampleVideo ? (
+                  {/* Show sample video only when not generating and no current job */}
+                  {showingSample && sampleVideo && !isGenerating && !currentJob ? (
                     <div className="space-y-4">
                       <div className="bg-accent/10 border-2 border-accent/20 rounded-xl p-4">
                         <div className="flex items-center gap-2 mb-2">
